@@ -113,6 +113,7 @@
     <ClCompile Include="EngineTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GUIManager.h" />
     <ClInclude Include="SDL2\begin_code.h" />
     <ClInclude Include="SDL2\close_code.h" />
     <ClInclude Include="SDL2\SDL.h" />

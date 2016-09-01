@@ -37,10 +37,19 @@
 
 #include "WindowManager.h"
 #include "TextureManager.h"
+#include "GUIManager.h"
 
 #if USING_SDL
+int mouseX;
+int mouseY;
+bool mouseButtonLeft;
+bool mouseButtonMiddle;
+bool mouseButtonRight;
+const Uint8* currentKeyStates;
+
 WindowManager& windowManager = WindowManager::GetInstance();
 TextureManager& textureManager = TextureManager::GetInstance();
+GUIManager& guiManager = GUIManager::GetInstance(mouseX, mouseY, mouseButtonLeft, mouseButtonMiddle, mouseButtonRight, currentKeyStates);
 #endif
 
 //Scene texture
@@ -200,7 +209,6 @@ void HandleInput()
 {
 	//Set texture based on current keystate
 	testVarFlag = 0;
-	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 	if (currentKeyStates[SDL_SCANCODE_UP])
 	{
 		testVarFlag |= 1;
@@ -280,6 +288,14 @@ int main(int argc, char* args[])
 		return 3;
 	}
 
+	GUIObjectNode* newNode = new GUIObjectNode;
+	newNode->m_X = 100;
+	newNode->m_Y = 250;
+	newNode->m_Width = 50;
+	newNode->m_Height = 150;
+	newNode->m_TextureID = g_TestTexture1->m_TextureID;
+	guiManager.GetBaseNode()->AddChild(newNode);
+
 	//  The event handler
 	SDL_Event e;
 
@@ -292,6 +308,13 @@ int main(int argc, char* args[])
 	//While application is running
 	while (!quit)
 	{
+		//  Get the current state of mouse and keyboard input
+		SDL_GetMouseState(&mouseX, &mouseY);
+		mouseButtonLeft = SDL_BUTTON(SDL_BUTTON_LEFT);
+		mouseButtonMiddle = SDL_BUTTON(SDL_BUTTON_MIDDLE);
+		mouseButtonRight = SDL_BUTTON(SDL_BUTTON_RIGHT);
+		currentKeyStates = SDL_GetKeyboardState(NULL);
+
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -303,24 +326,27 @@ int main(int argc, char* args[])
 			//Handle keypress with current mouse position
 			else if (e.type == SDL_TEXTINPUT)
 			{
-				auto x = 0, y = 0;
-				SDL_GetMouseState(&x, &y);
-				HandleTextInput(e.text.text[0], x, y);
+				HandleTextInput(e.text.text[0], mouseX, mouseY);
 			}
 			else
 			{
+				if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+				{
+				}
 				windowManager.HandleEvent(e);
 			}
 		}
 
 		//  Input
 		HandleInput();
+		guiManager.Input();
 
 		//  Update
 		//  ?
 
 		//  Render
 		RenderScreen();
+		guiManager.Render();
 		windowManager.Render();
 	}
 
