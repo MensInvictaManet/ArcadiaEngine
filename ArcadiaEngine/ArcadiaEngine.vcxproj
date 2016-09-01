@@ -196,6 +196,7 @@
     <ClInclude Include="SDL2\SDL_types.h" />
     <ClInclude Include="SDL2\SDL_version.h" />
     <ClInclude Include="SDL2\SDL_video.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

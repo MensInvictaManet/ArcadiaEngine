@@ -26,7 +26,19 @@ private:
 		bool			m_KeyboardFocus;
 		bool			m_Minimized;
 
-		WindowLink(int windowID) : m_WindowID(windowID) {}
+		WindowLink(SDL_Window* window, SDL_GLContext context, SDL_Renderer* renderer, int windowID, bool shown, int width, int height) :
+			m_Window(window),
+			m_Context(context),
+			m_Renderer(renderer),
+			m_WindowID(windowID),
+			m_Shown(shown),
+			m_Width(width),
+			m_Height(height),
+			m_MouseFocus(false),
+			m_KeyboardFocus(false),
+			m_Minimized(false)
+		{}
+
 		void HandleEvent(SDL_Event& e);
 	};
 
@@ -46,6 +58,7 @@ public:
 	bool GetWindowShown(const int index = -1);
 	int GetWindowWidth(const int index = -1);
 	int GetWindowHeight(const int index = -1);
+	bool SetCurrentWindow(const int index = -1);
 
 private:
 
@@ -60,7 +73,7 @@ private:
 	int m_CurrentWindow;
 };
 
-void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
+inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 {
 	//If an event was detected for this window
 	if (e.type == SDL_WINDOWEVENT && e.window.windowID == m_WindowID)
@@ -147,12 +160,12 @@ void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 	}
 }
 
-int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h, bool shown, bool current)
+inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h, bool shown, bool current)
 {
 	auto index = FirstFreeIndex();
 
 	//  Create the Window
-	SDL_Window* newWindow = SDL_CreateWindow(title, x, y, w, h, SDL_WINDOW_OPENGL | (shown ? SDL_WINDOW_SHOWN : 0));
+	auto newWindow = SDL_CreateWindow(title, x, y, w, h, SDL_WINDOW_OPENGL | (shown ? SDL_WINDOW_SHOWN : 0));
 	if (newWindow == nullptr)
 	{
 		printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -160,7 +173,7 @@ int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h
 	}
 
 	//  Create the OpenGL context
-	SDL_GLContext newContext = SDL_GL_CreateContext(newWindow);
+	auto newContext = SDL_GL_CreateContext(newWindow);
 	if (newContext == nullptr)
 	{
 		printf("OpenGL context could not be created! SDL Error: %s\n", SDL_GetError());
@@ -169,7 +182,7 @@ int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h
 	}
 
 	//  Create the Renderer
-	SDL_Renderer* newRenderer = SDL_CreateRenderer(newWindow, -1, SDL_RENDERER_ACCELERATED);
+	auto newRenderer = SDL_CreateRenderer(newWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (newRenderer == nullptr)
 	{
 		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -178,8 +191,8 @@ int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h
 		return -1;
 	}
 
-	//  Create the WindowLink
-	m_WindowList[index] = new WindowLink(SDL_GetWindowID(newWindow));
+	//  Create the WindowLink and assign the new data
+	m_WindowList[index] = new WindowLink(newWindow, newContext, newRenderer, SDL_GetWindowID(newWindow), shown, w, h);
 	if ((m_WindowList.find(index) == m_WindowList.end()) || m_WindowList[index] == nullptr)
 	{
 		printf("A new WindowLink could not be allocated!\n");
@@ -189,56 +202,55 @@ int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h
 		return -1;
 	}
 
-	//  We've successfully formed our new Window and created a WindowLink with it, so set the data
-	m_WindowList[index]->m_Window = newWindow;
-	m_WindowList[index]->m_Renderer = newRenderer;
-	m_WindowList[index]->m_Context = newContext;
-
 	//  Set the current window based on whether we're setting this or not
 	if (current | (m_CurrentWindow == -1)) m_CurrentWindow = index;
+	SDL_SetRenderDrawColor(newRenderer, 0x00, 0x00, 0x00, 0xFF);
 	SDL_GL_MakeCurrent(m_WindowList[m_CurrentWindow]->m_Window, m_WindowList[m_CurrentWindow]->m_Context);
 
 	//  Return the new window's index
 	return index;
 }
 
-bool WindowManager::DestroyWindow(const int index)
+inline bool WindowManager::DestroyWindow(const int index)
 {
 	auto iter = m_WindowList.find(index);
-	if (iter == m_WindowList.end()) return nullptr;
+	if (iter == m_WindowList.end()) return false;
 
 	DestroyWindow(iter);
 	return true;
 }
 
-void WindowManager::HandleEvent(SDL_Event& e)
+inline void WindowManager::HandleEvent(SDL_Event& e)
 {
 	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter) (*iter).second->HandleEvent(e);
 }
 
-void WindowManager::Render()
+inline void WindowManager::Render()
 {
 	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter)
 	{
 		if (!(*iter).second->m_Minimized)
 		{
-			//Clear screen
-			SDL_SetRenderDrawColor((*iter).second->m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			//  Clear the screen
+			SDL_SetRenderDrawColor((*iter).second->m_Renderer, 0x00, 0x00, 0x00, 0xFF);
 			SDL_RenderClear((*iter).second->m_Renderer);
 
-			//Update screen
+			//  Update the screen
 			SDL_RenderPresent((*iter).second->m_Renderer);
+			SDL_GL_SwapWindow((*iter).second->m_Window); // TODO: Only do this to the current window?
 		}
 	}
+
+	
 }
 
-void WindowManager::Shutdown()
+inline void WindowManager::Shutdown()
 {
 	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter) DestroyWindow(iter, false);
 	m_WindowList.clear();
 }
 
-SDL_Window* WindowManager::GetWindow(int index)
+inline SDL_Window* WindowManager::GetWindow(int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Window;
 
@@ -248,7 +260,7 @@ SDL_Window* WindowManager::GetWindow(int index)
 	return (*iter).second->m_Window;
 }
 
-SDL_GLContext WindowManager::GetContext(int index)
+inline SDL_GLContext WindowManager::GetContext(int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Context;
 
@@ -258,7 +270,7 @@ SDL_GLContext WindowManager::GetContext(int index)
 	return (*iter).second->m_Context;
 }
 
-SDL_Renderer* WindowManager::GetRenderer(int index)
+inline SDL_Renderer* WindowManager::GetRenderer(int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Renderer;
 
@@ -268,7 +280,7 @@ SDL_Renderer* WindowManager::GetRenderer(int index)
 	return (*iter).second->m_Renderer;
 }
 
-int WindowManager::GetWindowID(const int index)
+inline int WindowManager::GetWindowID(const int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_WindowID;
 
@@ -278,7 +290,7 @@ int WindowManager::GetWindowID(const int index)
 	return (*iter).second->m_WindowID;
 }
 
-bool WindowManager::GetWindowShown(const int index)
+inline bool WindowManager::GetWindowShown(const int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Shown;
 
@@ -288,7 +300,7 @@ bool WindowManager::GetWindowShown(const int index)
 	return (*iter).second->m_Shown;
 }
 
-int WindowManager::GetWindowWidth(const int index)
+inline int WindowManager::GetWindowWidth(const int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Width;
 
@@ -298,7 +310,7 @@ int WindowManager::GetWindowWidth(const int index)
 	return (*iter).second->m_Width;
 }
 
-int WindowManager::GetWindowHeight(const int index)
+inline int WindowManager::GetWindowHeight(const int index)
 {
 	if (index == -1) return m_WindowList[m_CurrentWindow]->m_Height;
 
@@ -308,18 +320,33 @@ int WindowManager::GetWindowHeight(const int index)
 	return (*iter).second->m_Height;
 }
 
-WindowManager::WindowManager() :
+bool WindowManager::SetCurrentWindow(const int index)
+{
+	if (index == -1)
+	{
+		SDL_GL_MakeCurrent(m_WindowList[m_CurrentWindow]->m_Window, m_WindowList[m_CurrentWindow]->m_Context);
+		return true;
+	}
+
+	auto iter = m_WindowList.find(index);
+	if (iter == m_WindowList.end()) return false;
+
+	SDL_GL_MakeCurrent((*iter).second->m_Window, (*iter).second->m_Context);
+	return true;
+}
+
+inline WindowManager::WindowManager() :
 	m_CurrentWindow(-1)
 {
 
 }
 
-WindowManager::~WindowManager()
+inline WindowManager::~WindowManager()
 {
 	Shutdown();
 }
 
-int WindowManager::FirstFreeIndex()
+inline int WindowManager::FirstFreeIndex()
 {
 	//  Find the first free index
 	auto index = 0;
@@ -330,8 +357,10 @@ int WindowManager::FirstFreeIndex()
 	}
 }
 
-int WindowManager::FirstUsedIndex()
+inline int WindowManager::FirstUsedIndex()
 {
+	if (m_WindowList.size() == 0) return -1;
+
 	//  Find the first free index
 	auto index = 0;
 	for (; ; ++index)
@@ -341,7 +370,7 @@ int WindowManager::FirstUsedIndex()
 	}
 }
 
-void WindowManager::DestroyWindow(std::unordered_map<int, WindowLink*>::iterator& iter, bool erase)
+inline void WindowManager::DestroyWindow(std::unordered_map<int, WindowLink*>::iterator& iter, bool erase)
 {
 	SDL_GL_DeleteContext((*iter).second->m_Context);
 

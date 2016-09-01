@@ -12,7 +12,7 @@
 #endif
 
 #if USING_SDL_IMAGE
-#include "SDL2\SDL_image.h"
+#include "SDL2/SDL_image.h"
 #pragma comment(lib, "SDL2/SDL2_image.lib")
 #endif
 
@@ -36,162 +36,16 @@
 #include <string>
 
 #include "WindowManager.h"
+#include "TextureManager.h"
 
 #if USING_SDL
 WindowManager& windowManager = WindowManager::GetInstance();
-
-//  The window we'll be rendering to
-SDL_Window* g_Window = nullptr;
-
-//  OpenGL context
-SDL_GLContext g_Context = nullptr;
-
-//The window renderer
-SDL_Renderer* g_Renderer = nullptr;
+TextureManager& textureManager = TextureManager::GetInstance();
 #endif
 
-class LTexture
-{
-public:
-	//Initializes variables
-	LTexture()
-	{
-		//Initialize
-		mTexture = NULL;
-		mWidth = 0;
-		mHeight = 0;
-	}
-
-	//Deallocates memory
-	~LTexture()
-	{
-		//Deallocate
-		free();
-	}
-
-	//Loads image at specified path
-	bool loadFromFile(std::string path)
-	{
-		//Get rid of preexisting texture
-		free();
-
-		//The final texture
-		mTexture = NULL;
-
-		//Load image at specified path
-		SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-		if (loadedSurface == NULL)
-		{
-			printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
-			return false;
-		}
-		else
-		{
-			//  Color key image
-			SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
-
-			//  Create texture from surface pixels
-			mTexture = SDL_CreateTextureFromSurface(g_Renderer, loadedSurface);
-			if (mTexture == NULL)
-			{
-				printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-				return false;
-			}
-			else
-			{
-				//  Get image dimensions
-				mWidth = loadedSurface->w;
-				mHeight = loadedSurface->h;
-			}
-
-			glGenTextures(1, &mTextureID);
-			glBindTexture(GL_TEXTURE_2D, mTextureID);
-
-			int mode = (loadedSurface->format->BytesPerPixel == 4) ? GL_RGBA : GL_RGB;
-
-			glTexImage2D(GL_TEXTURE_2D, 0, mode, loadedSurface->w, loadedSurface->h, 0, mode, GL_UNSIGNED_BYTE, loadedSurface->pixels);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			//  Get rid of the old loaded surface
-			SDL_FreeSurface(loadedSurface);
-		}
-
-		//  Return success
-		return mTexture != NULL;
-	}
-
-	//  Deallocates texture
-	void free()
-	{
-		//Free texture if it exists
-		if (mTexture != NULL)
-		{
-			SDL_DestroyTexture(mTexture);
-			mTexture = NULL;
-			mWidth = 0;
-			mHeight = 0;
-		}
-	}
-
-	//Set color modulation
-	void setColor(Uint8 red, Uint8 green, Uint8 blue)
-	{
-		//Modulate texture
-		SDL_SetTextureColorMod(mTexture, red, green, blue);
-	}
-
-	//Renders texture at given point
-	void render(int x, int y, SDL_Rect* clip = NULL)
-	{
-		//Set rendering space and render to screen
-		SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-		//Set clip rendering dimensions
-		if (clip != NULL)
-		{
-			renderQuad.w = clip->w;
-			renderQuad.h = clip->h;
-		}
-
-		//Render to screen
-		SDL_RenderCopy(g_Renderer, mTexture, clip, &renderQuad);
-	}
-
-	void renderOpenGL(float x, float y)
-	{
-		glBindTexture(GL_TEXTURE_2D, mTextureID);
-
-		// For Ortho mode, of course
-		float Width = 100;
-		float Height = 100;
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, 0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(x + Width, y, 0);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(x + Width, y + Height, 0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + Height, 0);
-		glEnd();
-	}
-
-	//Gets image dimensions
-	int getWidth() { return mWidth; }
-	int getHeight() { return mHeight; }
-
-private:
-	//The actual hardware texture
-	SDL_Texture* mTexture;
-	GLuint mTextureID;
-
-	//Image dimensions
-	int mWidth;
-	int mHeight;
-};
-
 //Scene texture
-LTexture g_TestTexture1;
-LTexture g_TestTexture2;
+TextureManager::ManagedTexture* g_TestTexture1;
+TextureManager::ManagedTexture* g_TestTexture2;
 
 //  Render flag
 bool gRender3D = true;
@@ -282,14 +136,6 @@ bool Initialize()
 	windowManager.CreateNewWindow("Arcadia Engine 2", 960, 100, SCREEN_WIDTH, SCREEN_HEIGHT, true, true);
 	// TEST
 
-	g_Window = windowManager.GetWindow(-1);
-	g_Context = windowManager.GetContext(-1);
-	g_Renderer = windowManager.GetRenderer(-1);
-	SDL_GL_MakeCurrent(g_Window, g_Context);
-
-	//  Initialize the renderer draw color
-	SDL_SetRenderDrawColor(g_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
 	//  Initialize PNG loading
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags))
@@ -334,11 +180,8 @@ void CloseProgram()
 #endif
 
 #if USING_SDL
-	//  Destroy the window	
-	SDL_DestroyWindow(g_Window);
-	g_Window = nullptr;
-
-	g_Renderer = nullptr;
+	//  Destroy the window manager (and all windows inside)
+	windowManager.Shutdown();
 
 	SDL_Quit();
 #endif
@@ -409,8 +252,8 @@ void RenderScreen()
 		glVertex2f(100.0f, 200.0f);
 		glEnd();
 
-		g_TestTexture1.renderOpenGL(250.0f, 100.0f);
-		g_TestTexture2.renderOpenGL(400.0f, 100.0f);
+		g_TestTexture1->renderOpenGL(250, 100, 100, 100);
+		g_TestTexture2->renderOpenGL(400, 100, 100, 100);
 	}
 }
 
@@ -424,14 +267,14 @@ int main(int argc, char* args[])
 	}
 
 	//  Load texture
-	if (!g_TestTexture1.loadFromFile("loaded1.png"))
+	if ((g_TestTexture1 = textureManager.LoadTexture("loaded1.png")) == nullptr)
 	{
 		printf("Failed to load texture!\n");
 		return 2;
 	}
 
 	//  Load texture
-	if (!g_TestTexture2.loadFromFile("loaded2.png"))
+	if ((g_TestTexture2 = textureManager.LoadTexture("loaded2.png")) == nullptr)
 	{
 		printf("Failed to load texture!\n");
 		return 3;
@@ -479,13 +322,10 @@ int main(int argc, char* args[])
 		//  Render
 		RenderScreen();
 		windowManager.Render();
-
-		//Update screen
-		SDL_GL_SwapWindow(g_Window);
 	}
 
-	g_TestTexture1.free();
-	g_TestTexture2.free();
+	g_TestTexture1->FreeTexture();
+	g_TestTexture2->FreeTexture();
 
 	//  Disable text input
 	SDL_StopTextInput();
