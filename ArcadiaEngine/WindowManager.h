@@ -320,7 +320,7 @@ inline int WindowManager::GetWindowHeight(const int index)
 	return (*iter).second->m_Height;
 }
 
-bool WindowManager::SetCurrentWindow(const int index)
+inline bool WindowManager::SetCurrentWindow(const int index)
 {
 	if (index == -1)
 	{
@@ -380,3 +380,6 @@ inline void WindowManager::DestroyWindow(std::unordered_map<int, WindowLink*>::i
 
 	if (erase) m_WindowList.erase(iter);
 }
+
+//  Instance to be utilized by anyone including this header
+WindowManager& windowManager = WindowManager::GetInstance();

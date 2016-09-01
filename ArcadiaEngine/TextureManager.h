@@ -217,3 +217,6 @@ inline int TextureManager::FirstFreeIndex()
 		if (iter == m_TextureList.end()) return index;
 	}
 }
+
+//  Instance to be utilized by anyone including this header
+TextureManager& textureManager = TextureManager::GetInstance();

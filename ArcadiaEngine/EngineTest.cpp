@@ -38,19 +38,7 @@
 #include "WindowManager.h"
 #include "TextureManager.h"
 #include "GUIManager.h"
-
-#if USING_SDL
-int mouseX;
-int mouseY;
-bool mouseButtonLeft;
-bool mouseButtonMiddle;
-bool mouseButtonRight;
-const Uint8* currentKeyStates;
-
-WindowManager& windowManager = WindowManager::GetInstance();
-TextureManager& textureManager = TextureManager::GetInstance();
-GUIManager& guiManager = GUIManager::GetInstance(mouseX, mouseY, mouseButtonLeft, mouseButtonMiddle, mouseButtonRight, currentKeyStates);
-#endif
+#include "InputManager.h"
 
 //Scene texture
 TextureManager::ManagedTexture* g_TestTexture1;
@@ -196,7 +184,7 @@ void CloseProgram()
 #endif
 }
 
-void HandleTextInput(unsigned char key, int x, int y)
+void HandleTextInput(unsigned char key)
 {
 	//  Toggle quad rendering
 	if (key == 'q')
@@ -209,11 +197,11 @@ void HandleInput()
 {
 	//Set texture based on current keystate
 	testVarFlag = 0;
-	if (currentKeyStates[SDL_SCANCODE_UP])
+	if (inputManager.GetKeyDown(SDL_SCANCODE_UP))
 	{
 		testVarFlag |= 1;
 	}
-	if (currentKeyStates[SDL_SCANCODE_DOWN])
+	if (inputManager.GetKeyDown(SDL_SCANCODE_DOWN))
 	{
 		testVarFlag |= 2;
 	}
@@ -288,7 +276,7 @@ int main(int argc, char* args[])
 		return 3;
 	}
 
-	GUIObjectNode* newNode = new GUIObjectNode;
+	auto* newNode = new GUIButton;
 	newNode->m_X = 100;
 	newNode->m_Y = 250;
 	newNode->m_Width = 50;
@@ -299,39 +287,42 @@ int main(int argc, char* args[])
 	//  The event handler
 	SDL_Event e;
 
-	//Enable text input
+	//  Enable text input
 	SDL_StartTextInput();
 
-	//Main loop flag
+	//  Main loop flag
 	auto quit = false;
 
-	//While application is running
+	//  While application is running
 	while (!quit)
 	{
 		//  Get the current state of mouse and keyboard input
-		SDL_GetMouseState(&mouseX, &mouseY);
-		mouseButtonLeft = SDL_BUTTON(SDL_BUTTON_LEFT);
-		mouseButtonMiddle = SDL_BUTTON(SDL_BUTTON_MIDDLE);
-		mouseButtonRight = SDL_BUTTON(SDL_BUTTON_RIGHT);
-		currentKeyStates = SDL_GetKeyboardState(NULL);
+		inputManager.GetInputForFrame();
 
-		//Handle events on queue
+		//  Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
-			//User requests quit
+			//  User requests quit
 			if (e.type == SDL_QUIT)
 			{
 				quit = true;
 			}
-			//Handle keypress with current mouse position
+			//  Handle keypress with current mouse position
 			else if (e.type == SDL_TEXTINPUT)
 			{
-				HandleTextInput(e.text.text[0], mouseX, mouseY);
+				HandleTextInput(e.text.text[0]);
 			}
 			else
 			{
-				if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+				if (/*e.type == SDL_MOUSEMOTION || */e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
 				{
+					switch (e.button.button)
+					{
+					case 1: inputManager.SetMouseButtonLeft((e.type == SDL_MOUSEBUTTONDOWN)); break;
+					case 2: inputManager.SetMouseButtonMiddle((e.type == SDL_MOUSEBUTTONDOWN)); break;
+					case 3: inputManager.SetMouseButtonRight((e.type == SDL_MOUSEBUTTONDOWN)); break;
+					default: break;
+					}
 				}
 				windowManager.HandleEvent(e);
 			}

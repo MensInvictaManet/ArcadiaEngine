@@ -6,6 +6,8 @@
 #include <deque>
 #include <tuple>
 
+#include "InputManager.h"
+
 class GUIObjectNode
 {
 private:
@@ -13,6 +15,8 @@ private:
 
 public:
 	GUIObjectNode();
+	virtual ~GUIObjectNode() {}
+
 	virtual void Input();
 	virtual void Render();
 
@@ -29,41 +33,29 @@ public:
 class GUIButton : public GUIObjectNode
 {
 public:
-	virtual void Input();
+	GUIButton() {}
+	virtual ~GUIButton() {}
+
+	virtual void Input() override;
 };
 
 class GUIManager
 {
-	friend class GUIButton;
-protected:
-	enum MouseButtonID
-	{
-		MOUSE_BUTTON_LEFT,
-		MOUSE_BUTTON_MIDDLE,
-		MOUSE_BUTTON_RIGHT
-	};
-
-	const int& mouseX;
-	const int& mouseY;
-	const bool& mouseButtonLeft;
-	const bool& mouseButtonMiddle;
-	const bool& mouseButtonRight;
-	const Uint8*& currentKeyStates;
 public:
-	static GUIManager& GetInstance(const int& mouse_x, const int& mouse_y, const bool& mouse_button_left, const bool& mouse_button_middle, const bool& mouse_button_right, const Uint8*& current_key_states) { static GUIManager INSTANCE(mouse_x, mouse_y, mouse_button_left, mouse_button_middle, mouse_button_right, current_key_states); return INSTANCE; }
+	static GUIManager& GetInstance() { static GUIManager INSTANCE; return INSTANCE; }
 
 	GUIObjectNode* GetBaseNode() { return &m_BaseNode; }
 	void Input();
 	void Render();
 
 private:
-	GUIManager(const int& mouse_x, const int& mouse_y, const bool& mouse_button_left, const bool& mouse_button_middle, const bool& mouse_button_right, const Uint8*& current_key_states);
+	GUIManager();
 	~GUIManager();
 
 	GUIObjectNode m_BaseNode;
 };
 
-GUIObjectNode::GUIObjectNode() :
+inline GUIObjectNode::GUIObjectNode() :
 	m_ZOrder(0),
 	m_X(0),
 	m_Y(0),
@@ -74,14 +66,14 @@ GUIObjectNode::GUIObjectNode() :
 
 }
 
-void GUIObjectNode::Input()
+inline void GUIObjectNode::Input()
 {
 	//  TODO: Take Input
 
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Input();
 }
 
-void GUIObjectNode::Render()
+inline void GUIObjectNode::Render()
 {
 	//  Render the object if able
 	if (m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
@@ -99,36 +91,40 @@ void GUIObjectNode::Render()
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render();
 }
 
-void GUIButton::Input()
+inline void GUIButton::Input()
 {
-	int x = GUIManager::GetInstance().mouseX;
+	auto leftButtonState = inputManager.GetMouseButtonLeft();
+	auto x = inputManager.GetMouseX();
+	auto y = inputManager.GetMouseY();
+
+	if ((leftButtonState == MOUSE_BUTTON_PRESSED) && (x > m_X) && (x < m_X + m_Width) && (y > m_Y) && (y < m_Y + m_Height))
+	{
+		m_X++;
+	}
+
+	//  Take base node input
+	GUIObjectNode::Input();
 }
 
-void GUIManager::Input()
+inline void GUIManager::Input()
 {
-	currentKeyStates = SDL_GetKeyboardState(NULL);
 	m_BaseNode.Input();
 }
 
-void GUIManager::Render()
+inline void GUIManager::Render()
 {
 	m_BaseNode.Render();
 }
 
-GUIManager::GUIManager(const int& mouse_x, const int& mouse_y, const bool& mouse_button_left, const bool& mouse_button_middle, const bool& mouse_button_right, const Uint8*& current_key_states) : 
-	mouseX(mouse_x),
-	mouseY(mouse_y),
-	mouseButtonLeft(mouse_button_left),
-	mouseButtonMiddle(mouse_button_middle),
-	mouseButtonRight(mouse_button_right),
-	currentKeyStates(current_key_states)
-
+inline GUIManager::GUIManager()
 {
 
 }
 
-GUIManager::~GUIManager()
+inline GUIManager::~GUIManager()
 {
 
 }
 
+//  Instance to be utilized by anyone including this header
+GUIManager& guiManager = GUIManager::GetInstance();
