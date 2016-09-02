@@ -113,7 +113,10 @@
     <ClCompile Include="EngineTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GUIButton.h" />
+    <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="GUIObjectNode.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="SDL2\begin_code.h" />
     <ClInclude Include="SDL2\close_code.h" />

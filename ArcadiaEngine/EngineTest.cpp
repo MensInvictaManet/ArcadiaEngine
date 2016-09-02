@@ -32,26 +32,59 @@
 #if USING_SDL_MIXER
 #endif
 
-#include <stdio.h>
-#include <string>
-
 #include "WindowManager.h"
 #include "TextureManager.h"
 #include "GUIManager.h"
+#include "GUIButton.h"
+#include "GUICheckbox.h"
 #include "InputManager.h"
 
-//Scene texture
-TextureManager::ManagedTexture* g_TestTexture1;
-TextureManager::ManagedTexture* g_TestTexture2;
-
-//  Render flag
-bool gRender3D = true;
+//  Test variables
+GUIButton* g_TestButton;
+GUICheckbox* g_TestCheckbox;
 
 int testVarFlag = 0;
 
 //  Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+
+bool InitializeSDL()
+{
+	//  Initialize SDL
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	//  Set SDL to use OpenGL 2.1
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+	//  Set the OpenGL attributes for multisampling
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
+	//  Set the texture filtering to linear
+	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+	{
+		printf("Warning: Linear texture filtering not enabled!");
+	}
+
+	//  Initialize PNG loading
+	int imgFlags = IMG_INIT_PNG;
+	if (!(IMG_Init(imgFlags) & imgFlags))
+	{
+		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		return false;
+	}
+
+	//  Enable text input
+	SDL_StartTextInput();
+
+	return true;
+}
 
 bool InitializeOpenGL()
 {
@@ -105,47 +138,19 @@ bool Initialize()
 	//  Initialization flag
 	auto success = true;
 
-	//  Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (!InitializeSDL())
 	{
-		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+		printf("Unable to initialize SDL!\n");
 		return false;
 	}
 
-	//  Set SDL to use OpenGL 2.1
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-
-	//  Set the OpenGL attributes for multisampling
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
-
-	//  Set the texture filtering to linear
-	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-	{
-		printf("Warning: Linear texture filtering not enabled!");
-	}
-
-	int windowIndex = windowManager.CreateNewWindow("Arcadia Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT);
+	auto windowIndex = windowManager.CreateNewWindow("Arcadia Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (windowIndex == -1) return false;
 
-	// TEST
-	windowManager.CreateNewWindow("Arcadia Engine 2", 960, 100, SCREEN_WIDTH, SCREEN_HEIGHT, true, true);
-	// TEST
-
-	//  Initialize PNG loading
-	int imgFlags = IMG_INIT_PNG;
-	if (!(IMG_Init(imgFlags) & imgFlags))
-	{
-		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-		success = false;
-	}
-
-	//  Set SDL to use Vsync
-	if (SDL_GL_SetSwapInterval(1) < 0)
-	{
-		printf("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
-	}
+	// TEST 2nd WINDOW
+	windowIndex = windowManager.CreateNewWindow("Arcadia Engine 2", 960, 100, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+	if (windowIndex == -1) return false;
+	// TEST 2nd WINDOW
 
 	//  Initialize OpenGL
 	if (!InitializeOpenGL())
@@ -176,9 +181,13 @@ void CloseProgram()
 	IMG_Quit();
 #endif
 
-#if USING_SDL
-	//  Destroy the window manager (and all windows inside)
+	//  Shutdown the manager classes that need it
+	textureManager.Shutdown();
 	windowManager.Shutdown();
+
+#if USING_SDL
+	//  Disable text input
+	SDL_StopTextInput();
 
 	SDL_Quit();
 #endif
@@ -187,9 +196,10 @@ void CloseProgram()
 void HandleTextInput(unsigned char key)
 {
 	//  Toggle quad rendering
-	if (key == 'q')
+	if (key == 'q' && g_TestButton != nullptr)
 	{
-		gRender3D = !gRender3D;
+		guiManager.DestroyNode(g_TestButton);
+		g_TestButton = nullptr;
 	}
 }
 
@@ -222,10 +232,10 @@ void RenderScreen()
 	if (!(testVarFlag & 1))
 	{
 		glBegin(GL_QUADS);
-		glVertex3f(-0.7f, -1.5f, -50.0f);
-		glVertex3f(0.7f, -1.5f, -50.0f);
-		glVertex3f(0.4f, -0.5f, -50.0f);
-		glVertex3f(-0.4f, -0.5f, -50.0f);
+		glVertex3f(-5.7f, -1.5f, -50.0f);
+		glVertex3f(-4.3f, -1.5f, -50.0f);
+		glVertex3f(-4.6f, -0.5f, -50.0f);
+		glVertex3f(-5.4f, -0.5f, -50.0f);
 		glEnd();
 	}
 
@@ -238,6 +248,9 @@ void RenderScreen()
 
 	glDisable(GL_DEPTH_TEST);
 
+	//  Render the 2D GUI through the GUIManager
+	guiManager.Render();
+
 	//  Render the 2D quad if the bool is set to true
 	if (!(testVarFlag & 2))
 	{
@@ -247,48 +260,13 @@ void RenderScreen()
 		glVertex2f(200.0f, 200.0f);
 		glVertex2f(100.0f, 200.0f);
 		glEnd();
-
-		g_TestTexture1->renderOpenGL(250, 100, 100, 100);
-		g_TestTexture2->renderOpenGL(400, 100, 100, 100);
 	}
 }
 
-int main(int argc, char* args[])
+void PrimaryLoop()
 {
-	//  Attempt to initialize OpenGL and SDL. Close the program if that fails.
-	if (!Initialize())
-	{
-		CloseProgram();
-		return 1;
-	}
-
-	//  Load texture
-	if ((g_TestTexture1 = textureManager.LoadTexture("loaded1.png")) == nullptr)
-	{
-		printf("Failed to load texture!\n");
-		return 2;
-	}
-
-	//  Load texture
-	if ((g_TestTexture2 = textureManager.LoadTexture("loaded2.png")) == nullptr)
-	{
-		printf("Failed to load texture!\n");
-		return 3;
-	}
-
-	auto* newNode = new GUIButton;
-	newNode->m_X = 100;
-	newNode->m_Y = 250;
-	newNode->m_Width = 50;
-	newNode->m_Height = 150;
-	newNode->m_TextureID = g_TestTexture1->m_TextureID;
-	guiManager.GetBaseNode()->AddChild(newNode);
-
 	//  The event handler
 	SDL_Event e;
-
-	//  Enable text input
-	SDL_StartTextInput();
 
 	//  Main loop flag
 	auto quit = false;
@@ -337,15 +315,36 @@ int main(int argc, char* args[])
 
 		//  Render
 		RenderScreen();
-		guiManager.Render();
 		windowManager.Render();
+
+		//  End Step
+		guiManager.EndStep();
+	}
+}
+
+int main(int argc, char* args[])
+{
+	//  Attempt to initialize OpenGL and SDL. Close the program if that fails.
+	if (!Initialize())
+	{
+		CloseProgram();
+		return 1;
 	}
 
-	g_TestTexture1->FreeTexture();
-	g_TestTexture2->FreeTexture();
+	//  Create some test UI (A button and a checkbox)
+	g_TestButton = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 100);
+	g_TestButton->SetLeftClickCallback([=](GUIObjectNode* node)
+	{
+		if (g_TestCheckbox != nullptr) g_TestCheckbox->SetChecked(false);
+	});
+	guiManager.GetBaseNode()->AddChild(g_TestButton);
 
-	//  Disable text input
-	SDL_StopTextInput();
+	g_TestCheckbox = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 400, 100, 100, 100);
+	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node) {});
+	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
+
+	//  Begin the primary loop, and continue until it exits
+	PrimaryLoop();
 
 	//  Free resources and close SDL
 	CloseProgram();

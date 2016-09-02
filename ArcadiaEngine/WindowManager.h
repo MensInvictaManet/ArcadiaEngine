@@ -45,7 +45,7 @@ private:
 public:
 	static WindowManager& GetInstance() { static WindowManager INSTANCE; return INSTANCE; }
 
-	int CreateNewWindow(const char* title = "", int x = SDL_WINDOWPOS_UNDEFINED, int y = SDL_WINDOWPOS_UNDEFINED, int w = 100, int h = 100, bool shown = true, bool current = false);
+	int CreateNewWindow(const char* title = "", int x = SDL_WINDOWPOS_UNDEFINED, int y = SDL_WINDOWPOS_UNDEFINED, int w = 100, int h = 100, bool shown = true, bool current = false, bool vsync = true);
 	bool DestroyWindow(const int index);
 	void HandleEvent(SDL_Event& e);
 	void Render();
@@ -154,13 +154,13 @@ inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 		if (updateCaption)
 		{
 			std::stringstream caption;
-			caption << "SDL Tutorial - ID: " << m_WindowID << " MouseFocus:" << ((m_MouseFocus) ? "On" : "Off") << " KeyboardFocus:" << ((m_KeyboardFocus) ? "On" : "Off");
+			caption << "Arcadia Engine - ID: " << m_WindowID << " MouseFocus:" << ((m_MouseFocus) ? "On" : "Off") << " KeyboardFocus:" << ((m_KeyboardFocus) ? "On" : "Off");
 			SDL_SetWindowTitle(m_Window, caption.str().c_str());
 		}
 	}
 }
 
-inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h, bool shown, bool current)
+inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w, int h, bool shown, bool current, bool vsync)
 {
 	auto index = FirstFreeIndex();
 
@@ -200,6 +200,13 @@ inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w
 		SDL_DestroyWindow(newWindow);
 		newRenderer = nullptr;
 		return -1;
+	}
+
+	//  (Temporarily) swap to the new window as current to set VSYNC
+	SDL_GL_MakeCurrent(m_WindowList[index]->m_Window, m_WindowList[index]->m_Context);
+	if (SDL_GL_SetSwapInterval(1) < 0)
+	{
+		printf("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 	}
 
 	//  Set the current window based on whether we're setting this or not

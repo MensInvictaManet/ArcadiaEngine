@@ -99,6 +99,7 @@ public:
 
 	static TextureManager& GetInstance() { static TextureManager INSTANCE; return INSTANCE; }
 
+	int LoadTextureGetID(const char* textureFile);
 	ManagedTexture* LoadTexture(const char* textureFile);
 	int GetTextureID(const int index);
 	ManagedTexture* GetManagedTexture(const int index);
@@ -113,6 +114,13 @@ private:
 	std::unordered_map<int, ManagedTexture*> m_TextureList;
 	std::unordered_map<std::string, ManagedTexture*> m_TextureListByFile;
 };
+
+inline int TextureManager::LoadTextureGetID(const char* textureFile)
+{
+	auto* texture = LoadTexture(textureFile);
+	return (texture != nullptr) ? texture->m_TextureID : -1;
+}
+
 
 inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* textureFile)
 {

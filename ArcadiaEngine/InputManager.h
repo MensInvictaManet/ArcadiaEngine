@@ -24,9 +24,9 @@ public:
 	MouseButtonState GetMouseButtonRight() const { return m_MouseButtonRight; }
 	bool GetKeyDown(const Uint8& sdlKey) const { return (m_KeyStates != nullptr) ? (m_KeyStates[sdlKey] != 0) : false; }
 
-	void SetMouseButtonLeft(bool setting) { m_MouseButtonLeft = ((setting == true) && (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED)) ? MOUSE_BUTTON_HELD : (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_HELD); }
-	void SetMouseButtonMiddle(bool setting) { m_MouseButtonMiddle = ((setting == true) && (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED)) ? MOUSE_BUTTON_HELD : (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_HELD); }
-	void SetMouseButtonRight(bool setting) { m_MouseButtonRight = ((setting == true) && (m_MouseButtonRight == MOUSE_BUTTON_PRESSED)) ? MOUSE_BUTTON_HELD : (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_HELD); }
+	void SetMouseButtonLeft(bool setting) { if (setting != (m_MouseButtonLeft != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonLeft = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
+	void SetMouseButtonMiddle(bool setting) { if (setting != (m_MouseButtonMiddle != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonMiddle = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
+	void SetMouseButtonRight(bool setting) { if (setting != (m_MouseButtonRight != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonRight = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 
 private:
 	InputManager();
@@ -42,10 +42,6 @@ private:
 
 inline void InputManager::GetInputForFrame()
 {
-	static auto leftButtonState = -1;
-	auto test = SDL_BUTTON(SDL_BUTTON_LEFT);
-	leftButtonState = test;
-
 	SDL_GetMouseState(&m_MouseX, &m_MouseY);
 	if (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) m_MouseButtonLeft = MOUSE_BUTTON_HELD;
 	if (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) m_MouseButtonMiddle = MOUSE_BUTTON_HELD;

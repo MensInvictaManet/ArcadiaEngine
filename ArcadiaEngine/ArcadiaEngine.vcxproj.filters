@@ -16,6 +16,9 @@
     <Filter Include="Header Files\SDL2">
       <UniqueIdentifier>{d30da410-255d-4386-8865-c1cfd4979923}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI Object Types">
+      <UniqueIdentifier>{4599e666-1925-4224-99ac-41dfd833b728}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineTest.cpp">
@@ -283,6 +286,15 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIObjectNode.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIButton.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
+    <ClInclude Include="GUICheckbox.h">
+      <Filter>Header Files\GUI Object Types</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
