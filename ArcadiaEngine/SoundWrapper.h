@@ -66,19 +66,19 @@ enum SoundFileType
 	SOUNDFILETYPE_WAV
 };
 
+enum SoundStatus
+{
+	SOUNDSTATUS_INVALID,
+	SOUNDSTATUS_LOADED,
+	SOUNDSTATUS_PLAYING
+};
+
 class SoundWrapper
 {
 private:
 	struct SoundData
 	{
 	public:
-		enum SoundStatus
-		{
-			SOUNDSTATUS_INVALID,
-			SOUNDSTATUS_LOADED,
-			SOUNDSTATUS_PLAYING
-		};
-
 		struct OggFileData
 		{
 		public:
@@ -98,24 +98,32 @@ private:
 
 			OggFileData(FILE* soundFile) :
 				m_SoundFile(soundFile),
+				m_VorbisInfo(nullptr),
 				m_Frequency(0),
 				m_Channels(0),
 				m_BufferSize(0),
-				m_Format(0)
+				m_Format(0),
+				m_DecodeBuffer(nullptr),
+				m_SoundSource(999),
+				m_BufferID(999),
+				iBuffersProcessed(0),
+				iTotalBuffersProcessed(0),
+				iQueuedBuffers(0),
+				ulBytesWritten(0)
 			{}
 
 		};
 
+		std::string						m_SoundFileName;
 		SoundStatus						m_SoundStatus;
 		SoundFileType					m_SoundFileType;
-		std::string						m_SoundFileName;
 		OggFileData*					m_OggFileData;
 		SimpleAudioLib::AudioEntity*	m_AudioEntity;	//  For WAV Files
 
 		SoundData(const char* fileName, SoundFileType fileType) :
+			m_SoundFileName(fileName),
 			m_SoundStatus(SOUNDSTATUS_INVALID),
 			m_SoundFileType(fileType),
-			m_SoundFileName(fileName),
 			m_OggFileData(NULL),
 			m_AudioEntity(NULL)
 		{
@@ -149,6 +157,7 @@ private:
 	SimpleAudioLib::CoreSystem& m_SimpleAudioLib;
 	bool m_bVorbisInitialized;
 	HINSTANCE m_VorbisFileDLL;
+	bool m_Shutdown;
 };
 
 bool SoundWrapper::Initialize()
@@ -291,7 +300,7 @@ bool SoundWrapper::loadSoundData(SoundData*& soundData)
 	}
 
 	//  Set the sound state to loaded and return a success
-	soundData->m_SoundStatus = SoundData::SOUNDSTATUS_LOADED;
+	soundData->m_SoundStatus = SOUNDSTATUS_LOADED;
 	return true;
 }
 
@@ -304,7 +313,7 @@ bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 	SoundData* soundData = soundDataList[soundIndex];
 
 	//  If we're set to an invalid state, reload the data
-	if (soundData->m_SoundStatus == SoundData::SOUNDSTATUS_INVALID)
+	if (soundData->m_SoundStatus == SOUNDSTATUS_INVALID)
 	{
 		loadSoundData(soundData);
 	}
@@ -359,7 +368,7 @@ bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 		soundData->m_AudioEntity->play();
 	}
 
-	soundData->m_SoundStatus = SoundData::SOUNDSTATUS_PLAYING;
+	soundData->m_SoundStatus = SOUNDSTATUS_PLAYING;
 	m_nSoundPlayingCount++;
 
 	return true;
@@ -404,7 +413,7 @@ bool SoundWrapper::unloadSoundFile(int soundIndex)
 	}
 
 	//  Decrement the sound playing count and return a success
-	soundData->m_SoundStatus = SoundData::SOUNDSTATUS_INVALID;
+	soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
 	m_nSoundPlayingCount--;
 	return true;
 }
@@ -415,6 +424,7 @@ void SoundWrapper::Update()
 	{
 		SoundData* soundData = soundDataList[i];
 		if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) continue;
+		if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) continue;
 
 		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData;
 		if (oggFileData == NULL) continue;
@@ -482,28 +492,32 @@ void SoundWrapper::Shutdown()
 	}
 	m_bVorbisInitialized = false;
 
-	// Shutdown AL
-	ALFWShutdownOpenAL();
-
-	// Shutdown Framework
-	ALFWShutdown();
+	//  Mark that we have shut down, so as not to do so twice
+	m_Shutdown = true;
 }
 
 SoundWrapper::SoundWrapper() :
 	m_nSoundPlayingCount(0),
 	m_SimpleAudioLib(SimpleAudioLib::CoreSystem::getInstance()),
 	m_bVorbisInitialized(false),
-	m_VorbisFileDLL(NULL)
+	m_VorbisFileDLL(NULL),
+	m_Shutdown(false)
 {
 }
 
 SoundWrapper::~SoundWrapper()
 {
 	//  Call the shutdown which will free all memory and set us back to a default state
-	Shutdown();
+	if (!m_Shutdown) Shutdown();
 
 	//  Shut down the SimpleAudioLib core
 	SimpleAudioLib::CoreSystem::release();
+
+	// Shutdown AL
+	ALFWShutdownOpenAL();
+
+	// Shutdown Framework
+	ALFWShutdown();
 }
 
 void SoundWrapper::unloadAllSoundFiles()
@@ -513,6 +527,7 @@ void SoundWrapper::unloadAllSoundFiles()
 	{
 		unloadSoundFile(i);
 	}
+	soundDataList.clear();
 }
 
 int SoundWrapper::determineFirstIndex()

@@ -2,7 +2,6 @@
 #define USING_SDL_IMAGE		true
 #define	USING_OPENGL		true
 #define	USING_GLU			true
-#define USING_SDL_TTF		false
 #define USING_SDL_MIXER		false
 
 #if USING_SDL
@@ -26,9 +25,6 @@
 #pragma comment(lib, "glu32.lib")
 #endif
 
-#if USING_SDL_TTF
-#endif
-
 #if USING_SDL_MIXER
 #endif
 
@@ -46,6 +42,8 @@ GUIButton* g_TestButton2;
 GUICheckbox* g_TestCheckbox;
 int g_CoinSound[4];
 int g_BackgroundMusic;
+SDL_Texture* g_TextTexture = nullptr;
+GLuint g_TextTextureID = 0;
 
 int testVarFlag = 0;
 
@@ -120,7 +118,7 @@ bool InitializeOpenGL()
 	}
 
 	//  Initialize clear color
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 
 	//  Check for an error
 	error = glGetError();
@@ -135,6 +133,16 @@ bool InitializeOpenGL()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return success;
+}
+
+unsigned int power_two_floor(unsigned int val)
+{
+	unsigned int power = 2, nextVal = power * 2;
+
+	while ((nextVal *= 2) <= val)
+		power *= 2;
+
+	return power * 2;
 }
 
 bool Initialize()
@@ -152,10 +160,7 @@ bool Initialize()
 	auto windowIndex = windowManager.CreateNewWindow("Arcadia Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (windowIndex == -1) return false;
 
-	// TEST 2nd WINDOW
-	windowIndex = windowManager.CreateNewWindow("Arcadia Engine 2", 960, 100, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-	if (windowIndex == -1) return false;
-	// TEST 2nd WINDOW
+	SDL_SetRenderDrawColor(windowManager.GetRenderer(windowIndex), 0xFF, 0xFF, 0xFF, 0xFF);
 
 	//  Initialize OpenGL
 	if (!InitializeOpenGL())
@@ -241,14 +246,16 @@ void RenderScreen()
 	glLoadIdentity();
 	gluPerspective(45.0, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 1.0, 200.0);
 
+	glDisable(GL_TEXTURE_2D);
+
 	//  Render the 3D quad if the bool is set to true
 	if (!(testVarFlag & 1))
 	{
 		glBegin(GL_QUADS);
-		glVertex3f(-5.7f, -1.5f, -50.0f);
-		glVertex3f(-4.3f, -1.5f, -50.0f);
-		glVertex3f(-4.6f, -0.5f, -50.0f);
-		glVertex3f(-5.4f, -0.5f, -50.0f);
+			glVertex3f(-5.7f, -1.5f, -50.0f);
+			glVertex3f(-4.3f, -1.5f, -50.0f);
+			glVertex3f(-4.6f, -0.5f, -50.0f);
+			glVertex3f(-5.4f, -0.5f, -50.0f);
 		glEnd();
 	}
 
@@ -260,20 +267,25 @@ void RenderScreen()
 	glLoadIdentity();
 
 	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 
 	//  Render the 2D GUI through the GUIManager
 	guiManager.Render();
-
+	
+	/*
 	//  Render the 2D quad if the bool is set to true
 	if (!(testVarFlag & 2))
 	{
+		glBindTexture(GL_TEXTURE_2D, g_TextTextureID);
+
 		glBegin(GL_QUADS);
-		glVertex2f(100.0f, 100.0f);
-		glVertex2f(200.0f, 100.0f);
-		glVertex2f(200.0f, 200.0f);
-		glVertex2f(100.0f, 200.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(100.0f, 300.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex2f(400.0f, 300.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex2f(400.0f, 400.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(100.0f, 400.0f);
 		glEnd();
 	}
+	*/
 }
 
 void PrimaryLoop()

@@ -211,7 +211,6 @@ inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w
 
 	//  Set the current window based on whether we're setting this or not
 	if (current | (m_CurrentWindow == -1)) m_CurrentWindow = index;
-	SDL_SetRenderDrawColor(newRenderer, 0x00, 0x00, 0x00, 0xFF);
 	SDL_GL_MakeCurrent(m_WindowList[m_CurrentWindow]->m_Window, m_WindowList[m_CurrentWindow]->m_Context);
 
 	//  Return the new window's index
@@ -239,7 +238,7 @@ inline void WindowManager::Render()
 		if (!(*iter).second->m_Minimized)
 		{
 			//  Clear the screen
-			SDL_SetRenderDrawColor((*iter).second->m_Renderer, 0x00, 0x00, 0x00, 0xFF);
+			SDL_SetRenderDrawColor((*iter).second->m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 			SDL_RenderClear((*iter).second->m_Renderer);
 
 			//  Update the screen
@@ -247,8 +246,6 @@ inline void WindowManager::Render()
 			SDL_GL_SwapWindow((*iter).second->m_Window); // TODO: Only do this to the current window?
 		}
 	}
-
-	
 }
 
 inline void WindowManager::Shutdown()
