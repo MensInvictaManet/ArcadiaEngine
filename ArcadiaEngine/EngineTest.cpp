@@ -35,6 +35,7 @@
 #include "GUICheckbox.h"
 #include "InputManager.h"
 #include "SoundWrapper.h"
+#include "XMLWrapper.h"
 
 //  Test variables
 GUIButton* g_TestButton1;
@@ -388,6 +389,8 @@ int main(int argc, char* args[])
 		useOggFiles = g_TestCheckbox->GetChecked();
 	});
 	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
+	
+	//xmlWrapper.LoadXMLFile("./Fonts/Arial/Arial.xml");
 
 	//  Begin the primary loop, and continue until it exits
 	PrimaryLoop();

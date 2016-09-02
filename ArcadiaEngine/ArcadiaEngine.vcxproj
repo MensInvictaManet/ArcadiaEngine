@@ -229,9 +229,11 @@
     <ClInclude Include="SDL2\SDL_types.h" />
     <ClInclude Include="SDL2\SDL_version.h" />
     <ClInclude Include="SDL2\SDL_video.h" />
+    <ClInclude Include="SimpleMD5.h" />
     <ClInclude Include="SoundWrapper.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="WindowManager.h" />
+    <ClInclude Include="XMLWrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

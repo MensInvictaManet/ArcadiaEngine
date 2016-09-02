@@ -398,5 +398,11 @@
     <ClInclude Include="OpenAL\xram.h">
       <Filter>Header Files\OpenAL\Background</Filter>
     </ClInclude>
+    <ClInclude Include="XMLWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMD5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
