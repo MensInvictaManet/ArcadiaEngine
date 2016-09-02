@@ -111,6 +111,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EngineTest.cpp" />
+    <ClCompile Include="OpenAL\aldlist.cpp" />
+    <ClCompile Include="OpenAL\CWaves.cpp" />
+    <ClCompile Include="OpenAL\Framework.cpp" />
+    <ClCompile Include="OpenAL\LoadOAL.cpp" />
+    <ClCompile Include="OpenAL\SimpleAudioLib\AudioEntity.cpp" />
+    <ClCompile Include="OpenAL\SimpleAudioLib\BaseMessageException.cpp" />
+    <ClCompile Include="OpenAL\SimpleAudioLib\CoreSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIButton.h" />
@@ -118,6 +125,27 @@
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="GUIObjectNode.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="OpenAL\al.h" />
+    <ClInclude Include="OpenAL\alc.h" />
+    <ClInclude Include="OpenAL\aldlist.h" />
+    <ClInclude Include="OpenAL\CWaves.h" />
+    <ClInclude Include="OpenAL\efx-creative.h" />
+    <ClInclude Include="OpenAL\EFX-Util.h" />
+    <ClInclude Include="OpenAL\efx.h" />
+    <ClInclude Include="OpenAL\Framework.h" />
+    <ClInclude Include="OpenAL\LoadOAL.h" />
+    <ClInclude Include="OpenAL\Ogg\ogg.h" />
+    <ClInclude Include="OpenAL\Ogg\os_types.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\AudioEntity.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\BaseMessageException.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\CoreSystem.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\CorruptedFileException.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\InvalidPathException.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\NoContextException.h" />
+    <ClInclude Include="OpenAL\SimpleAudioLib\NoDeviceException.h" />
+    <ClInclude Include="OpenAL\Vorbis\codec.h" />
+    <ClInclude Include="OpenAL\Vorbis\vorbisfile.h" />
+    <ClInclude Include="OpenAL\xram.h" />
     <ClInclude Include="SDL2\begin_code.h" />
     <ClInclude Include="SDL2\close_code.h" />
     <ClInclude Include="SDL2\SDL.h" />
@@ -201,6 +229,7 @@
     <ClInclude Include="SDL2\SDL_types.h" />
     <ClInclude Include="SDL2\SDL_version.h" />
     <ClInclude Include="SDL2\SDL_video.h" />
+    <ClInclude Include="SoundWrapper.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>

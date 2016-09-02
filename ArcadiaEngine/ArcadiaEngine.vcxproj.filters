@@ -19,10 +19,46 @@
     <Filter Include="Header Files\GUI Object Types">
       <UniqueIdentifier>{4599e666-1925-4224-99ac-41dfd833b728}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\OpenAL">
+      <UniqueIdentifier>{598f0aa8-647b-4cf7-b48f-d3bc61d5e6c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenAL\Vorbis">
+      <UniqueIdentifier>{e10f9fe4-2fe3-4722-a0a0-39de643471f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenAL\SimpleAudioLib">
+      <UniqueIdentifier>{d9b6bf4a-ace5-4e33-8b77-318d807c4e58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenAL\Ogg">
+      <UniqueIdentifier>{a984130b-4554-417f-93f6-cca67d7aea2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenAL\Background">
+      <UniqueIdentifier>{1d08bd32-8e86-4b19-a4f5-57ab2fa7909d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineTest.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\SimpleAudioLib\AudioEntity.cpp">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\SimpleAudioLib\BaseMessageException.cpp">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\SimpleAudioLib\CoreSystem.cpp">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\aldlist.cpp">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\CWaves.cpp">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\Framework.cpp">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenAL\LoadOAL.cpp">
+      <Filter>Header Files\OpenAL\Background</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +331,72 @@
     </ClInclude>
     <ClInclude Include="GUICheckbox.h">
       <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\Vorbis\codec.h">
+      <Filter>Header Files\OpenAL\Vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\Vorbis\vorbisfile.h">
+      <Filter>Header Files\OpenAL\Vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\AudioEntity.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\BaseMessageException.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\CoreSystem.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\CorruptedFileException.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\InvalidPathException.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\NoContextException.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\SimpleAudioLib\NoDeviceException.h">
+      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\Ogg\ogg.h">
+      <Filter>Header Files\OpenAL\Ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\Ogg\os_types.h">
+      <Filter>Header Files\OpenAL\Ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundWrapper.h">
+      <Filter>Header Files\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\al.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\alc.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\aldlist.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\CWaves.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\efx.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\efx-creative.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\EFX-Util.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\Framework.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\LoadOAL.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenAL\xram.h">
+      <Filter>Header Files\OpenAL\Background</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

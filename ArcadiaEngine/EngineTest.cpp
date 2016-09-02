@@ -38,10 +38,14 @@
 #include "GUIButton.h"
 #include "GUICheckbox.h"
 #include "InputManager.h"
+#include "SoundWrapper.h"
 
 //  Test variables
-GUIButton* g_TestButton;
+GUIButton* g_TestButton1;
+GUIButton* g_TestButton2;
 GUICheckbox* g_TestCheckbox;
+int g_CoinSound[4];
+int g_BackgroundMusic;
 
 int testVarFlag = 0;
 
@@ -138,6 +142,7 @@ bool Initialize()
 	//  Initialization flag
 	auto success = true;
 
+	//  Initialize SDL
 	if (!InitializeSDL())
 	{
 		printf("Unable to initialize SDL!\n");
@@ -156,6 +161,13 @@ bool Initialize()
 	if (!InitializeOpenGL())
 	{
 		printf("Unable to initialize OpenGL!\n");
+		return false;
+	}
+
+	//  Initialize the sound wrapper
+	if (soundWrapper.Initialize() == false)
+	{
+		printf("Unable to initialize SoundWrapper!\n");
 		return false;
 	}
 
@@ -184,6 +196,7 @@ void CloseProgram()
 	//  Shutdown the manager classes that need it
 	textureManager.Shutdown();
 	windowManager.Shutdown();
+	soundWrapper.Shutdown();
 
 #if USING_SDL
 	//  Disable text input
@@ -196,10 +209,10 @@ void CloseProgram()
 void HandleTextInput(unsigned char key)
 {
 	//  Toggle quad rendering
-	if (key == 'q' && g_TestButton != nullptr)
+	if (key == 'q' && g_TestButton1 != nullptr)
 	{
-		guiManager.DestroyNode(g_TestButton);
-		g_TestButton = nullptr;
+		guiManager.DestroyNode(g_TestButton1);
+		g_TestButton1 = nullptr;
 	}
 }
 
@@ -277,6 +290,9 @@ void PrimaryLoop()
 		//  Get the current state of mouse and keyboard input
 		inputManager.GetInputForFrame();
 
+		//  Update the sound wrapper
+		soundWrapper.Update();
+
 		//  Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -331,16 +347,34 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
+	//  Load some test sounds
+	g_CoinSound[0] = soundWrapper.loadSoundFile("CoinPickup1.ogg", SOUNDFILETYPE_OGG);
+	g_CoinSound[1] = soundWrapper.loadSoundFile("CoinPickup2.ogg", SOUNDFILETYPE_OGG);
+	g_CoinSound[2] = soundWrapper.loadSoundFile("CoinPickup1.wav", SOUNDFILETYPE_WAV);
+	g_CoinSound[3] = soundWrapper.loadSoundFile("CoinPickup2.wav", SOUNDFILETYPE_WAV);
+	soundWrapper.playSoundFile(g_BackgroundMusic = soundWrapper.loadSoundFile("BackgroundMusic.ogg", SOUNDFILETYPE_OGG));
+
 	//  Create some test UI (A button and a checkbox)
-	g_TestButton = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 100);
-	g_TestButton->SetLeftClickCallback([=](GUIObjectNode* node)
+	static auto useOggFiles = true;
+	g_TestButton1 = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 100);
+	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
-		if (g_TestCheckbox != nullptr) g_TestCheckbox->SetChecked(false);
+		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 0 : 2]);
 	});
-	guiManager.GetBaseNode()->AddChild(g_TestButton);
+	guiManager.GetBaseNode()->AddChild(g_TestButton1);
+
+	g_TestButton2 = GUIButton::CreateButton("ButtonTest.png", 250, 100, 100, 100);
+	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)
+	{
+		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 1 : 3]);
+	});
+	guiManager.GetBaseNode()->AddChild(g_TestButton2);
 
 	g_TestCheckbox = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 400, 100, 100, 100);
-	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node) {});
+	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node)
+	{
+		useOggFiles = g_TestCheckbox->GetChecked();
+	});
 	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
 
 	//  Begin the primary loop, and continue until it exits
