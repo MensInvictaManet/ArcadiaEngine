@@ -52,12 +52,12 @@ typedef int(*LPOVOPENCALLBACKS)(void *datasource, OggVorbis_File *vf, char *init
 
 // Variables
 ov_callbacks		soundCallbacks;
-LPOVCLEAR			fn_ov_clear = NULL;
-LPOVREAD			fn_ov_read = NULL;
-LPOVPCMTOTAL		fn_ov_pcm_total = NULL;
-LPOVINFO			fn_ov_info = NULL;
-LPOVCOMMENT			fn_ov_comment = NULL;
-LPOVOPENCALLBACKS	fn_ov_open_callbacks = NULL;
+LPOVCLEAR			fn_ov_clear = nullptr;
+LPOVREAD			fn_ov_read = nullptr;
+LPOVPCMTOTAL		fn_ov_pcm_total = nullptr;
+LPOVINFO			fn_ov_info = nullptr;
+LPOVCOMMENT			fn_ov_comment = nullptr;
+LPOVOPENCALLBACKS	fn_ov_open_callbacks = nullptr;
 
 enum SoundFileType
 {
@@ -124,8 +124,8 @@ private:
 			m_SoundFileName(fileName),
 			m_SoundStatus(SOUNDSTATUS_INVALID),
 			m_SoundFileType(fileType),
-			m_OggFileData(NULL),
-			m_AudioEntity(NULL)
+			m_OggFileData(nullptr),
+			m_AudioEntity(nullptr)
 		{
 		}
 	};
@@ -140,13 +140,13 @@ public:
 	void Update();
 	void Shutdown();
 
-	inline const int getSoundPlayingCount() const { return m_nSoundPlayingCount; }
+	int getSoundPlayingCount() const { return m_nSoundPlayingCount; }
 
 private:
 	SoundWrapper();
 	~SoundWrapper();
 
-	bool loadSoundData(SoundData*& soundData);
+	bool loadSoundData(SoundData*& soundData) const;
 	void unloadAllSoundFiles();
 	int determineFirstIndex();
 
@@ -160,7 +160,7 @@ private:
 	bool m_Shutdown;
 };
 
-bool SoundWrapper::Initialize()
+inline bool SoundWrapper::Initialize()
 {
 	// Initialize OpenAL Framework
 	ALFWInit();
@@ -171,12 +171,12 @@ bool SoundWrapper::Initialize()
 		m_VorbisFileDLL = LoadLibrary("vorbisfile.dll");
 		if (m_VorbisFileDLL)
 		{
-			fn_ov_clear = (LPOVCLEAR)GetProcAddress(m_VorbisFileDLL, "ov_clear");
-			fn_ov_read = (LPOVREAD)GetProcAddress(m_VorbisFileDLL, "ov_read");
-			fn_ov_pcm_total = (LPOVPCMTOTAL)GetProcAddress(m_VorbisFileDLL, "ov_pcm_total");
-			fn_ov_info = (LPOVINFO)GetProcAddress(m_VorbisFileDLL, "ov_info");
-			fn_ov_comment = (LPOVCOMMENT)GetProcAddress(m_VorbisFileDLL, "ov_comment");
-			fn_ov_open_callbacks = (LPOVOPENCALLBACKS)GetProcAddress(m_VorbisFileDLL, "ov_open_callbacks");
+			fn_ov_clear = LPOVCLEAR(GetProcAddress(m_VorbisFileDLL, "ov_clear"));
+			fn_ov_read = LPOVREAD(GetProcAddress(m_VorbisFileDLL, "ov_read"));
+			fn_ov_pcm_total = LPOVPCMTOTAL(GetProcAddress(m_VorbisFileDLL, "ov_pcm_total"));
+			fn_ov_info = LPOVINFO(GetProcAddress(m_VorbisFileDLL, "ov_info"));
+			fn_ov_comment = LPOVCOMMENT(GetProcAddress(m_VorbisFileDLL, "ov_comment"));
+			fn_ov_open_callbacks = LPOVOPENCALLBACKS(GetProcAddress(m_VorbisFileDLL, "ov_open_callbacks"));
 
 			if (fn_ov_clear && fn_ov_read && fn_ov_pcm_total && fn_ov_info && fn_ov_comment && fn_ov_open_callbacks)
 			{
@@ -194,8 +194,8 @@ bool SoundWrapper::Initialize()
 	}
 
 	// Initialise OpenAL and get the data out to send into SimpleAudioLib
-	ALCdevice* pDevice = NULL;
-	ALCcontext* pContext = NULL;
+	ALCdevice* pDevice = nullptr;
+	ALCcontext* pContext = nullptr;
 	if (!ALFWInitOpenAL(pDevice, pContext))
 	{
 		ALFWprintf("Failed to initialize OpenAL\n");
@@ -215,7 +215,7 @@ bool SoundWrapper::Initialize()
 	return true;
 }
 
-int SoundWrapper::loadSoundFile(const char* soundFileName, SoundFileType fileType)
+inline int SoundWrapper::loadSoundFile(const char* soundFileName, SoundFileType fileType)
 {
 	//  Find a new index, create a new SoundData class, and then load the sound data into it
 	int newSoundIndex = determineFirstIndex();
@@ -228,9 +228,9 @@ int SoundWrapper::loadSoundFile(const char* soundFileName, SoundFileType fileTyp
 	return newSoundIndex;
 }
 
-bool SoundWrapper::loadSoundData(SoundData*& soundData)
+inline bool SoundWrapper::loadSoundData(SoundData*& soundData) const
 {
-	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG && soundData->m_OggFileData == NULL)
+	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG && soundData->m_OggFileData == nullptr)
 	{
 		// Open the OggVorbis file
 		FILE *pOggVorbisFile;
@@ -242,7 +242,7 @@ bool SoundWrapper::loadSoundData(SoundData*& soundData)
 		}
 
 		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData = new SoundData::OggFileData(pOggVorbisFile);
-		if (fn_ov_open_callbacks(oggFileData->m_SoundFile, &oggFileData->m_OggFile, NULL, 0, soundCallbacks) == 0)
+		if (fn_ov_open_callbacks(oggFileData->m_SoundFile, &oggFileData->m_OggFile, nullptr, 0, soundCallbacks) == 0)
 		{
 			// Get some information about the file (Channels, Format, and Frequency)
 			oggFileData->m_VorbisInfo = fn_ov_info(&oggFileData->m_OggFile, -1);
@@ -286,11 +286,11 @@ bool SoundWrapper::loadSoundData(SoundData*& soundData)
 			}
 		}
 	}
-	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV && soundData->m_AudioEntity == NULL)
+	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV && soundData->m_AudioEntity == nullptr)
 	{
 		SimpleAudioLib::AudioEntity* newAudioEntity;
 		newAudioEntity = m_SimpleAudioLib.createAudioEntityFromFile(soundData->m_SoundFileName.c_str());
-		if (newAudioEntity == NULL)
+		if (newAudioEntity == nullptr)
 		{
 			ALFWprintf("Could not create AudioEntity for %s\n", soundData->m_SoundFileName.c_str());
 			return false;
@@ -304,7 +304,7 @@ bool SoundWrapper::loadSoundData(SoundData*& soundData)
 	return true;
 }
 
-bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
+inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 {
 	//  Ensure the sound index is valid before continuing;
 	if (soundIndex < 0) return false;
@@ -325,7 +325,7 @@ bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 		if (oggFileData->m_Format != 0)
 		{
 			// Allocate a buffer to be used to store decoded data for all Buffers
-			oggFileData->m_DecodeBuffer = (char*)malloc(oggFileData->m_BufferSize);
+			oggFileData->m_DecodeBuffer = static_cast<char*>(malloc(oggFileData->m_BufferSize));
 			if (!oggFileData->m_DecodeBuffer)
 			{
 				ALFWprintf("Failed to allocate memory for decoded OggVorbis data\n");
@@ -374,13 +374,14 @@ bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 	return true;
 }
 
-bool SoundWrapper::unloadSoundFile(int soundIndex)
+inline bool SoundWrapper::unloadSoundFile(int soundIndex)
 {
 	//  Ensure the sound index is valid before continuing;
 	if (soundIndex < 0) return false;
 	if (soundIndex >= int(soundDataList.size())) return false;
 
 	SoundData* soundData = soundDataList[soundIndex];
+	if (soundData->m_SoundStatus == SOUNDSTATUS_INVALID) return true;
 
 	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
 	{
@@ -393,7 +394,7 @@ bool SoundWrapper::unloadSoundFile(int soundIndex)
 		if (oggFileData->m_DecodeBuffer)
 		{
 			free(oggFileData->m_DecodeBuffer);
-			oggFileData->m_DecodeBuffer = NULL;
+			oggFileData->m_DecodeBuffer = nullptr;
 		}
 
 		// Clean up buffers and sources
@@ -404,12 +405,12 @@ bool SoundWrapper::unloadSoundFile(int soundIndex)
 		fn_ov_clear(&oggFileData->m_OggFile);
 
 		delete soundData->m_OggFileData;
-		soundData->m_OggFileData = NULL;
+		soundData->m_OggFileData = nullptr;
 	}
 	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV)
 	{
 		delete soundData->m_AudioEntity;
-		soundData->m_AudioEntity = NULL;
+		soundData->m_AudioEntity = nullptr;
 	}
 
 	//  Decrement the sound playing count and return a success
@@ -418,7 +419,7 @@ bool SoundWrapper::unloadSoundFile(int soundIndex)
 	return true;
 }
 
-void SoundWrapper::Update()
+inline void SoundWrapper::Update()
 {
 	for (int i = 0; i < int(soundDataList.size()); ++i)
 	{
@@ -427,7 +428,7 @@ void SoundWrapper::Update()
 		if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) continue;
 
 		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData;
-		if (oggFileData == NULL) continue;
+		if (oggFileData == nullptr) continue;
 
 		// Request the number of OpenAL Buffers have been processed (played) on the Source
 		oggFileData->iBuffersProcessed = 0;
@@ -488,7 +489,7 @@ void SoundWrapper::Shutdown()
 	if (m_VorbisFileDLL)
 	{
 		FreeLibrary(m_VorbisFileDLL);
-		m_VorbisFileDLL = NULL;
+		m_VorbisFileDLL = nullptr;
 	}
 	m_bVorbisInitialized = false;
 
@@ -496,16 +497,16 @@ void SoundWrapper::Shutdown()
 	m_Shutdown = true;
 }
 
-SoundWrapper::SoundWrapper() :
+inline SoundWrapper::SoundWrapper() :
 	m_nSoundPlayingCount(0),
 	m_SimpleAudioLib(SimpleAudioLib::CoreSystem::getInstance()),
 	m_bVorbisInitialized(false),
-	m_VorbisFileDLL(NULL),
+	m_VorbisFileDLL(nullptr),
 	m_Shutdown(false)
 {
 }
 
-SoundWrapper::~SoundWrapper()
+inline SoundWrapper::~SoundWrapper()
 {
 	//  Call the shutdown which will free all memory and set us back to a default state
 	if (!m_Shutdown) Shutdown();
@@ -520,20 +521,20 @@ SoundWrapper::~SoundWrapper()
 	ALFWShutdown();
 }
 
-void SoundWrapper::unloadAllSoundFiles()
+inline void SoundWrapper::unloadAllSoundFiles()
 {
 	//  Delete all sound file data
-	for (int i = 0; i < int(soundDataList.size()); ++i)
+	for (auto i = 0; i < int(soundDataList.size()); ++i)
 	{
 		unloadSoundFile(i);
 	}
 	soundDataList.clear();
 }
 
-int SoundWrapper::determineFirstIndex()
+inline int SoundWrapper::determineFirstIndex()
 {
 	std::map<int, SoundData*>::const_iterator iter;
-	for (int i = 0; ; ++i)
+	for (auto i = 0; ; ++i)
 	{
 		iter = soundDataList.find(i);
 		if (iter == soundDataList.end()) return i;
@@ -541,7 +542,7 @@ int SoundWrapper::determineFirstIndex()
 }
 
 //  Background Functions
-unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuffer, unsigned long ulBufferSize, unsigned long ulChannels)
+inline unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuffer, unsigned long ulBufferSize, unsigned long ulChannels)
 {
 	int current_section;
 	long lDecodeSize;
@@ -549,7 +550,7 @@ unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuff
 	short *pSamples;
 
 	unsigned long ulBytesDone = 0;
-	while (1)
+	while (true)
 	{
 		lDecodeSize = fn_ov_read(psOggVorbisFile, pDecodeBuffer + ulBytesDone, ulBufferSize - ulBytesDone, 0, 2, 1, &current_section);
 		if (lDecodeSize > 0)
@@ -583,29 +584,29 @@ unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuff
 	return ulBytesDone;
 }
 
-void Swap(short &s1, short &s2)
+inline void Swap(short &s1, short &s2)
 {
-	short sTemp = s1;
+	auto sTemp = s1;
 	s1 = s2;
 	s2 = sTemp;
 }
 
-size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
+inline size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
 	return fread(ptr, size, nmemb, (FILE*)datasource);
 }
 
-int ov_seek_func(void *datasource, ogg_int64_t offset, int whence)
+inline int ov_seek_func(void *datasource, ogg_int64_t offset, int whence)
 {
 	return fseek((FILE*)datasource, (long)offset, whence);
 }
 
-int ov_close_func(void *datasource)
+inline int ov_close_func(void *datasource)
 {
 	return fclose((FILE*)datasource);
 }
 
-long ov_tell_func(void *datasource)
+inline long ov_tell_func(void *datasource)
 {
 	return ftell((FILE*)datasource);
 }
