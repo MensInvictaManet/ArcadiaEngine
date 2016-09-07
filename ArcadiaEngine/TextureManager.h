@@ -59,7 +59,7 @@ public:
 				}
 		 */
 
-		void renderOpenGL(int x, int y, int width = -1, int height = -1) const
+		void RenderTexture(int x, int y, int width = -1, int height = -1) const
 		{
 			if (width < 0) width = m_Width;
 			if (height < 0) height = m_Height;
@@ -67,10 +67,29 @@ public:
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex3i(x, y, 0);
-			glTexCoord2f(1.0f, 0.0f); glVertex3i(x + width, y, 0);
-			glTexCoord2f(1.0f, 1.0f); glVertex3i(x + width, y + height, 0);
-			glTexCoord2f(0.0f, 1.0f); glVertex3i(x, y + height, 0);
+				glTexCoord2f(0.0f, 0.0f); glVertex3i(x, y, 0);
+				glTexCoord2f(1.0f, 0.0f); glVertex3i(x + width, y, 0);
+				glTexCoord2f(1.0f, 1.0f); glVertex3i(x + width, y + height, 0);
+				glTexCoord2f(0.0f, 1.0f); glVertex3i(x, y + height, 0);
+			glEnd();
+		}
+
+		void RenderTexturePart(int x, int y, int sub_x, int sub_y, int sub_w, int sub_h) const
+		{
+			if (sub_w <= 0) sub_w = m_Width - sub_x;
+			if (sub_h <= 0) sub_h = m_Height - sub_y;
+
+			glBindTexture(GL_TEXTURE_2D, m_TextureID);
+
+			glBegin(GL_QUADS);
+				glTexCoord2f(float(sub_x) / (float(m_Width)), (float(sub_y) / float(m_Height)));
+				glVertex3i(x, y, 0);
+				glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y) / float(m_Height)));
+				glVertex3i(x + sub_w, y, 0);
+				glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
+				glVertex3i(x + sub_w, y + sub_h, 0);
+				glTexCoord2f((float(sub_x) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
+				glVertex3i(x, y + sub_h, 0);
 			glEnd();
 		}
 

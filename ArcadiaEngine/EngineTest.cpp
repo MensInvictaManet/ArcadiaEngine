@@ -35,7 +35,7 @@
 #include "GUICheckbox.h"
 #include "InputManager.h"
 #include "SoundWrapper.h"
-#include "XMLWrapper.h"
+#include "FontManager.h"
 
 //  Test variables
 GUIButton* g_TestButton1;
@@ -272,6 +272,7 @@ void RenderScreen()
 
 	//  Render the 2D GUI through the GUIManager
 	guiManager.Render();
+	fontManager.GetFont("Arial")->RenderText("TESTing! This Font :)", 100, 400, true, false);
 	
 	/*
 	//  Render the 2D quad if the bool is set to true
@@ -390,7 +391,8 @@ int main(int argc, char* args[])
 	});
 	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
 	
-	//xmlWrapper.LoadXMLFile("./Fonts/Arial/Arial.xml");
+	fontManager.SetFontFolder("Fonts/");
+	fontManager.LoadFont("Arial");
 
 	//  Begin the primary loop, and continue until it exits
 	PrimaryLoop();

@@ -404,5 +404,8 @@
     <ClInclude Include="SimpleMD5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

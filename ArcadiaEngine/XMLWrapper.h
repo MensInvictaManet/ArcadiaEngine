@@ -16,14 +16,14 @@ public:
 
 	const RapidXML_Doc* LoadXMLFile( const char* filename )
 	{
-		RapidXML_File* newFile = NULL;
-		std::string hash = md5( std::string( filename ) );
+		RapidXML_File* newFile = nullptr;
+		auto hash = md5( std::string( filename ) );
 		
 		XMLListType::const_iterator findIter = m_LoadedXMLList.find( hash );
 		if (findIter != m_LoadedXMLList.end()) newFile = (*findIter).second;
 		else newFile = new RapidXML_File( filename );
 
-		RapidXML_Doc* newDoc = new RapidXML_Doc;
+		auto newDoc = new RapidXML_Doc;
 		newDoc->parse<0>( newFile->data() );
 		
 		m_LoadedXMLList[hash] = newFile;
@@ -32,7 +32,7 @@ public:
 
 	bool RemoveXMLFile( const char* filename )
 	{
-		std::string hash = md5( std::string( filename ) );
+		auto hash = md5( std::string( filename ) );
 		XMLListType::const_iterator findIter = m_LoadedXMLList.find( hash );
 		if (findIter != m_LoadedXMLList.end())
 		{
