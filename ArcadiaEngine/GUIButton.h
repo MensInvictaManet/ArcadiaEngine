@@ -2,6 +2,7 @@
 
 #include "GUIObjectNode.h"
 #include "InputManager.h"
+#include "FontManager.h"
 
 #include <functional>
 
@@ -18,7 +19,9 @@ public:
 	void SetLeftClickCallback(const GUIButtonCallback& callback) { m_LeftClickCallback = callback; }
 	void SetMiddleClickCallback(const GUIButtonCallback& callback) { m_MiddleClickCallback = callback; }
 	void SetRightClickCallback(const GUIButtonCallback& callback) { m_RightClickCallback = callback; }
-	
+	void SetFont(const Font* font) { m_Font = font; }
+	void SetText(const std::string text) { m_Text = text; }
+
 	void Input() override;
 	void Render() override;
 
@@ -27,6 +30,8 @@ private:
 	GUIButtonCallback	m_MiddleClickCallback;
 	GUIButtonCallback	m_RightClickCallback;
 	bool m_Pressed;
+	const Font* m_Font;
+	std::string m_Text;
 };
 
 inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, int w, int h)
@@ -40,11 +45,13 @@ inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, i
 	return newButton;
 }
 
-inline GUIButton::GUIButton() : 
+inline GUIButton::GUIButton() :
 	m_LeftClickCallback(nullptr),
 	m_MiddleClickCallback(nullptr),
 	m_RightClickCallback(nullptr),
-	m_Pressed(false)
+	m_Pressed(false),
+	m_Font(nullptr),
+	m_Text("")
 {
 	
 }
@@ -95,6 +102,11 @@ inline void GUIButton::Render()
 		glTexCoord2f(1.0f, 1.0f); glVertex3i(m_X + m_Width - pressedWidthDelta, m_Y + m_Height - pressedHeightDelta, 0);
 		glTexCoord2f(0.0f, 1.0f); glVertex3i(m_X + pressedWidthDelta, m_Y + m_Height - pressedHeightDelta, 0);
 		glEnd();
+
+		if (m_Font != nullptr && !m_Text.empty())
+		{
+			m_Font->RenderText(m_Text.c_str(), m_X + m_Width / 2, m_Y + m_Height / 2, true, true, m_Pressed ? 0.95f : 1.0f, m_Pressed ? 0.95f : 1.0f);
+		}
 	}
 
 	//  Pass the render call to all children

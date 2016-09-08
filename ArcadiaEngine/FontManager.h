@@ -19,8 +19,8 @@ public:
 	~Font();
 
 	void Shutdown();
-	void RenderText(const char* text, int x, int y, bool x_centered = false, bool y_centered = false);
-	unsigned int GetTextWidth(const char* text);
+	void RenderText(const char* text, int x, int y, bool x_centered = false, bool y_centered = false, float x_scale = 1.0f, float y_scale = 1.0f) const;
+	unsigned int GetTextWidth(const char* text) const;
 	unsigned int GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces = true);
 
 	inline unsigned int GetFontHeight(void)	const { return m_Height; }
@@ -75,35 +75,28 @@ inline void Font::Shutdown(void)
 }
 
 
-inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bool y_centered)
+inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bool y_centered, float x_scale, float y_scale) const
 {
 	if (m_Texture == nullptr) return;
 
 	//  Determine the X offset
 	unsigned int x_offset = x;
-	if (x_centered)
-	{
-		auto width = GetTextWidth(text);
-		x_offset -= (width >> 1);
-	}
+	if (x_centered) x_offset -= (unsigned int)((GetTextWidth(text) / 2.0f) * x_scale);
 
 	//  Determine the Y offset
 	unsigned int y_offset = y;
-	if (y_centered)
-	{
-		y_offset = y - (m_Height >> 1);
-	}
+	if (y_centered) y_offset -= (unsigned int)(((m_Height / 2.0f)) * y_scale);
 
 	//  Render each character in a line while updating the X offset
 	for (unsigned int i = 0; i < strlen(text); ++i)
 	{
-		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], 0, m_Width[text[i] - 32], m_Height);
-		x_offset += m_Width[text[i] - 32];
+		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], 0, int(m_Width[text[i] - 32] * x_scale), int(m_Height * y_scale));
+		x_offset += int(m_Width[text[i] - 32] * x_scale);
 	}
 }
 
 
-inline unsigned int Font::GetTextWidth(const char* text)
+inline unsigned int Font::GetTextWidth(const char* text) const
 {
 	unsigned int width = 0;
 	for (unsigned int i = 0; i < strlen(text); ++i) width += m_Width[text[i] - 32];

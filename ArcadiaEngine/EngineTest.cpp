@@ -352,15 +352,8 @@ void PrimaryLoop()
 	}
 }
 
-int main(int argc, char* args[])
+void CreateTestData()
 {
-	//  Attempt to initialize OpenGL and SDL. Close the program if that fails.
-	if (!Initialize())
-	{
-		CloseProgram();
-		return 1;
-	}
-
 	//  Load some test sounds
 	g_CoinSound[0] = soundWrapper.loadSoundFile("CoinPickup1.ogg", SOUNDFILETYPE_OGG);
 	g_CoinSound[1] = soundWrapper.loadSoundFile("CoinPickup2.ogg", SOUNDFILETYPE_OGG);
@@ -368,16 +361,23 @@ int main(int argc, char* args[])
 	g_CoinSound[3] = soundWrapper.loadSoundFile("CoinPickup2.wav", SOUNDFILETYPE_WAV);
 	soundWrapper.playSoundFile(g_BackgroundMusic = soundWrapper.loadSoundFile("BackgroundMusic.ogg", SOUNDFILETYPE_OGG));
 
-	//  Create some test UI (A button and a checkbox)
+	fontManager.SetFontFolder("Fonts/");
+	fontManager.LoadFont("Arial");
+
+	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
-	g_TestButton1 = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 100);
+	g_TestButton1 = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 50);
+	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
+	g_TestButton1->SetText("Sound 1");
 	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 0 : 2]);
 	});
 	guiManager.GetBaseNode()->AddChild(g_TestButton1);
 
-	g_TestButton2 = GUIButton::CreateButton("ButtonTest.png", 250, 100, 100, 100);
+	g_TestButton2 = GUIButton::CreateButton("ButtonTest.png", 250, 100, 100, 50);
+	g_TestButton2->SetFont(fontManager.GetFont("Arial"));
+	g_TestButton2->SetText("Sound 2");
 	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 1 : 3]);
@@ -390,9 +390,18 @@ int main(int argc, char* args[])
 		useOggFiles = g_TestCheckbox->GetChecked();
 	});
 	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
-	
-	fontManager.SetFontFolder("Fonts/");
-	fontManager.LoadFont("Arial");
+}
+
+int main(int argc, char* args[])
+{
+	//  Attempt to initialize OpenGL and SDL. Close the program if that fails.
+	if (!Initialize())
+	{
+		CloseProgram();
+		return 1;
+	}
+
+	CreateTestData();
 
 	//  Begin the primary loop, and continue until it exits
 	PrimaryLoop();
