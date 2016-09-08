@@ -67,10 +67,10 @@ public:
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f); glVertex3i(x, y, 0);
-				glTexCoord2f(1.0f, 0.0f); glVertex3i(x + width, y, 0);
-				glTexCoord2f(1.0f, 1.0f); glVertex3i(x + width, y + height, 0);
-				glTexCoord2f(0.0f, 1.0f); glVertex3i(x, y + height, 0);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + width, y);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + width, y + height);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + height);
 			glEnd();
 		}
 

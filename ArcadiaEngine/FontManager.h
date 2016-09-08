@@ -22,7 +22,7 @@ public:
 	void Shutdown();
 	void RenderText(const char* text, int x, int y, bool x_centered = false, bool y_centered = false, float x_scale = 1.0f, float y_scale = 1.0f) const;
 	unsigned int GetTextWidth(const char* text) const;
-	unsigned int GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces = true);
+	unsigned int GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces = true) const;
 
 	inline unsigned int GetFontHeight(void)	const { return m_MaxHeight; }
 
@@ -109,7 +109,7 @@ inline unsigned int Font::GetTextWidth(const char* text) const
 }
 
 
-inline unsigned int Font::GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces)
+inline unsigned int Font::GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces) const
 {
 	unsigned int character_count = 0;
 	std::string new_string("");
@@ -158,7 +158,7 @@ inline bool FontManager::LoadFont(const char* font_name)
 	const RapidXML_Node* baseNode = fontXML->first_node();
 	if (baseNode == nullptr || strcmp(baseNode->name(), "BitmapFont") != 0) return false;
 
-	std::string font_texture(m_FontFolder);
+	auto font_texture(m_FontFolder);
 	font_texture.append(font_name);
 	font_texture.append("/");
 	font_texture.append(font_name);

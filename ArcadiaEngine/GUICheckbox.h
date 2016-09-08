@@ -11,8 +11,9 @@ public:
 	typedef std::function<void(GUIObjectNode*)> GUICheckboxCallback;
 
 	static GUICheckbox* CreateCheckbox(const char* imageFile, const char* checkFile, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUICheckbox* CreateTemplatedCheckbox(const char* checkboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
-	GUICheckbox();
+	GUICheckbox(bool templated);
 	virtual ~GUICheckbox();
 
 	bool GetChecked() const { return m_Checked; }
@@ -32,24 +33,71 @@ private:
 	GLuint m_CheckTextureID;
 	GUICheckboxCallback	m_CheckCallback;
 	bool m_Checked;
+
+	//  Template data
+	bool m_Templated;
+	TextureManager::ManagedTexture* TextureTopLeftCorner[2];
+	TextureManager::ManagedTexture* TextureTopRightCorner[2];
+	TextureManager::ManagedTexture* TextureBottomLeftCorner[2];
+	TextureManager::ManagedTexture* TextureBottomRightCorner[2];
+	TextureManager::ManagedTexture* TextureLeftSide[2];
+	TextureManager::ManagedTexture* TextureRightSide[2];
+	TextureManager::ManagedTexture* TextureTopSide[2];
+	TextureManager::ManagedTexture* TextureBottomSide[2];
+	TextureManager::ManagedTexture* TextureMiddle[2];
 };
 
 inline GUICheckbox* GUICheckbox::CreateCheckbox(const char* imageFile, const char* checkFile, int x, int y, int w, int h)
 {
-	auto newButton = new GUICheckbox;
-	newButton->SetTextureID(textureManager.LoadTextureGetID(imageFile));
-	newButton->SetCheckTextureID(textureManager.LoadTextureGetID(checkFile));
-	newButton->SetX(x);
-	newButton->SetY(y);
-	newButton->SetWidth(w);
-	newButton->SetHeight(h);
-	return newButton;
+	auto newCheckbox = new GUICheckbox(false);
+
+	newCheckbox->SetTextureID(textureManager.LoadTextureGetID(imageFile));
+	newCheckbox->SetCheckTextureID(textureManager.LoadTextureGetID(checkFile));
+
+	newCheckbox->SetX(x);
+	newCheckbox->SetY(y);
+	newCheckbox->SetWidth(w);
+	newCheckbox->SetHeight(h);
+	return newCheckbox;
 }
 
-inline GUICheckbox::GUICheckbox() :
+inline GUICheckbox* GUICheckbox::CreateTemplatedCheckbox(const char* checkboxTemplate, int x, int y, int w, int h)
+{
+	auto newCheckbox = new GUICheckbox(true);
+
+	auto templateFolder("./UITemplates/Checkbox/" + std::string(checkboxTemplate) + "/");
+	newCheckbox->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
+	newCheckbox->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
+	newCheckbox->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());
+	newCheckbox->TextureBottomRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomRightCorner.png").c_str());
+	newCheckbox->TextureLeftSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_LeftSide.png").c_str());
+	newCheckbox->TextureRightSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_RightSide.png").c_str());
+	newCheckbox->TextureTopSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopSide.png").c_str());
+	newCheckbox->TextureBottomSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomSide.png").c_str());
+	newCheckbox->TextureMiddle[0] = textureManager.LoadTexture(std::string(templateFolder + "U_Middle.png").c_str());
+	newCheckbox->TextureTopLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopLeftCorner.png").c_str());
+	newCheckbox->TextureTopRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopRightCorner.png").c_str());
+	newCheckbox->TextureBottomLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomLeftCorner.png").c_str());
+	newCheckbox->TextureBottomRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomRightCorner.png").c_str());
+	newCheckbox->TextureLeftSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_LeftSide.png").c_str());
+	newCheckbox->TextureRightSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_RightSide.png").c_str());
+	newCheckbox->TextureTopSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopSide.png").c_str());
+	newCheckbox->TextureBottomSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomSide.png").c_str());
+	newCheckbox->TextureMiddle[1] = textureManager.LoadTexture(std::string(templateFolder + "C_Middle.png").c_str());
+	newCheckbox->SetTextureID(-1);
+
+	newCheckbox->SetX(x);
+	newCheckbox->SetY(y);
+	newCheckbox->SetWidth(w);
+	newCheckbox->SetHeight(h);
+	return newCheckbox;
+}
+
+inline GUICheckbox::GUICheckbox(bool templated) :
 	m_CheckTextureID(-1),
 	m_CheckCallback(nullptr),
-	m_Checked(false)
+	m_Checked(false),
+	m_Templated(templated)
 {
 
 }
@@ -88,27 +136,47 @@ inline void GUICheckbox::Input(int xOffset, int yOffset)
 inline void GUICheckbox::Render(int xOffset, int yOffset)
 {
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
+		auto x = m_X + xOffset;
+		auto y = m_Y + yOffset;
 
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(xOffset + m_X, yOffset + m_Y, 0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y, 0);
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height, 0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(xOffset + m_X, yOffset + m_Y + m_Height, 0);
-		glEnd();
-
-		if (m_Checked)
+		if (m_Templated)
 		{
-			glBindTexture(GL_TEXTURE_2D, m_CheckTextureID);
+			auto checkedIndex = (m_Checked ? 1 : 0);
+
+			TextureTopLeftCorner[checkedIndex]->RenderTexture(x, y, TextureTopLeftCorner[checkedIndex]->getWidth(), TextureTopLeftCorner[checkedIndex]->getHeight());
+			TextureTopRightCorner[checkedIndex]->RenderTexture(x + m_Width - TextureTopRightCorner[checkedIndex]->getWidth(), y, TextureTopRightCorner[checkedIndex]->getWidth(), TextureTopRightCorner[checkedIndex]->getHeight());
+			TextureBottomLeftCorner[checkedIndex]->RenderTexture(x, y + m_Height - TextureBottomLeftCorner[checkedIndex]->getHeight(), TextureBottomLeftCorner[checkedIndex]->getWidth(), TextureBottomLeftCorner[checkedIndex]->getHeight());
+			TextureBottomRightCorner[checkedIndex]->RenderTexture(x + m_Width - TextureBottomRightCorner[checkedIndex]->getWidth(), y + m_Height - TextureBottomRightCorner[checkedIndex]->getHeight(), TextureBottomRightCorner[checkedIndex]->getWidth(), TextureBottomLeftCorner[checkedIndex]->getHeight());
+			TextureLeftSide[checkedIndex]->RenderTexture(x, y + TextureTopLeftCorner[checkedIndex]->getHeight(), TextureLeftSide[checkedIndex]->getWidth(), m_Height - TextureTopLeftCorner[checkedIndex]->getHeight() - TextureBottomLeftCorner[checkedIndex]->getHeight());
+			TextureRightSide[checkedIndex]->RenderTexture(x + m_Width - TextureRightSide[checkedIndex]->getWidth(), y + TextureTopRightCorner[checkedIndex]->getHeight(), TextureRightSide[checkedIndex]->getWidth(), m_Height - TextureTopRightCorner[checkedIndex]->getHeight() - TextureBottomRightCorner[checkedIndex]->getHeight());
+			TextureTopSide[checkedIndex]->RenderTexture(x + TextureTopLeftCorner[checkedIndex]->getWidth(), y, m_Width - TextureBottomLeftCorner[checkedIndex]->getWidth() - TextureBottomRightCorner[checkedIndex]->getWidth(), TextureTopSide[checkedIndex]->getHeight());
+			TextureBottomSide[checkedIndex]->RenderTexture(x + TextureBottomLeftCorner[checkedIndex]->getWidth(), y + m_Height - TextureBottomSide[checkedIndex]->getHeight(), m_Width - TextureBottomLeftCorner[checkedIndex]->getWidth() - TextureBottomRightCorner[checkedIndex]->getWidth(), TextureBottomSide[checkedIndex]->getHeight());
+			TextureMiddle[checkedIndex]->RenderTexture(x + TextureLeftSide[checkedIndex]->getWidth(), y + TextureTopSide[checkedIndex]->getHeight(), m_Width - TextureLeftSide[checkedIndex]->getWidth() - TextureRightSide[checkedIndex]->getWidth(), m_Height - TextureTopSide[checkedIndex]->getHeight() - TextureBottomSide[checkedIndex]->getHeight());
+		}
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex3i(xOffset + m_X, yOffset + m_Y, 0);
-			glTexCoord2f(1.0f, 0.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y, 0);
-			glTexCoord2f(1.0f, 1.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height, 0);
-			glTexCoord2f(0.0f, 1.0f); glVertex3i(xOffset + m_X, yOffset + m_Y + m_Height, 0);
+				glTexCoord2f(0.0f, 0.0f); glVertex3i(x, y, 0);
+				glTexCoord2f(1.0f, 0.0f); glVertex3i(x + m_Width, y, 0);
+				glTexCoord2f(1.0f, 1.0f); glVertex3i(x + m_Width, y + m_Height, 0);
+				glTexCoord2f(0.0f, 1.0f); glVertex3i(x, y + m_Height, 0);
 			glEnd();
+
+			if (m_Checked)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_CheckTextureID);
+
+				glBegin(GL_QUADS);
+					glTexCoord2f(0.0f, 0.0f); glVertex3i(xOffset + m_X, yOffset + m_Y, 0);
+					glTexCoord2f(1.0f, 0.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y, 0);
+					glTexCoord2f(1.0f, 1.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height, 0);
+					glTexCoord2f(0.0f, 1.0f); glVertex3i(xOffset + m_X, yOffset + m_Y + m_Height, 0);
+				glEnd();
+			}
 		}
 	}
 

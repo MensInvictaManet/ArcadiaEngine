@@ -41,7 +41,8 @@
 //  Test variables
 GUIButton* g_TestButton1;
 GUIButton* g_TestButton2;
-GUICheckbox* g_TestCheckbox;
+GUICheckbox* g_TestCheckbox1;
+GUICheckbox* g_TestCheckbox2;
 GUIMoveable* g_TestMoveable;
 int g_CoinSound[4];
 int g_BackgroundMusic;
@@ -373,12 +374,19 @@ void CreateTestData()
 	g_TestMoveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(g_TestMoveable);
 
-	g_TestCheckbox = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
-	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node)
+	g_TestCheckbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
+	g_TestCheckbox1->SetCheckCallback([=](GUIObjectNode* node)
 	{
-		useOggFiles = g_TestCheckbox->GetChecked();
+		useOggFiles = g_TestCheckbox1->GetChecked();
 	});
-	g_TestMoveable->AddChild(g_TestCheckbox);
+	g_TestMoveable->AddChild(g_TestCheckbox1);
+
+	g_TestCheckbox2 = GUICheckbox::CreateTemplatedCheckbox("Standard", 20, 100, 50, 50);
+	g_TestCheckbox2->SetCheckCallback([=](GUIObjectNode* node)
+	{
+		useOggFiles = g_TestCheckbox2->GetChecked();
+	});
+	g_TestMoveable->AddChild(g_TestCheckbox2);
 
 	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 40, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
