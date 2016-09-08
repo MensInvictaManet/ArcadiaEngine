@@ -410,5 +410,11 @@
     <ClInclude Include="GUIMoveable.h">
       <Filter>Header Files\GUI Object Types</Filter>
     </ClInclude>
+    <ClInclude Include="GUIEditBox.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeSlice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

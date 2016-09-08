@@ -123,6 +123,7 @@
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GUIButton.h" />
     <ClInclude Include="GUICheckbox.h" />
+    <ClInclude Include="GUIEditBox.h" />
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="GUIMoveable.h" />
     <ClInclude Include="GUIObjectNode.h" />
@@ -234,6 +235,7 @@
     <ClInclude Include="SimpleMD5.h" />
     <ClInclude Include="SoundWrapper.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="TimeSlice.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="XMLWrapper.h" />
   </ItemGroup>

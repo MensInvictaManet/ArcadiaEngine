@@ -31,19 +31,17 @@
 #include "WindowManager.h"
 #include "TextureManager.h"
 #include "GUIManager.h"
+#include "GUIMoveable.h"
 #include "GUIButton.h"
 #include "GUICheckbox.h"
-#include "GUIMoveable.h"
+#include "GUIEditBox.h"
 #include "InputManager.h"
 #include "SoundWrapper.h"
 #include "FontManager.h"
+#include "TimeSlice.h"
 
 //  Test variables
 GUIButton* g_TestButton1;
-GUIButton* g_TestButton2;
-GUICheckbox* g_TestCheckbox1;
-GUICheckbox* g_TestCheckbox2;
-GUIMoveable* g_TestMoveable;
 int g_CoinSound[4];
 int g_BackgroundMusic;
 SDL_Texture* g_TextTexture = nullptr;
@@ -215,16 +213,6 @@ void CloseProgram()
 #endif
 }
 
-void HandleTextInput(unsigned char key)
-{
-	//  Toggle quad rendering
-	if (key == 'q' && g_TestButton1 != nullptr)
-	{
-		guiManager.DestroyNode(g_TestButton1);
-		g_TestButton1 = nullptr;
-	}
-}
-
 void HandleInput()
 {
 	//Set texture based on current keystate
@@ -289,6 +277,8 @@ void PrimaryLoop()
 	//  While application is running
 	while (!quit)
 	{
+		DetermineTimeSlice();
+
 		//  Get the current state of mouse and keyboard input
 		inputManager.GetInputForFrame();
 
@@ -306,7 +296,7 @@ void PrimaryLoop()
 			//  Handle keypress with current mouse position
 			else if (e.type == SDL_TEXTINPUT)
 			{
-				HandleTextInput(e.text.text[0]);
+				inputManager.AddKeyToString(e.text.text[0]);
 			}
 			else
 			{
@@ -356,22 +346,22 @@ void CreateTestData()
 	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
 
-	g_TestMoveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
-	guiManager.GetBaseNode()->AddChild(g_TestMoveable);
+	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
+	guiManager.GetBaseNode()->AddChild(moveable);
 
-	g_TestCheckbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
-	g_TestCheckbox1->SetCheckCallback([=](GUIObjectNode* node)
+	auto checkbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
+	checkbox1->SetCheckCallback([=](GUIObjectNode* node)
 	{
-		useOggFiles = g_TestCheckbox1->GetChecked();
+		useOggFiles = checkbox1->GetChecked();
 	});
-	g_TestMoveable->AddChild(g_TestCheckbox1);
+	moveable->AddChild(checkbox1);
 
-	g_TestCheckbox2 = GUICheckbox::CreateTemplatedCheckbox("Standard", 20, 100, 50, 50);
-	g_TestCheckbox2->SetCheckCallback([=](GUIObjectNode* node)
+	auto checkbox2 = GUICheckbox::CreateTemplatedCheckbox("Standard", 20, 100, 50, 50);
+	checkbox2->SetCheckCallback([=](GUIObjectNode* node)
 	{
-		useOggFiles = g_TestCheckbox2->GetChecked();
+		useOggFiles = checkbox2->GetChecked();
 	});
-	g_TestMoveable->AddChild(g_TestCheckbox2);
+	moveable->AddChild(checkbox2);
 
 	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 40, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
@@ -380,16 +370,21 @@ void CreateTestData()
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 0 : 2]);
 	});
-	g_TestMoveable->AddChild(g_TestButton1);
+	moveable->AddChild(g_TestButton1);
 
-	g_TestButton2 = GUIButton::CreateTemplatedButton("Standard", 100, 100, 100, 50);
-	g_TestButton2->SetFont(fontManager.GetFont("Arial-12-White"));
-	g_TestButton2->SetText("Sound 2");
-	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)
+	auto button2 = GUIButton::CreateTemplatedButton("Standard", 100, 100, 100, 50);
+	button2->SetFont(fontManager.GetFont("Arial-12-White"));
+	button2->SetText("Sound 2");
+	button2->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 1 : 3]);
 	});
-	g_TestMoveable->AddChild(g_TestButton2);
+	moveable->AddChild(button2);
+
+	auto editbox1 = GUIEditBox::CreateTemplatedEditBox("Standard", 40, 160, 200, 30);
+	editbox1->SetFont(fontManager.GetFont("Arial"));
+	editbox1->SetText("EDIT THIS TEXT");
+	moveable->AddChild(editbox1);
 }
 
 int main(int argc, char* args[])
