@@ -276,21 +276,6 @@ void RenderScreen()
 	//  Render the 2D GUI through the GUIManager
 	guiManager.Render();
 	fontManager.GetFont("Arial")->RenderText("TESTing! This Font :)", 100, 400, true, false);
-	
-	/*
-	//  Render the 2D quad if the bool is set to true
-	if (!(testVarFlag & 2))
-	{
-		glBindTexture(GL_TEXTURE_2D, g_TextTextureID);
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex2f(100.0f, 300.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex2f(400.0f, 300.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex2f(400.0f, 400.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex2f(100.0f, 400.0f);
-		glEnd();
-	}
-	*/
 }
 
 void PrimaryLoop()
@@ -397,7 +382,7 @@ void CreateTestData()
 	});
 	g_TestMoveable->AddChild(g_TestButton1);
 
-	g_TestButton2 = GUIButton::CreateButton("ButtonTest2.png", 100, 100, 100, 50);
+	g_TestButton2 = GUIButton::CreateTemplatedButton("Standard", 100, 100, 100, 50);
 	g_TestButton2->SetFont(fontManager.GetFont("Arial-12-White"));
 	g_TestButton2->SetText("Sound 2");
 	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)

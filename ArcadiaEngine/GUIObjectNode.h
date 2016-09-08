@@ -55,7 +55,7 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_Y(0),
 	m_Width(0),
 	m_Height(0),
-	m_TextureID(-1),
+	m_TextureID(0),
 	m_Visible(true),
 	m_Parent(nullptr),
 	m_SetToDestroy(false)
@@ -74,7 +74,7 @@ inline void GUIObjectNode::Input(int xOffset, int yOffset)
 inline void GUIObjectNode::Render(int xOffset, int yOffset)
 {
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && m_TextureID != 0 && m_Width > 0 && m_Height > 0)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 

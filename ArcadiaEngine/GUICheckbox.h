@@ -13,7 +13,7 @@ public:
 	static GUICheckbox* CreateCheckbox(const char* imageFile, const char* checkFile, int x = 0, int y = 0, int w = 0, int h = 0);
 	static GUICheckbox* CreateTemplatedCheckbox(const char* checkboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
-	GUICheckbox(bool templated);
+	explicit GUICheckbox(bool templated);
 	virtual ~GUICheckbox();
 
 	bool GetChecked() const { return m_Checked; }
@@ -84,7 +84,7 @@ inline GUICheckbox* GUICheckbox::CreateTemplatedCheckbox(const char* checkboxTem
 	newCheckbox->TextureTopSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopSide.png").c_str());
 	newCheckbox->TextureBottomSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomSide.png").c_str());
 	newCheckbox->TextureMiddle[1] = textureManager.LoadTexture(std::string(templateFolder + "C_Middle.png").c_str());
-	newCheckbox->SetTextureID(-1);
+	newCheckbox->SetTextureID(0);
 
 	newCheckbox->SetX(x);
 	newCheckbox->SetY(y);
@@ -94,12 +94,20 @@ inline GUICheckbox* GUICheckbox::CreateTemplatedCheckbox(const char* checkboxTem
 }
 
 inline GUICheckbox::GUICheckbox(bool templated) :
-	m_CheckTextureID(-1),
+	m_CheckTextureID(0),
 	m_CheckCallback(nullptr),
 	m_Checked(false),
 	m_Templated(templated)
 {
-
+	TextureTopLeftCorner[0]		= TextureTopLeftCorner[1]		= nullptr;
+	TextureTopRightCorner[0]	= TextureTopRightCorner[1]		= nullptr;
+	TextureBottomLeftCorner[0]	= TextureBottomLeftCorner[1]	= nullptr;
+	TextureBottomRightCorner[0]	= TextureBottomRightCorner[1]	= nullptr;
+	TextureLeftSide[0]			= TextureLeftSide[1]			= nullptr;
+	TextureRightSide[0]			= TextureRightSide[1]			= nullptr;
+	TextureTopSide[0]			= TextureTopSide[1]				= nullptr;
+	TextureBottomSide[0]		= TextureBottomSide[1]			= nullptr;
+	TextureMiddle[0]			= TextureMiddle[1]				= nullptr;
 }
 
 

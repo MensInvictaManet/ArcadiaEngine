@@ -12,8 +12,9 @@ public:
 	typedef std::function<void(GUIObjectNode*)> GUIButtonCallback;
 
 	static GUIButton* CreateButton(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUIButton* CreateTemplatedButton(const char* checkboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
-	GUIButton();
+	explicit GUIButton(bool templated);
 	virtual ~GUIButton();
 
 	void SetLeftClickCallback(const GUIButtonCallback& callback) { m_LeftClickCallback = callback; }
@@ -32,11 +33,22 @@ private:
 	bool m_Pressed;
 	const Font* m_Font;
 	std::string m_Text;
+
+	bool m_Templated;
+	TextureManager::ManagedTexture* TextureTopLeftCorner[2];
+	TextureManager::ManagedTexture* TextureTopRightCorner[2];
+	TextureManager::ManagedTexture* TextureBottomLeftCorner[2];
+	TextureManager::ManagedTexture* TextureBottomRightCorner[2];
+	TextureManager::ManagedTexture* TextureLeftSide[2];
+	TextureManager::ManagedTexture* TextureRightSide[2];
+	TextureManager::ManagedTexture* TextureTopSide[2];
+	TextureManager::ManagedTexture* TextureBottomSide[2];
+	TextureManager::ManagedTexture* TextureMiddle[2];
 };
 
 inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, int w, int h)
 {
-	auto newButton = new GUIButton;
+	auto newButton = new GUIButton(false);
 	newButton->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newButton->SetX(x);
 	newButton->SetY(y);
@@ -45,15 +57,56 @@ inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, i
 	return newButton;
 }
 
-inline GUIButton::GUIButton() :
+inline GUIButton* GUIButton::CreateTemplatedButton(const char* buttonTemplate, int x, int y, int w, int h)
+{
+	auto newButton = new GUIButton(true);
+
+	auto templateFolder("./UITemplates/Button/" + std::string(buttonTemplate) + "/");
+	newButton->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
+	newButton->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
+	newButton->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());
+	newButton->TextureBottomRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomRightCorner.png").c_str());
+	newButton->TextureLeftSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_LeftSide.png").c_str());
+	newButton->TextureRightSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_RightSide.png").c_str());
+	newButton->TextureTopSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopSide.png").c_str());
+	newButton->TextureBottomSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomSide.png").c_str());
+	newButton->TextureMiddle[0] = textureManager.LoadTexture(std::string(templateFolder + "U_Middle.png").c_str());
+	newButton->TextureTopLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopLeftCorner.png").c_str());
+	newButton->TextureTopRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopRightCorner.png").c_str());
+	newButton->TextureBottomLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomLeftCorner.png").c_str());
+	newButton->TextureBottomRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomRightCorner.png").c_str());
+	newButton->TextureLeftSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_LeftSide.png").c_str());
+	newButton->TextureRightSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_RightSide.png").c_str());
+	newButton->TextureTopSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopSide.png").c_str());
+	newButton->TextureBottomSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomSide.png").c_str());
+	newButton->TextureMiddle[1] = textureManager.LoadTexture(std::string(templateFolder + "C_Middle.png").c_str());
+	newButton->SetTextureID(0);
+
+	newButton->SetX(x);
+	newButton->SetY(y);
+	newButton->SetWidth(w);
+	newButton->SetHeight(h);
+	return newButton;
+}
+
+inline GUIButton::GUIButton(bool templated) :
 	m_LeftClickCallback(nullptr),
 	m_MiddleClickCallback(nullptr),
 	m_RightClickCallback(nullptr),
 	m_Pressed(false),
 	m_Font(nullptr),
-	m_Text("")
+	m_Text(""),
+	m_Templated(templated)
 {
-	
+	TextureTopLeftCorner[0] = TextureTopLeftCorner[1] = nullptr;
+	TextureTopRightCorner[0] = TextureTopRightCorner[1] = nullptr;
+	TextureBottomLeftCorner[0] = TextureBottomLeftCorner[1] = nullptr;
+	TextureBottomRightCorner[0] = TextureBottomRightCorner[1] = nullptr;
+	TextureLeftSide[0] = TextureLeftSide[1] = nullptr;
+	TextureRightSide[0] = TextureRightSide[1] = nullptr;
+	TextureTopSide[0] = TextureTopSide[1] = nullptr;
+	TextureBottomSide[0] = TextureBottomSide[1] = nullptr;
+	TextureMiddle[0] = TextureMiddle[1] = nullptr;
 }
 
 
@@ -89,23 +142,44 @@ inline void GUIButton::Input(int xOffset, int yOffset)
 inline void GUIButton::Render(int xOffset, int yOffset)
 {
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
+		auto x = m_X + xOffset;
+		auto y = m_Y + yOffset;
 
-		auto pressedWidthDelta = m_Pressed ? int(m_Width * 0.05f) : 0;
-		auto pressedHeightDelta = m_Pressed ? int(m_Height * 0.05f) : 0;
+		if (m_Templated)
+		{
+			auto pressedIndex = (m_Pressed ? 1 : 0);
 
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xOffset + m_X + pressedWidthDelta, yOffset + m_Y + pressedHeightDelta);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xOffset + m_X + m_Width - pressedWidthDelta, yOffset + m_Y + pressedHeightDelta);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xOffset + m_X + m_Width - pressedWidthDelta, yOffset + m_Y + m_Height - pressedHeightDelta);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xOffset + m_X + pressedWidthDelta, yOffset + m_Y + m_Height - pressedHeightDelta);
-		glEnd();
+			TextureTopLeftCorner[pressedIndex]->RenderTexture(x, y, TextureTopLeftCorner[pressedIndex]->getWidth(), TextureTopLeftCorner[pressedIndex]->getHeight());
+			TextureTopRightCorner[pressedIndex]->RenderTexture(x + m_Width - TextureTopRightCorner[pressedIndex]->getWidth(), y, TextureTopRightCorner[pressedIndex]->getWidth(), TextureTopRightCorner[pressedIndex]->getHeight());
+			TextureBottomLeftCorner[pressedIndex]->RenderTexture(x, y + m_Height - TextureBottomLeftCorner[pressedIndex]->getHeight(), TextureBottomLeftCorner[pressedIndex]->getWidth(), TextureBottomLeftCorner[pressedIndex]->getHeight());
+			TextureBottomRightCorner[pressedIndex]->RenderTexture(x + m_Width - TextureBottomRightCorner[pressedIndex]->getWidth(), y + m_Height - TextureBottomRightCorner[pressedIndex]->getHeight(), TextureBottomRightCorner[pressedIndex]->getWidth(), TextureBottomLeftCorner[pressedIndex]->getHeight());
+			TextureLeftSide[pressedIndex]->RenderTexture(x, y + TextureTopLeftCorner[pressedIndex]->getHeight(), TextureLeftSide[pressedIndex]->getWidth(), m_Height - TextureTopLeftCorner[pressedIndex]->getHeight() - TextureBottomLeftCorner[pressedIndex]->getHeight());
+			TextureRightSide[pressedIndex]->RenderTexture(x + m_Width - TextureRightSide[pressedIndex]->getWidth(), y + TextureTopRightCorner[pressedIndex]->getHeight(), TextureRightSide[pressedIndex]->getWidth(), m_Height - TextureTopRightCorner[pressedIndex]->getHeight() - TextureBottomRightCorner[pressedIndex]->getHeight());
+			TextureTopSide[pressedIndex]->RenderTexture(x + TextureTopLeftCorner[pressedIndex]->getWidth(), y, m_Width - TextureBottomLeftCorner[pressedIndex]->getWidth() - TextureBottomRightCorner[pressedIndex]->getWidth(), TextureTopSide[pressedIndex]->getHeight());
+			TextureBottomSide[pressedIndex]->RenderTexture(x + TextureBottomLeftCorner[pressedIndex]->getWidth(), y + m_Height - TextureBottomSide[pressedIndex]->getHeight(), m_Width - TextureBottomLeftCorner[pressedIndex]->getWidth() - TextureBottomRightCorner[pressedIndex]->getWidth(), TextureBottomSide[pressedIndex]->getHeight());
+			TextureMiddle[pressedIndex]->RenderTexture(x + TextureLeftSide[pressedIndex]->getWidth(), y + TextureTopSide[pressedIndex]->getHeight(), m_Width - TextureLeftSide[pressedIndex]->getWidth() - TextureRightSide[pressedIndex]->getWidth(), m_Height - TextureTopSide[pressedIndex]->getHeight() - TextureBottomSide[pressedIndex]->getHeight());
+		}
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
+			auto pressedWidthDelta = m_Pressed ? int(m_Width * 0.05f) : 0;
+			auto pressedHeightDelta = m_Pressed ? int(m_Height * 0.05f) : 0;
+
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(x + pressedWidthDelta, y + pressedHeightDelta);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + pressedHeightDelta);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + m_Height - pressedHeightDelta);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(x + pressedWidthDelta, y + m_Height - pressedHeightDelta);
+			glEnd();
+		}
+
+		//  Render the font the same way regardless of templating
 		if (m_Font != nullptr && !m_Text.empty())
 		{
-			m_Font->RenderText(m_Text.c_str(), xOffset + m_X + m_Width / 2, yOffset + m_Y + m_Height / 2, true, true, m_Pressed ? 0.95f : 1.0f, m_Pressed ? 0.95f : 1.0f);
+			m_Font->RenderText(m_Text.c_str(), x + m_Width / 2, y + m_Height / 2, true, true, m_Pressed ? 0.95f : 1.0f, m_Pressed ? 0.95f : 1.0f);
 		}
 	}
 

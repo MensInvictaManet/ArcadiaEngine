@@ -61,6 +61,7 @@ public:
 
 		void RenderTexture(int x, int y, int width = -1, int height = -1) const
 		{
+			if (m_TextureID == 0) return;
 			if (width < 0) width = m_Width;
 			if (height < 0) height = m_Height;
 
@@ -76,6 +77,7 @@ public:
 
 		void RenderTexturePart(int x, int y, int sub_x, int sub_y, int sub_w, int sub_h) const
 		{
+			if (m_TextureID == 0) return;
 			if (sub_w <= 0) sub_w = m_Width - sub_x;
 			if (sub_h <= 0) sub_h = m_Height - sub_y;
 
@@ -100,7 +102,7 @@ public:
 			{
 				SDL_DestroyTexture(m_Texture);
 				m_Texture = nullptr;
-				m_TextureID = -1;
+				m_TextureID = 0;
 				m_Width = 0;
 				m_Height = 0;
 			}
@@ -118,9 +120,9 @@ public:
 
 	static TextureManager& GetInstance() { static TextureManager INSTANCE; return INSTANCE; }
 
-	int LoadTextureGetID(const char* textureFile);
+	GLuint LoadTextureGetID(const char* textureFile);
 	ManagedTexture* LoadTexture(const char* textureFile);
-	int GetTextureID(const int index);
+	GLuint GetTextureID(const int index);
 	ManagedTexture* GetManagedTexture(const int index);
 	void Shutdown();
 
@@ -134,17 +136,17 @@ private:
 	std::unordered_map<std::string, ManagedTexture*> m_TextureListByFile;
 };
 
-inline int TextureManager::LoadTextureGetID(const char* textureFile)
+inline GLuint TextureManager::LoadTextureGetID(const char* textureFile)
 {
 	auto* texture = LoadTexture(textureFile);
-	return (texture != nullptr) ? texture->m_TextureID : -1;
+	return (texture != nullptr) ? texture->m_TextureID : 0;
 }
 
 
 inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* textureFile)
 {
 	auto iter = m_TextureListByFile.find(textureFile);
-	if (iter != m_TextureListByFile.end()) (*iter).second->m_TextureID;
+	if (iter != m_TextureListByFile.end()) return (*iter).second;
 
 	//  TODO: Load the texture, create a ManagedTexture, return the Texture ID
 	SDL_Texture* sdlTexture = nullptr;
@@ -176,7 +178,7 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 	auto mode = (sdlSurface->format->BytesPerPixel == 4) ? GL_RGBA : GL_RGB;
 
 	//  Create the OpenGL texture and push the surface data to it
-	GLuint textureID = 999;
+	GLuint textureID = 0;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, mode, sdlSurface->w, sdlSurface->h, 0, mode, GL_UNSIGNED_BYTE, sdlSurface->pixels);
@@ -203,10 +205,10 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 	return managedTexture;
 }
 
-inline int TextureManager::GetTextureID(const int index)
+inline GLuint TextureManager::GetTextureID(const int index)
 {
 	auto iter = m_TextureList.find(index);
-	if (iter == m_TextureList.end()) return -1;
+	if (iter == m_TextureList.end()) return 0;
 
 	return (*iter).second->m_TextureID;
 }
