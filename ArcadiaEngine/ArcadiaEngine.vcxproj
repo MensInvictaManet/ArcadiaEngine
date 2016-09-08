@@ -124,6 +124,7 @@
     <ClInclude Include="GUIButton.h" />
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIEditBox.h" />
+    <ClInclude Include="GUILabel.h" />
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="GUIMoveable.h" />
     <ClInclude Include="GUIObjectNode.h" />

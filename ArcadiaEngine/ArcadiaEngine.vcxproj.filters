@@ -416,5 +416,8 @@
     <ClInclude Include="TimeSlice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUILabel.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

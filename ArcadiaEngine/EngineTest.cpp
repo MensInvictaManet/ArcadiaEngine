@@ -32,6 +32,7 @@
 #include "TextureManager.h"
 #include "GUIManager.h"
 #include "GUIMoveable.h"
+#include "GUILabel.h"
 #include "GUIButton.h"
 #include "GUICheckbox.h"
 #include "GUIEditBox.h"
@@ -263,7 +264,6 @@ void RenderScreen()
 
 	//  Render the 2D GUI through the GUIManager
 	guiManager.Render();
-	fontManager.GetFont("Arial")->RenderText("TESTing! This Font :)", 100, 400, true, false);
 }
 
 void PrimaryLoop()
@@ -348,6 +348,11 @@ void CreateTestData()
 
 	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
+
+	auto label = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label->SetFont(fontManager.GetFont("Arial"));
+	label->SetText("Move This UI Around");
+	moveable->AddChild(label);
 
 	auto checkbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
 	checkbox1->SetCheckCallback([=](GUIObjectNode* node)
