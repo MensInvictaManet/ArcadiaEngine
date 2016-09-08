@@ -363,10 +363,11 @@ void CreateTestData()
 
 	fontManager.SetFontFolder("Fonts/");
 	fontManager.LoadFont("Arial");
+	fontManager.LoadFont("Arial-12-White");
 
 	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
-	g_TestButton1 = GUIButton::CreateButton("ButtonTest.png", 100, 100, 100, 50);
+	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 100, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
 	g_TestButton1->SetText("Sound 1");
 	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)
@@ -375,8 +376,8 @@ void CreateTestData()
 	});
 	guiManager.GetBaseNode()->AddChild(g_TestButton1);
 
-	g_TestButton2 = GUIButton::CreateButton("ButtonTest.png", 250, 100, 100, 50);
-	g_TestButton2->SetFont(fontManager.GetFont("Arial"));
+	g_TestButton2 = GUIButton::CreateButton("ButtonTest2.png", 250, 100, 100, 50);
+	g_TestButton2->SetFont(fontManager.GetFont("Arial-12-White"));
 	g_TestButton2->SetText("Sound 2");
 	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)
 	{

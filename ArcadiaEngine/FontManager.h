@@ -23,13 +23,15 @@ public:
 	unsigned int GetTextWidth(const char* text) const;
 	unsigned int GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces = true);
 
-	inline unsigned int GetFontHeight(void)	const { return m_Height; }
+	inline unsigned int GetFontHeight(void)	const { return m_MaxHeight; }
 
 protected:
 	TextureManager::ManagedTexture* m_Texture;
 	unsigned int m_X[95];
+	unsigned int m_Y[95];
 	unsigned int m_Width[95];
-	unsigned int m_Height;
+	unsigned int m_Height[95];
+	unsigned int m_MaxHeight;
 };
 
 class FontManager
@@ -54,10 +56,12 @@ private:
 
 inline Font::Font() :
 	m_Texture(nullptr),
-	m_Height(0)
+	m_MaxHeight(0)
 {
 	memset(m_X, 0, sizeof(unsigned int) * 95);
+	memset(m_Y, 0, sizeof(unsigned int) * 95);
 	memset(m_Width, 0, sizeof(unsigned int) * 95);
+	memset(m_Height, 0, sizeof(unsigned int) * 95);
 }
 
 
@@ -85,12 +89,12 @@ inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bo
 
 	//  Determine the Y offset
 	unsigned int y_offset = y;
-	if (y_centered) y_offset -= (unsigned int)(((m_Height / 2.0f)) * y_scale);
+	if (y_centered) y_offset -= (unsigned int)(((m_MaxHeight / 2.0f)) * y_scale);
 
 	//  Render each character in a line while updating the X offset
 	for (unsigned int i = 0; i < strlen(text); ++i)
 	{
-		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], 0, int(m_Width[text[i] - 32] * x_scale), int(m_Height * y_scale));
+		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], m_Y[text[i] - 32], int(m_Width[text[i] - 32] * x_scale), int(m_Height[text[i] - 32] * y_scale));
 		x_offset += int(m_Width[text[i] - 32] * x_scale);
 	}
 }
@@ -171,11 +175,15 @@ inline bool FontManager::LoadFont(const char* font_name)
 		unsigned int index = atoi(dataNode->value()) - 32;
 		dataNode = dataNode->next_sibling("X");
 		new_font.m_X[index] = atoi(dataNode->value());
+		dataNode = dataNode->next_sibling("Y");
+		new_font.m_Y[index] = atoi(dataNode->value());
 		dataNode = dataNode->next_sibling("W");
 		new_font.m_Width[index] = atoi(dataNode->value());
+		dataNode = dataNode->next_sibling("H");
+		new_font.m_Height[index] = atoi(dataNode->value());
+		if (new_font.m_MaxHeight < new_font.m_Height[index]) new_font.m_MaxHeight = new_font.m_Height[index];
 	}
 
-	new_font.m_Height = new_font.m_Texture->getHeight();
 	m_FontList[font_name_string] = new_font;
 
 	return true;
