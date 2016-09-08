@@ -5,6 +5,7 @@
 
 #include "TextureManager.h"
 #include "XMLWrapper.h"
+
 #include <unordered_map>
 #include <string>
 

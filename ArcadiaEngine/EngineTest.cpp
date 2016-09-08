@@ -33,6 +33,7 @@
 #include "GUIManager.h"
 #include "GUIButton.h"
 #include "GUICheckbox.h"
+#include "GUIMoveable.h"
 #include "InputManager.h"
 #include "SoundWrapper.h"
 #include "FontManager.h"
@@ -41,6 +42,7 @@
 GUIButton* g_TestButton1;
 GUIButton* g_TestButton2;
 GUICheckbox* g_TestCheckbox;
+GUIMoveable* g_TestMoveable;
 int g_CoinSound[4];
 int g_BackgroundMusic;
 SDL_Texture* g_TextTexture = nullptr;
@@ -367,30 +369,34 @@ void CreateTestData()
 
 	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
-	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 100, 100, 50);
+
+	g_TestMoveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
+	guiManager.GetBaseNode()->AddChild(g_TestMoveable);
+
+	g_TestCheckbox = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
+	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node)
+	{
+		useOggFiles = g_TestCheckbox->GetChecked();
+	});
+	g_TestMoveable->AddChild(g_TestCheckbox);
+
+	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 40, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
 	g_TestButton1->SetText("Sound 1");
 	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 0 : 2]);
 	});
-	guiManager.GetBaseNode()->AddChild(g_TestButton1);
+	g_TestMoveable->AddChild(g_TestButton1);
 
-	g_TestButton2 = GUIButton::CreateButton("ButtonTest2.png", 250, 100, 100, 50);
+	g_TestButton2 = GUIButton::CreateButton("ButtonTest2.png", 100, 100, 100, 50);
 	g_TestButton2->SetFont(fontManager.GetFont("Arial-12-White"));
 	g_TestButton2->SetText("Sound 2");
 	g_TestButton2->SetLeftClickCallback([=](GUIObjectNode* node)
 	{
 		soundWrapper.playSoundFile(g_CoinSound[useOggFiles ? 1 : 3]);
 	});
-	guiManager.GetBaseNode()->AddChild(g_TestButton2);
-
-	g_TestCheckbox = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 400, 100, 100, 100);
-	g_TestCheckbox->SetCheckCallback([=](GUIObjectNode* node)
-	{
-		useOggFiles = g_TestCheckbox->GetChecked();
-	});
-	guiManager.GetBaseNode()->AddChild(g_TestCheckbox);
+	g_TestMoveable->AddChild(g_TestButton2);
 }
 
 int main(int argc, char* args[])
@@ -402,6 +408,7 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
+	//  Create test data for different systems to ensure they work as they should
 	CreateTestData();
 
 	//  Begin the primary loop, and continue until it exits

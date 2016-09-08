@@ -407,5 +407,8 @@
     <ClInclude Include="FontManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUIMoveable.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,8 +21,8 @@ public:
 	void SetCheckTextureID(int textureID) { m_CheckTextureID = textureID; }
 	void SetCheckCallback(const GUICheckboxCallback& callback) { m_CheckCallback = callback; }
 
-	void Input() override;
-	void Render() override;
+	void Input(int xOffset = 0, int yOffset = 0) override;
+	void Render(int xOffset = 0, int yOffset = 0) override;
 
 private:
 	void ToggleCheck();
@@ -68,7 +68,7 @@ inline void GUICheckbox::SetChecked(bool checked)
 }
 
 
-inline void GUICheckbox::Input()
+inline void GUICheckbox::Input(int xOffset, int yOffset)
 {
 	auto leftButtonState = inputManager.GetMouseButtonLeft();
 	auto middleButtonState = inputManager.GetMouseButtonMiddle();
@@ -76,16 +76,16 @@ inline void GUICheckbox::Input()
 	auto x = inputManager.GetMouseX();
 	auto y = inputManager.GetMouseY();
 
-	if ((x > m_X) && (x < m_X + m_Width) && (y > m_Y) && (y < m_Y + m_Height))
+	if ((x > xOffset + m_X) && (x < xOffset + m_X + m_Width) && (y > yOffset + m_Y) && (y < yOffset + m_Y + m_Height))
 	{
 		if (leftButtonState == MOUSE_BUTTON_PRESSED) ToggleCheck();
 	}
 
 	//  Take base node input
-	GUIObjectNode::Input();
+	GUIObjectNode::Input(xOffset, yOffset);
 }
 
-inline void GUICheckbox::Render()
+inline void GUICheckbox::Render(int xOffset, int yOffset)
 {
 	//  Render the object if we're able
 	if (!m_SetToDestroy && m_Visible && m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
@@ -93,10 +93,10 @@ inline void GUICheckbox::Render()
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(m_X, m_Y, 0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(m_X + m_Width, m_Y, 0);
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(m_X + m_Width, m_Y + m_Height, 0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(m_X, m_Y + m_Height, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex3i(xOffset + m_X, yOffset + m_Y, 0);
+		glTexCoord2f(1.0f, 0.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y, 0);
+		glTexCoord2f(1.0f, 1.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height, 0);
+		glTexCoord2f(0.0f, 1.0f); glVertex3i(xOffset + m_X, yOffset + m_Y + m_Height, 0);
 		glEnd();
 
 		if (m_Checked)
@@ -104,16 +104,16 @@ inline void GUICheckbox::Render()
 			glBindTexture(GL_TEXTURE_2D, m_CheckTextureID);
 
 			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex3i(m_X, m_Y, 0);
-			glTexCoord2f(1.0f, 0.0f); glVertex3i(m_X + m_Width, m_Y, 0);
-			glTexCoord2f(1.0f, 1.0f); glVertex3i(m_X + m_Width, m_Y + m_Height, 0);
-			glTexCoord2f(0.0f, 1.0f); glVertex3i(m_X, m_Y + m_Height, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex3i(xOffset + m_X, yOffset + m_Y, 0);
+			glTexCoord2f(1.0f, 0.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y, 0);
+			glTexCoord2f(1.0f, 1.0f); glVertex3i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height, 0);
+			glTexCoord2f(0.0f, 1.0f); glVertex3i(xOffset + m_X, yOffset + m_Y + m_Height, 0);
 			glEnd();
 		}
 	}
 
 	//  Pass the render call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render();
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(xOffset + m_X, yOffset + m_Y);
 }
 
 inline void GUICheckbox::ToggleCheck()

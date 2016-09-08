@@ -16,8 +16,8 @@ public:
 	GUIObjectNode();
 	virtual ~GUIObjectNode() {}
 
-	virtual void Input();
-	virtual void Render();
+	virtual void Input(int xOffset = 0, int yOffset = 0);
+	virtual void Render(int xOffset = 0, int yOffset = 0);
 	virtual void SetToDestroy();
 	virtual void Destroy();
 
@@ -63,15 +63,15 @@ inline GUIObjectNode::GUIObjectNode() :
 
 }
 
-inline void GUIObjectNode::Input()
+inline void GUIObjectNode::Input(int xOffset, int yOffset)
 {
 	if (m_SetToDestroy) return;
 
 	//  Pass the input call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Input();
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Input(xOffset + m_X, yOffset + m_Y);
 }
 
-inline void GUIObjectNode::Render()
+inline void GUIObjectNode::Render(int xOffset, int yOffset)
 {
 	//  Render the object if we're able
 	if (!m_SetToDestroy && m_Visible && m_TextureID >= 0 && m_Width > 0 && m_Height > 0)
@@ -79,15 +79,15 @@ inline void GUIObjectNode::Render()
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3i(m_X, m_Y, 0);
-		glTexCoord2f(1.0f, 0.0f); glVertex3i(m_X + m_Width, m_Y, 0);
-		glTexCoord2f(1.0f, 1.0f); glVertex3i(m_X + m_Width, m_Y + m_Height, 0);
-		glTexCoord2f(0.0f, 1.0f); glVertex3i(m_X, m_Y + m_Height, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(xOffset + m_X, yOffset + m_Y);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(xOffset + m_X + m_Width, yOffset + m_Y);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(xOffset + m_X, yOffset + m_Y + m_Height);
 		glEnd();
 	}
 
 	//  Pass the render call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render();
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(xOffset + m_X, yOffset + m_Y);
 }
 
 inline void GUIObjectNode::SetToDestroy()
