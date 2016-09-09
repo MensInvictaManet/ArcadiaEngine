@@ -40,6 +40,7 @@
 #include "SoundWrapper.h"
 #include "FontManager.h"
 #include "TimeSlice.h"
+#include "WinsockWrapper.h"
 
 //  Test variables
 GUIButton* g_TestButton1;
@@ -390,6 +391,13 @@ void CreateTestData()
 	editbox1->SetFont(fontManager.GetFont("Arial"));
 	editbox1->SetText("EDIT THIS TEXT");
 	moveable->AddChild(editbox1);
+
+	//  Test the Winsock Wrapper
+	winsockWrapper.WinsockInitialize();
+	auto googleIP = Socket::GetHostIP("www.google.com");
+	auto ipAddress = winsockWrapper.ConvertIPtoUINT(googleIP.c_str());
+	auto ipString = winsockWrapper.ConvertUINTtoIP(ipAddress);
+	winsockWrapper.WinsockShutdown();
 }
 
 int main(int argc, char* args[])

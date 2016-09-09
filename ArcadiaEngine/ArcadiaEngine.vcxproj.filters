@@ -34,6 +34,9 @@
     <Filter Include="Header Files\OpenAL\Background">
       <UniqueIdentifier>{1d08bd32-8e86-4b19-a4f5-57ab2fa7909d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\WinsockWrapper">
+      <UniqueIdentifier>{6dc34e35-388d-4d97-8f9c-26c84251279f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineTest.cpp">
@@ -418,6 +421,15 @@
     </ClInclude>
     <ClInclude Include="GUILabel.h">
       <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
+    <ClInclude Include="WinsockWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketBuffer.h">
+      <Filter>Header Files\WinsockWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>Header Files\WinsockWrapper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

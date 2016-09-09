@@ -1,5 +1,4 @@
-#ifndef _XML_WRAPPER_H_
-#define _XML_WRAPPER_H_
+#pragma once
 
 #include "RapidXML/rapidxml_utils.hpp"
 #include "SimpleMD5.h"
@@ -54,5 +53,3 @@ private:
 
 //  Instance to be utilized by anyone including this header
 XMLWrapper& xmlWrapper = XMLWrapper::GetInstance();
-
-#endif
