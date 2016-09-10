@@ -36,6 +36,7 @@
 #include "GUIButton.h"
 #include "GUICheckbox.h"
 #include "GUIEditBox.h"
+#include "GUIListBox.h"
 #include "InputManager.h"
 #include "SoundWrapper.h"
 #include "FontManager.h"
@@ -52,8 +53,8 @@ GLuint g_TextTextureID = 0;
 int testVarFlag = 0;
 
 //  Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
 
 bool InitializeSDL()
 {
@@ -95,7 +96,7 @@ bool InitializeSDL()
 bool InitializeOpenGL()
 {
 	auto success = true;
-	GLenum error = GL_NO_ERROR;
+	GLenum error;
 
 	//  Initialize the Projection Matrix
 	glMatrixMode(GL_PROJECTION);
@@ -105,7 +106,7 @@ bool InitializeOpenGL()
 	error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
-		printf("Error initializing OpenGL! %s\n", gluErrorString(error));
+		printf("Error initializing OpenGL! %p\n", gluErrorString(error));
 		success = false;
 	}
 
@@ -117,7 +118,7 @@ bool InitializeOpenGL()
 	error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
-		printf("Error initializing OpenGL! %s\n", gluErrorString(error));
+		printf("Error initializing OpenGL! %p\n", gluErrorString(error));
 		success = false;
 	}
 
@@ -128,7 +129,7 @@ bool InitializeOpenGL()
 	error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
-		printf("Error initializing OpenGL! %s\n", gluErrorString(error));
+		printf("Error initializing OpenGL! %p\n", gluErrorString(error));
 		success = false;
 	}
 
@@ -151,9 +152,6 @@ unsigned int power_two_floor(unsigned int val)
 
 bool Initialize()
 {
-	//  Initialization flag
-	auto success = true;
-
 	//  Initialize SDL
 	if (!InitializeSDL())
 	{
@@ -347,13 +345,36 @@ void CreateTestData()
 	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
 
-	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 250, 200, 256, 256, 0, 0, 256, 25);
+	auto listbox1 = GUIListBox::CreateTemplatedListBox("Standard", 320, 60, 240, 76, 220, 6, 16, 16, 16, 16, 16, 22, 2);
+	guiManager.GetBaseNode()->AddChild(listbox1);
+
+	auto label1 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label1->SetFont(fontManager.GetFont("Arial"));
+	label1->SetText("Test string 1");
+	listbox1->AddItem(label1);
+
+	auto label2 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label2->SetFont(fontManager.GetFont("Arial"));
+	label2->SetText("Test string 2");
+	listbox1->AddItem(label2);
+
+	auto label3 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label3->SetFont(fontManager.GetFont("Arial"));
+	label3->SetText("Test string 3");
+	listbox1->AddItem(label3);
+
+	auto label4 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label4->SetFont(fontManager.GetFont("Arial"));
+	label4->SetText("Test string 4");
+	listbox1->AddItem(label4);
+
+	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
 
-	auto label = GUILabel::CreateLabel("", 0, 0, 200, 30);
-	label->SetFont(fontManager.GetFont("Arial"));
-	label->SetText("Move This UI Around");
-	moveable->AddChild(label);
+	auto label5 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	label5->SetFont(fontManager.GetFont("Arial"));
+	label5->SetText("Move This UI Around");
+	moveable->AddChild(label5);
 
 	auto checkbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
 	checkbox1->SetCheckCallback([=](GUIObjectNode* node)
@@ -369,7 +390,7 @@ void CreateTestData()
 	});
 	moveable->AddChild(checkbox2);
 
-	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 100, 40, 100, 50);
+	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 120, 40, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
 	g_TestButton1->SetText("Sound 1");
 	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)
@@ -378,7 +399,7 @@ void CreateTestData()
 	});
 	moveable->AddChild(g_TestButton1);
 
-	auto button2 = GUIButton::CreateTemplatedButton("Standard", 100, 100, 100, 50);
+	auto button2 = GUIButton::CreateTemplatedButton("Standard", 120, 100, 100, 50);
 	button2->SetFont(fontManager.GetFont("Arial-12-White"));
 	button2->SetText("Sound 2");
 	button2->SetLeftClickCallback([=](GUIObjectNode* node)
@@ -387,7 +408,7 @@ void CreateTestData()
 	});
 	moveable->AddChild(button2);
 
-	auto editbox1 = GUIEditBox::CreateTemplatedEditBox("Standard", 40, 160, 200, 30);
+	auto editbox1 = GUIEditBox::CreateTemplatedEditBox("Standard", 20, 160, 200, 30);
 	editbox1->SetFont(fontManager.GetFont("Arial"));
 	editbox1->SetText("EDIT THIS TEXT");
 	moveable->AddChild(editbox1);

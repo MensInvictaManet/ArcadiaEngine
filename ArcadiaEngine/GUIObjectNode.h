@@ -73,21 +73,24 @@ inline void GUIObjectNode::Input(int xOffset, int yOffset)
 
 inline void GUIObjectNode::Render(int xOffset, int yOffset)
 {
+	auto x = m_X + xOffset;
+	auto y = m_Y + yOffset;
+
 	//  Render the object if we're able
 	if (!m_SetToDestroy && m_Visible && m_TextureID != 0 && m_Width > 0 && m_Height > 0)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xOffset + m_X, yOffset + m_Y);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xOffset + m_X + m_Width, yOffset + m_Y);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xOffset + m_X + m_Width, yOffset + m_Y + m_Height);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xOffset + m_X, yOffset + m_Y + m_Height);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
 		glEnd();
 	}
 
 	//  Pass the render call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(xOffset + m_X, yOffset + m_Y);
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(x, y);
 }
 
 inline void GUIObjectNode::SetToDestroy()

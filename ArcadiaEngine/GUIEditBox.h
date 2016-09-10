@@ -11,7 +11,7 @@ class GUIEditBox : public GUIObjectNode
 {
 public:
 	static GUIEditBox* CreateEditBox(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0);
-	static GUIEditBox* CreateTemplatedEditBox(const char* checkboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUIEditBox* CreateTemplatedEditBox(const char* editboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUIEditBox(bool templated);
 	virtual ~GUIEditBox();
@@ -42,45 +42,45 @@ private:
 
 inline GUIEditBox* GUIEditBox::CreateEditBox(const char* imageFile, int x, int y, int w, int h)
 {
-	auto newButton = new GUIEditBox(false);
-	newButton->SetTextureID(textureManager.LoadTextureGetID(imageFile));
-	newButton->SetX(x);
-	newButton->SetY(y);
-	newButton->SetWidth(w);
-	newButton->SetHeight(h);
-	return newButton;
+	auto newEditbox = new GUIEditBox(false);
+	newEditbox->SetTextureID(textureManager.LoadTextureGetID(imageFile));
+	newEditbox->SetX(x);
+	newEditbox->SetY(y);
+	newEditbox->SetWidth(w);
+	newEditbox->SetHeight(h);
+	return newEditbox;
 }
 
-inline GUIEditBox* GUIEditBox::CreateTemplatedEditBox(const char* buttonTemplate, int x, int y, int w, int h)
+inline GUIEditBox* GUIEditBox::CreateTemplatedEditBox(const char* editboxTemplate, int x, int y, int w, int h)
 {
-	auto newButton = new GUIEditBox(true);
+	auto newEditbox = new GUIEditBox(true);
 
-	auto templateFolder("./UITemplates/EditBox/" + std::string(buttonTemplate) + "/");
-	newButton->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
-	newButton->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
-	newButton->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());
-	newButton->TextureBottomRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomRightCorner.png").c_str());
-	newButton->TextureLeftSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_LeftSide.png").c_str());
-	newButton->TextureRightSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_RightSide.png").c_str());
-	newButton->TextureTopSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopSide.png").c_str());
-	newButton->TextureBottomSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomSide.png").c_str());
-	newButton->TextureMiddle[0] = textureManager.LoadTexture(std::string(templateFolder + "U_Middle.png").c_str());
-	newButton->TextureTopLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopLeftCorner.png").c_str());
-	newButton->TextureTopRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopRightCorner.png").c_str());
-	newButton->TextureBottomLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomLeftCorner.png").c_str());
-	newButton->TextureBottomRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomRightCorner.png").c_str());
-	newButton->TextureLeftSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_LeftSide.png").c_str());
-	newButton->TextureRightSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_RightSide.png").c_str());
-	newButton->TextureTopSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopSide.png").c_str());
-	newButton->TextureBottomSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomSide.png").c_str());
-	newButton->TextureMiddle[1] = textureManager.LoadTexture(std::string(templateFolder + "C_Middle.png").c_str());
-	newButton->SetTextureID(0);
+	auto templateFolder("./UITemplates/EditBox/" + std::string(editboxTemplate) + "/");
+	newEditbox->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
+	newEditbox->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
+	newEditbox->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());
+	newEditbox->TextureBottomRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomRightCorner.png").c_str());
+	newEditbox->TextureLeftSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_LeftSide.png").c_str());
+	newEditbox->TextureRightSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_RightSide.png").c_str());
+	newEditbox->TextureTopSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopSide.png").c_str());
+	newEditbox->TextureBottomSide[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomSide.png").c_str());
+	newEditbox->TextureMiddle[0] = textureManager.LoadTexture(std::string(templateFolder + "U_Middle.png").c_str());
+	newEditbox->TextureTopLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopLeftCorner.png").c_str());
+	newEditbox->TextureTopRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopRightCorner.png").c_str());
+	newEditbox->TextureBottomLeftCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomLeftCorner.png").c_str());
+	newEditbox->TextureBottomRightCorner[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomRightCorner.png").c_str());
+	newEditbox->TextureLeftSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_LeftSide.png").c_str());
+	newEditbox->TextureRightSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_RightSide.png").c_str());
+	newEditbox->TextureTopSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_TopSide.png").c_str());
+	newEditbox->TextureBottomSide[1] = textureManager.LoadTexture(std::string(templateFolder + "C_BottomSide.png").c_str());
+	newEditbox->TextureMiddle[1] = textureManager.LoadTexture(std::string(templateFolder + "C_Middle.png").c_str());
+	newEditbox->SetTextureID(0);
 
-	newButton->SetX(x);
-	newButton->SetY(y);
-	newButton->SetWidth(w);
-	newButton->SetHeight(h);
-	return newButton;
+	newEditbox->SetX(x);
+	newEditbox->SetY(y);
+	newEditbox->SetWidth(w);
+	newEditbox->SetHeight(h);
+	return newEditbox;
 }
 
 inline GUIEditBox::GUIEditBox(bool templated) :
@@ -110,8 +110,6 @@ inline GUIEditBox::~GUIEditBox()
 inline void GUIEditBox::Input(int xOffset, int yOffset)
 {
 	auto leftButtonState = inputManager.GetMouseButtonLeft();
-	auto middleButtonState = inputManager.GetMouseButtonMiddle();
-	auto rightButtonState = inputManager.GetMouseButtonRight();
 	auto x = inputManager.GetMouseX();
 	auto y = inputManager.GetMouseY();
 
