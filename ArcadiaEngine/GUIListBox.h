@@ -2,8 +2,11 @@
 
 #include "GUIObjectNode.h"
 #include "InputManager.h"
+#include "TimeSlice.h"
 
 #include <functional>
+
+#define LIST_BOX_SCROLL_DELAY 0.1f
 
 class GUIListBox : public GUIObjectNode
 {
@@ -20,7 +23,7 @@ public:
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
-	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); }
+	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); UpdateMover(); }
 
 private:
 	GUIListBoxCallback	m_ItemClickCallback;
@@ -29,10 +32,12 @@ private:
 	std::vector<GUIObjectNode*> m_ItemList;
 	int	SelectedIndex;
 	int MovementIndex;
-	unsigned int MoverHeight;
-	unsigned int MoverY;
+	int MoverHeight;
+	int MoverY;
+	int MoverYDelta;
 	bool m_Clicked;
-	unsigned int ClickedY;
+	int ClickedY;
+	float m_LastClickTime;
 
 	bool m_Templated;
 	TextureManager::ManagedTexture* TextureTopLeftCorner;
@@ -53,15 +58,15 @@ private:
 	TextureManager::ManagedTexture* TextureSelector;
 	int DirectionalButtonsX;
 	int ContentY;
-	unsigned int UpButtonW;
-	unsigned int UpButtonH;
-	unsigned int DownButtonW;
-	unsigned int DownButtonH;
-	unsigned int BarColumnW;
-	unsigned int EntryHeight;
-	unsigned int SpaceBetweenEntries;
-	unsigned int ItemDisplayCount;
-	unsigned int Justification;
+	int UpButtonW;
+	int UpButtonH;
+	int DownButtonW;
+	int DownButtonH;
+	int BarColumnW;
+	int EntryHeight;
+	int SpaceBetweenEntries;
+	int ItemDisplayCount;
+	int Justification;
 
 	void UpdateMover(void);
 };
@@ -124,10 +129,12 @@ inline GUIListBox::GUIListBox(bool templated) :
 	m_ItemClickCallback(nullptr),
 	SelectedIndex(0),
 	MovementIndex(0),
-	MoverHeight(10),
-	MoverY(0),
+	MoverHeight(-1),
+	MoverY(-1),
+	MoverYDelta(-1),
 	m_Clicked(false),
-	ClickedY(0),
+	ClickedY(-1),
+	m_LastClickTime(0.0f),
 	m_Templated(templated)
 {
 	TextureTopLeftCorner = nullptr;
@@ -148,15 +155,15 @@ inline GUIListBox::GUIListBox(bool templated) :
 	TextureSelector = nullptr;
 	DirectionalButtonsX = 0;
 	ContentY = 0;
-	UpButtonW = 0;
-	UpButtonH = 0;
-	DownButtonW = 0;
-	DownButtonH = 0;
-	BarColumnW = 0;
-	EntryHeight = 0;
-	SpaceBetweenEntries = 0;
-	ItemDisplayCount = 0;
-	Justification = JUSTIFY_LEFT;
+	UpButtonW = -1;
+	UpButtonH = -1;
+	DownButtonW = -1;
+	DownButtonH = -1;
+	BarColumnW = -1;
+	EntryHeight = -1;
+	SpaceBetweenEntries = -1;
+	ItemDisplayCount = -1;
+	Justification = JUSTIFICATION_COUNT;
 }
 
 
@@ -185,71 +192,59 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 			return;
 		}
 
-		while (true)
+		if (std::abs(my - ClickedY) > MoverYDelta)
 		{
-			if (std::abs(my - int(ClickedY)) > int(EntryHeight))
-			{
-				auto indexChange = int(my - int(ClickedY) / EntryHeight);
-				ClickedY += indexChange * EntryHeight;
-				if (indexChange > 0)
-				{
-					if (MovementIndex + indexChange > int(m_ItemList.size()) - int(ItemDisplayCount)) indexChange = int(m_ItemList.size()) - int(ItemDisplayCount) - MovementIndex;
-				}
-				else
-				{
-					if (MovementIndex + indexChange < 0) indexChange = -MovementIndex;
-				}
-				MovementIndex += indexChange;
-				UpdateMover();
-			}
-			else break;
+			//  The farthest we can shift is to the top or bottom of the list
+			auto indexChange = std::min(std::max((my - ClickedY) / MoverYDelta, -MovementIndex), (int(m_ItemList.size()) - ItemDisplayCount - MovementIndex));
+			ClickedY += indexChange * MoverYDelta;
+			MovementIndex += indexChange;
+			UpdateMover();
 		}
 	}
 
 	if (leftButtonState == MOUSE_BUTTON_UNPRESSED) return;
 	if (mx < x || mx > x + m_Width || my < y || my > y + m_Height) return;
 
-	if (x + DirectionalButtonsX > mx)
+	//  If we're left of the directional buttons, assume we're clicking an entry in the list and find out which one
+	if (mx < x + DirectionalButtonsX)
 	{
 		int newSelectedIndex = (int(my) - y - TextureTopSide->getHeight()) / (EntryHeight + SpaceBetweenEntries) + MovementIndex;
-		if (newSelectedIndex >= MovementIndex)
-			if (newSelectedIndex < int(m_ItemList.size()))
-				if (newSelectedIndex < MovementIndex + int(ItemDisplayCount))
-				{
-					if (SelectedIndex != newSelectedIndex && m_ItemClickCallback != nullptr) m_ItemClickCallback(this);
-					SelectedIndex = newSelectedIndex;
-					return;
-				}
+		if (newSelectedIndex >= MovementIndex && newSelectedIndex < int(m_ItemList.size()) && newSelectedIndex < MovementIndex + int(ItemDisplayCount))
+		{
+			if (SelectedIndex != newSelectedIndex && m_ItemClickCallback != nullptr) m_ItemClickCallback(this);
+			SelectedIndex = newSelectedIndex;
+			return;
+		}
 	}
 
-	if (x + DirectionalButtonsX < int(mx))
-		if (x + DirectionalButtonsX > int(mx - UpButtonW))
-			if (y + ContentY < int(my))
-				if (y + ContentY > int(my - UpButtonH))
-				{
-					if (MovementIndex > 0) MovementIndex -= 1;
-					UpdateMover();
-					return;
-				}
+	//  If we're clicking to the right of where the directional buttons start horizontally...
+	if ((gameSeconds - m_LastClickTime > LIST_BOX_SCROLL_DELAY) && mx > x + DirectionalButtonsX)
+	{
+		//  If we're clicking the up button, move the movement index up one if possible
+		if ((mx < x + DirectionalButtonsX + UpButtonW) && (my > y + ContentY) && (my < y + ContentY + UpButtonH))
+		{
+			if (MovementIndex > 0) MovementIndex -= 1;
+			UpdateMover();
+			m_LastClickTime = gameSeconds;
+			return;
+		}
 
-	if (x < int(mx - DirectionalButtonsX))
-		if (x > int(mx - DirectionalButtonsX - DownButtonW))
-			if (y < int(my - m_Height + ContentY + DownButtonH))
-				if (y > int(my - m_Height + ContentY))
-				{
-					if (MovementIndex < int(m_ItemList.size() - ItemDisplayCount)) MovementIndex += 1;
-					UpdateMover();
-					return;
-				}
+		//  If we're clicking the down button, move the movement index down one if possible
+		if ((mx < x + DirectionalButtonsX + DownButtonW) && (my > y + m_Height - ContentY - DownButtonH) && (my < y + m_Height - ContentY))
+		{
+			if (MovementIndex < int(m_ItemList.size() - ItemDisplayCount)) MovementIndex += 1;
+			UpdateMover();
+			m_LastClickTime = gameSeconds;
+			return;
+		}
+	}
 
-	if (x < int(mx - DirectionalButtonsX))
-		if (x > int(mx - DirectionalButtonsX - BarColumnW))
-			if (y < int(my - ContentY - UpButtonH - MoverY))
-				if (y > int(my - ContentY - UpButtonH - MoverY - MoverHeight))
-				{
-					m_Clicked = true;
-					ClickedY = int(my);
-				}
+	//  If we're clicking inside of the mover, keep track of our click so we can drag it
+	if ((leftButtonState == MOUSE_BUTTON_PRESSED) && (mx > x + DirectionalButtonsX) && (mx < x + DirectionalButtonsX + BarColumnW) && (my > y + ContentY + UpButtonH + MoverY) && (my < y + ContentY + UpButtonH + MoverY + MoverHeight))
+	{
+		m_Clicked = true;
+		ClickedY = my;
+	}
 
 	//  Take base node input
 	GUIObjectNode::Input(xOffset, yOffset);
@@ -289,7 +284,7 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 		}
 
 		//  Render the scroll buttons if needed
-		auto renderScrollButtons = (m_ItemList.size() > ItemDisplayCount);
+		auto renderScrollButtons = (int(m_ItemList.size()) > ItemDisplayCount);
 		if (renderScrollButtons)
 		{
 			TextureUpButton->RenderTexture(x + DirectionalButtonsX, y + ContentY, UpButtonW, UpButtonH);
@@ -301,12 +296,12 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 		}
 
 		//  Render the items contained within
-		for (unsigned int i = MovementIndex; i < m_ItemList.size() && i < MovementIndex + ItemDisplayCount; ++i)
+		for (int i = MovementIndex; i < int(m_ItemList.size()) && i < MovementIndex + ItemDisplayCount; ++i)
 		{
 			m_ItemList[i]->Render(x, y + ((EntryHeight + SpaceBetweenEntries) * (i - MovementIndex)));
 		}
 
-		for (unsigned int i = 0; i < int(m_ItemList.size()) && i < ItemDisplayCount ; ++i)
+		for (int i = 0; i < int(m_ItemList.size()) && i < ItemDisplayCount ; ++i)
 		{
 			//m_ItemList[i]->Render(x, y + i * (EntryHeight + SpaceBetweenEntries));
 		}
@@ -328,6 +323,7 @@ void GUIListBox::UpdateMover()
 	auto mover_size_percent = float(ItemDisplayCount) / float(m_ItemList.size());
 	MoverHeight = (unsigned int)((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_size_percent);
 
-	auto mover_position_percent = float(MovementIndex) / float(m_ItemList.size());
-	MoverY = (unsigned int)((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_position_percent);
+	auto mover_position_percent_delta = float(1) / float(m_ItemList.size());
+	MoverYDelta = (unsigned int)((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_position_percent_delta);
+	MoverY = (unsigned int)(float(MoverYDelta) * float(MovementIndex));
 }

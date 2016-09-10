@@ -47,12 +47,10 @@ inline GUIMoveable::GUIMoveable(int grab_x, int grab_y, int grab_w, int grab_h) 
 	
 }
 
-
 inline GUIMoveable::~GUIMoveable()
 {
 	
 }
-
 
 inline void GUIMoveable::Input(int xOffset, int yOffset)
 {
