@@ -121,6 +121,7 @@ inline GUIListBox* GUIListBox::CreateTemplatedListBox(const char* listboxTemplat
 }
 
 inline GUIListBox::GUIListBox(bool templated) :
+	m_ItemClickCallback(nullptr),
 	SelectedIndex(0),
 	MovementIndex(0),
 	MoverHeight(10),
@@ -215,7 +216,7 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 			if (newSelectedIndex < int(m_ItemList.size()))
 				if (newSelectedIndex < MovementIndex + int(ItemDisplayCount))
 				{
-					if (SelectedIndex != newSelectedIndex) m_ItemClickCallback(this);
+					if (SelectedIndex != newSelectedIndex && m_ItemClickCallback != nullptr) m_ItemClickCallback(this);
 					SelectedIndex = newSelectedIndex;
 					return;
 				}
@@ -300,16 +301,21 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 		}
 
 		//  Render the items contained within
+		for (unsigned int i = MovementIndex; i < m_ItemList.size() && i < MovementIndex + ItemDisplayCount; ++i)
+		{
+			m_ItemList[i]->Render(x, y + ((EntryHeight + SpaceBetweenEntries) * (i - MovementIndex)));
+		}
+
 		for (unsigned int i = 0; i < int(m_ItemList.size()) && i < ItemDisplayCount ; ++i)
 		{
-			m_ItemList[i]->Render(x, y + i * (EntryHeight + SpaceBetweenEntries));
+			//m_ItemList[i]->Render(x, y + i * (EntryHeight + SpaceBetweenEntries));
 		}
 
 		//  Render the selector if an item is selected
 		if (SelectedIndex != -1 && (SelectedIndex >= MovementIndex) && (SelectedIndex < MovementIndex + int(ItemDisplayCount)))
 		{
 			auto width = (renderScrollButtons ? (DirectionalButtonsX - TextureLeftSide->getWidth()) : m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth()) - 2;
-			TextureSelector->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight() + EntryHeight * (SelectedIndex - MovementIndex), width, EntryHeight);
+			TextureSelector->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight() + (EntryHeight + SpaceBetweenEntries) * (SelectedIndex - MovementIndex), width, EntryHeight);
 		}
 	}
 
