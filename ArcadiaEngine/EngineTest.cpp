@@ -147,33 +147,33 @@ void CreateTestData()
 	GUIObjectNode* listEntryNode = new GUIObjectNode;
 	listbox1->AddItem(listEntryNode);
 
-	auto label1 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label1 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label1->SetFont(fontManager.GetFont("Arial"));
 	label1->SetText("Test string 1 A");
 	listEntryNode->AddChild(label1);
 
-	auto label2 = GUILabel::CreateLabel("", 200, 0, 200, 30);
+	auto label2 = GUILabel::CreateLabel("", 200, 6, 200, 30);
 	label2->SetFont(fontManager.GetFont("Arial"));
 	label2->SetText("Test string 1 B");
 	listEntryNode->AddChild(label2);
 
 
-	auto label3 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label3 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label3->SetFont(fontManager.GetFont("Arial"));
 	label3->SetText("Test string 2");
 	listbox1->AddItem(label3);
 
-	auto label4 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label4 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label4->SetFont(fontManager.GetFont("Arial"));
 	label4->SetText("Test string 3");
 	listbox1->AddItem(label4);
 
-	auto label5 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label5 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label5->SetFont(fontManager.GetFont("Arial"));
 	label5->SetText("Test string 4");
 	listbox1->AddItem(label5);
 
-	auto label6 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label6 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label6->SetFont(fontManager.GetFont("Arial"));
 	label6->SetText("Test string 5");
 	listbox1->AddItem(label6);
@@ -181,7 +181,7 @@ void CreateTestData()
 	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
 
-	auto label7 = GUILabel::CreateLabel("", 0, 0, 200, 30);
+	auto label7 = GUILabel::CreateLabel("", 10, 6, 200, 30);
 	label7->SetFont(fontManager.GetFont("Arial"));
 	label7->SetText("Move This UI Around");
 	moveable->AddChild(label7);
