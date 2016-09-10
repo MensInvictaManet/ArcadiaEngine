@@ -120,6 +120,7 @@
     <ClCompile Include="OpenAL\SimpleAudioLib\CoreSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArcadiaEngine.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GUIButton.h" />
     <ClInclude Include="GUICheckbox.h" />

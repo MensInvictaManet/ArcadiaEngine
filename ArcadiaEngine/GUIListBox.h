@@ -127,7 +127,7 @@ inline GUIListBox* GUIListBox::CreateTemplatedListBox(const char* listboxTemplat
 
 inline GUIListBox::GUIListBox(bool templated) :
 	m_ItemClickCallback(nullptr),
-	SelectedIndex(0),
+	SelectedIndex(-1),
 	MovementIndex(0),
 	MoverHeight(-1),
 	MoverY(-1),
