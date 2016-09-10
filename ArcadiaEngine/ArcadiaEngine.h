@@ -6,7 +6,7 @@
 #define	USING_GLU			true
 #define USING_SDL_MIXER		false
 
-#define AUDIO_ENABLED		true
+#define AUDIO_ENABLED		false
 
 #if USING_SDL
 #include "SDL2/SDL.h"
@@ -30,8 +30,8 @@
 #endif
 
 #if AUDIO_ENABLED
-	#if USING_SDL_MIXER
-	#endif
+#if USING_SDL_MIXER
+#endif
 #endif
 
 #include "WindowManager.h"
@@ -49,12 +49,12 @@
 #include "WinsockWrapper.h"
 
 #if AUDIO_ENABLED
-	#include "SoundWrapper.h"
+#include "SoundWrapper.h"
 #endif
 
 //  Screen dimension constants (change per project)
-#define	SCREEN_WIDTH	1024
-#define	SCREEN_HEIGHT	768
+#define	SCREEN_WIDTH	800
+#define	SCREEN_HEIGHT	600
 
 bool InitializeSDL()
 {
@@ -154,6 +154,9 @@ bool InitializeEngine()
 
 	SDL_SetRenderDrawColor(windowManager.GetRenderer(windowIndex), 0xFF, 0xFF, 0xFF, 0xFF);
 
+	//  Initialize Winsock
+	winsockWrapper.WinsockInitialize();
+
 	//  Initialize OpenGL
 	if (!InitializeOpenGL())
 	{
@@ -175,12 +178,14 @@ bool InitializeEngine()
 
 void ShutdownEngine()
 {
+
 	//  Quit all SDL sub-systems
 #if USING_SDL_IMAGE
 	IMG_Quit();
 #endif
 
 	//  Shutdown the manager classes that need it
+	winsockWrapper.WinsockShutdown();
 	textureManager.Shutdown();
 	windowManager.Shutdown();
 

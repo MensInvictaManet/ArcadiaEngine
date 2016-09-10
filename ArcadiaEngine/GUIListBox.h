@@ -11,6 +11,7 @@
 class GUIListBox : public GUIObjectNode
 {
 public:
+	enum Justifications { JUSTIFY_LEFT = 0, JUSTIFY_RIGHT, JUSTIFY_CENTER, JUSTIFICATION_COUNT };
 	typedef std::function<void(GUIObjectNode*)> GUIListBoxCallback;
 
 	static GUIListBox* CreateListBox(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0);
@@ -24,11 +25,11 @@ public:
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
 	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); UpdateMover(); }
+	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); }
 
 private:
 	GUIListBoxCallback	m_ItemClickCallback;
 
-	enum Justifications { JUSTIFY_LEFT = 0, JUSTIFY_RIGHT, JUSTIFY_CENTER, JUSTIFICATION_COUNT };
 	std::vector<GUIObjectNode*> m_ItemList;
 	int	SelectedIndex;
 	int MovementIndex;

@@ -8,7 +8,7 @@ class GUILabel : public GUIObjectNode
 public:
 	enum Justifications { JUSTIFY_LEFT = 0, JUSTIFY_RIGHT, JUSTIFY_CENTER, JUSTIFICATION_COUNT };
 
-	static GUILabel* CreateLabel(const char* text, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUILabel* CreateLabel(const Font* font, const char* text, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUILabel(const char* text = "");
 	virtual ~GUILabel();
@@ -26,9 +26,10 @@ private:
 	int m_Justification;
 };
 
-inline GUILabel* GUILabel::CreateLabel(const char* text, int x, int y, int w, int h)
+inline GUILabel* GUILabel::CreateLabel(const Font* font, const char* text, int x, int y, int w, int h)
 {
 	auto newLabel = new GUILabel(text);
+	newLabel->SetFont(font);
 	newLabel->SetX(x);
 	newLabel->SetY(y);
 	newLabel->SetWidth(w);
@@ -59,7 +60,7 @@ inline void GUILabel::Render(int xOffset, int yOffset)
 	if (!m_SetToDestroy && m_Visible && (m_Font != nullptr && !m_Text.empty()) && m_Width > 0 && m_Height > 0)
 	{
 		//  Render the font the same way regardless of templating
-		if (m_Justification == JUSTIFY_CENTER)		m_Font->RenderText(m_Text.c_str(), x + m_Font->GetTextWidth(m_Text.c_str()) / 2, y);
+		if (m_Justification == JUSTIFY_CENTER)		m_Font->RenderText(m_Text.c_str(), x - m_Font->GetTextWidth(m_Text.c_str()) / 2, y);
 		else if (m_Justification == JUSTIFY_LEFT)	m_Font->RenderText(m_Text.c_str(), x, y);
 		else if (m_Justification == JUSTIFY_RIGHT)	m_Font->RenderText(m_Text.c_str(), x + m_Width - m_Font->GetTextWidth(m_Text.c_str()), y);
 	}
