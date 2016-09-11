@@ -6,7 +6,7 @@
 #define	USING_GLU			true
 #define USING_SDL_MIXER		false
 
-#define AUDIO_ENABLED		false
+#define AUDIO_ENABLED		true
 #define CONSOLE_DISABLED	true
 
 #if USING_SDL
@@ -58,8 +58,8 @@
 #endif
 
 //  Screen dimension constants (change per project)
-#define	SCREEN_WIDTH	800
-#define	SCREEN_HEIGHT	600
+#define	SCREEN_WIDTH	1024
+#define	SCREEN_HEIGHT	768
 
 bool InitializeSDL()
 {
