@@ -216,6 +216,12 @@ void CreateTestData()
 	editbox1->SetText("EDIT THIS TEXT");
 	moveable->AddChild(editbox1);
 
+	auto dropDown1 = GUIDropDown::CreateTemplatedDropDown("Standard", 20, 400, 200, 32, 176, 8, 16, 16);
+	dropDown1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Dropdown 1", 10, 8, 80, 22));
+	dropDown1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Dropdown 2", 10, 8, 80, 22));
+	dropDown1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Dropdown 3", 10, 8, 80, 22));
+	guiManager.GetBaseNode()->AddChild(dropDown1);
+
 	//  Test the Winsock Wrapper
 	winsockWrapper.WinsockInitialize();
 	auto googleIP = Socket::GetHostIP("www.google.com");

@@ -437,5 +437,8 @@
     <ClInclude Include="ArcadiaEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUIDropDown.h">
+      <Filter>Header Files\GUI Object Types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
