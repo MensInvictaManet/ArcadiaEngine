@@ -83,29 +83,29 @@ void PrimaryLoop()
 		//  Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
-			//  User requests quit
-			if (e.type == SDL_QUIT)
+			switch (e.type)
 			{
+			case SDL_QUIT:
 				quit = true;
-			}
-			//  Handle keypress with current mouse position
-			else if (e.type == SDL_TEXTINPUT)
-			{
+				break;
+
+			case SDL_TEXTINPUT:
 				inputManager.AddKeyToString(e.text.text[0]);
-			}
-			else
-			{
-				if (/*e.type == SDL_MOUSEMOTION || */e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+				switch (e.button.button)
 				{
-					switch (e.button.button)
-					{
-					case 1: inputManager.SetMouseButtonLeft((e.type == SDL_MOUSEBUTTONDOWN)); break;
-					case 2: inputManager.SetMouseButtonMiddle((e.type == SDL_MOUSEBUTTONDOWN)); break;
-					case 3: inputManager.SetMouseButtonRight((e.type == SDL_MOUSEBUTTONDOWN)); break;
-					default: break;
-					}
+				case 1: inputManager.SetMouseButtonLeft((e.type == SDL_MOUSEBUTTONDOWN)); break;
+				case 2: inputManager.SetMouseButtonMiddle((e.type == SDL_MOUSEBUTTONDOWN)); break;
+				case 3: inputManager.SetMouseButtonRight((e.type == SDL_MOUSEBUTTONDOWN)); break;
+				default: break;
 				}
+
+			default:
 				windowManager.HandleEvent(e);
+				break;
 			}
 		}
 
@@ -147,42 +147,35 @@ void CreateTestData()
 	GUIObjectNode* listEntryNode = new GUIObjectNode;
 	listbox1->AddItem(listEntryNode);
 
-	auto label1 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label1->SetFont(fontManager.GetFont("Arial"));
+	auto label1 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label1->SetText("Test string 1 A");
 	listEntryNode->AddChild(label1);
 
-	auto label2 = GUILabel::CreateLabel("", 200, 6, 200, 30);
-	label2->SetFont(fontManager.GetFont("Arial"));
+	auto label2 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 200, 6, 200, 30);
 	label2->SetText("Test string 1 B");
 	listEntryNode->AddChild(label2);
 
 
-	auto label3 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label3->SetFont(fontManager.GetFont("Arial"));
+	auto label3 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label3->SetText("Test string 2");
 	listbox1->AddItem(label3);
 
-	auto label4 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label4->SetFont(fontManager.GetFont("Arial"));
+	auto label4 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label4->SetText("Test string 3");
 	listbox1->AddItem(label4);
 
-	auto label5 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label5->SetFont(fontManager.GetFont("Arial"));
+	auto label5 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label5->SetText("Test string 4");
 	listbox1->AddItem(label5);
 
-	auto label6 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label6->SetFont(fontManager.GetFont("Arial"));
+	auto label6 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label6->SetText("Test string 5");
 	listbox1->AddItem(label6);
 
 	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
 
-	auto label7 = GUILabel::CreateLabel("", 10, 6, 200, 30);
-	label7->SetFont(fontManager.GetFont("Arial"));
+	auto label7 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label7->SetText("Move This UI Around");
 	moveable->AddChild(label7);
 

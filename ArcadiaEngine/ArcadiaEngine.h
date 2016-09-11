@@ -6,7 +6,7 @@
 #define	USING_GLU			true
 #define USING_SDL_MIXER		false
 
-#define AUDIO_ENABLED		false
+#define AUDIO_ENABLED		true
 
 #if USING_SDL
 #include "SDL2/SDL.h"
