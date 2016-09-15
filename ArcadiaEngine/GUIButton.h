@@ -15,7 +15,7 @@ public:
 	static GUIButton* CreateTemplatedButton(const char* buttonTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUIButton(bool templated);
-	virtual ~GUIButton();
+	~GUIButton();
 
 	void SetLeftClickCallback(const GUIButtonCallback& callback) { m_LeftClickCallback = callback; }
 	void SetMiddleClickCallback(const GUIButtonCallback& callback) { m_MiddleClickCallback = callback; }
@@ -48,6 +48,7 @@ private:
 
 inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Button", sizeof(GUIButton));
 	auto newButton = new GUIButton(false);
 	newButton->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newButton->SetX(x);
@@ -59,6 +60,7 @@ inline GUIButton* GUIButton::CreateButton(const char* imageFile, int x, int y, i
 
 inline GUIButton* GUIButton::CreateTemplatedButton(const char* buttonTemplate, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Button", sizeof(GUIButton));
 	auto newButton = new GUIButton(true);
 
 	auto templateFolder("./UITemplates/Button/" + std::string(buttonTemplate) + "/");
@@ -112,7 +114,7 @@ inline GUIButton::GUIButton(bool templated) :
 
 inline GUIButton::~GUIButton()
 {
-	
+	MANAGE_MEMORY_DELETE("MenuUI_Button", sizeof(GUIButton));
 }
 
 

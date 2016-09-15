@@ -192,6 +192,7 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 
 	//  Create a ManagedTexture with our new data, and stick it in the TextureList
 	auto index = FirstFreeIndex();
+	MANAGE_MEMORY_NEW("TextureManager", sizeof(ManagedTexture));
 	auto managedTexture = new ManagedTexture(sdlTexture, textureID, width, height, index);
 	if (managedTexture == nullptr)
 	{
@@ -221,9 +222,16 @@ inline TextureManager::ManagedTexture* TextureManager::GetManagedTexture(const i
 	return (*iter).second;
 }
 
-void TextureManager::Shutdown()
+inline void TextureManager::Shutdown()
 {
-	
+	while (!m_TextureList.empty())
+	{
+		m_TextureList.begin()->second->FreeTexture();
+		MANAGE_MEMORY_DELETE("TextureManager", sizeof(ManagedTexture));
+		delete m_TextureList.begin()->second;
+		m_TextureList.erase(m_TextureList.begin());
+	}
+	m_TextureListByFile.clear();
 }
 
 inline TextureManager::TextureManager()

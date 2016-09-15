@@ -14,7 +14,7 @@ public:
 	static GUICheckbox* CreateTemplatedCheckbox(const char* checkboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUICheckbox(bool templated);
-	virtual ~GUICheckbox();
+	~GUICheckbox();
 
 	bool GetChecked() const { return m_Checked; }
 
@@ -49,6 +49,7 @@ private:
 
 inline GUICheckbox* GUICheckbox::CreateCheckbox(const char* imageFile, const char* checkFile, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Checkbox", sizeof(GUICheckbox));
 	auto newCheckbox = new GUICheckbox(false);
 
 	newCheckbox->SetTextureID(textureManager.LoadTextureGetID(imageFile));
@@ -63,6 +64,7 @@ inline GUICheckbox* GUICheckbox::CreateCheckbox(const char* imageFile, const cha
 
 inline GUICheckbox* GUICheckbox::CreateTemplatedCheckbox(const char* checkboxTemplate, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Checkbox", sizeof(GUICheckbox));
 	auto newCheckbox = new GUICheckbox(true);
 
 	auto templateFolder("./UITemplates/Checkbox/" + std::string(checkboxTemplate) + "/");
@@ -113,7 +115,7 @@ inline GUICheckbox::GUICheckbox(bool templated) :
 
 inline GUICheckbox::~GUICheckbox()
 {
-
+	MANAGE_MEMORY_DELETE("MenuUI_Checkbox", sizeof(GUICheckbox));
 }
 
 

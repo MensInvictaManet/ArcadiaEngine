@@ -7,6 +7,8 @@
 #include "SDL2/SDL_opengl.h"
 #pragma comment(lib, "opengl32.lib")
 
+#include "MemoryManager.h"
+
 #include <unordered_map>
 #include <sstream>
 
@@ -68,7 +70,7 @@ private:
 
 	int FirstFreeIndex();
 	int FirstUsedIndex();
-	void DestroyWindow(std::unordered_map<int, WindowLink*>::iterator& iter, bool erase = true);
+	static void DestroyWindow(WindowLink* windowLink);
 
 	std::unordered_map<int, WindowLink*> m_WindowList;
 	int m_CurrentWindow;
@@ -80,7 +82,7 @@ inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 	if (e.type == SDL_WINDOWEVENT && e.window.windowID == m_WindowID)
 	{
 		//Caption update flag
-		bool updateCaption = false;
+		auto updateCaption = false;
 
 		switch (e.window.event)
 		{
@@ -197,6 +199,7 @@ inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w
 	}
 
 	//  Create the WindowLink and assign the new data
+	MANAGE_MEMORY_NEW("WindowManager", sizeof(WindowLink));
 	m_WindowList[index] = new WindowLink(newWindow, newContext, newRenderer, SDL_GetWindowID(newWindow), shown, w, h);
 	if ((m_WindowList.find(index) == m_WindowList.end()) || m_WindowList[index] == nullptr)
 	{
@@ -227,7 +230,8 @@ inline bool WindowManager::DestroyWindow(const int index)
 	auto iter = m_WindowList.find(index);
 	if (iter == m_WindowList.end()) return false;
 
-	DestroyWindow(iter);
+	DestroyWindow((*iter).second);
+	m_WindowList.erase(iter);
 	return true;
 }
 
@@ -255,8 +259,13 @@ inline void WindowManager::Render()
 
 inline void WindowManager::Shutdown()
 {
-	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter) DestroyWindow(iter, false);
-	m_WindowList.clear();
+	while (!m_WindowList.empty())
+	{
+		DestroyWindow(m_WindowList.begin()->second);
+		MANAGE_MEMORY_DELETE("WindowManager", sizeof(WindowLink));
+		delete m_WindowList.begin()->second;
+		m_WindowList.erase(m_WindowList.begin());
+	}
 }
 
 inline SDL_Window* WindowManager::GetWindow(int index)
@@ -387,15 +396,13 @@ inline int WindowManager::FirstUsedIndex()
 	}
 }
 
-inline void WindowManager::DestroyWindow(std::unordered_map<int, WindowLink*>::iterator& iter, bool erase)
+inline void WindowManager::DestroyWindow(WindowLink* windowLink)
 {
-	SDL_GL_DeleteContext((*iter).second->m_Context);
+	SDL_GL_DeleteContext(windowLink->m_Context);
 
-	SDL_DestroyWindow((*iter).second->m_Window);
+	SDL_DestroyWindow(windowLink->m_Window);
 
-	(*iter).second->m_Renderer = nullptr;
-
-	if (erase) m_WindowList.erase(iter);
+	windowLink->m_Renderer = nullptr;
 }
 
 //  Instance to be utilized by anyone including this header

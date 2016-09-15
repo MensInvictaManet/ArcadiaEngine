@@ -6,6 +6,7 @@ int g_CoinSound[4];
 int g_BackgroundMusic;
 SDL_Texture* g_TextTexture = nullptr;
 GLuint g_TextTextureID = 0;
+GUIListBox* memoryDataListBox = nullptr;
 
 int testVarFlag = 0;
 
@@ -20,6 +21,33 @@ void HandleInput()
 	if (inputManager.GetKeyDown(SDL_SCANCODE_DOWN))
 	{
 		testVarFlag |= 2;
+	}
+}
+
+void UpdateMemoryListBox()
+{
+	if (memoryDataListBox == nullptr) return;
+	if (MEMORY_MANAGER_ACTIVE == false) return;
+
+	static unsigned int memoryPoolCount = 0;
+	auto currentMemoryPoolCount = memoryManager.GetMemoryPoolCount();
+
+	//  Make sure we add to the amount of Labels until we have enough to show all of the current memory pools
+	while (memoryPoolCount < currentMemoryPoolCount)
+	{
+		auto newLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 4, 300, 22);
+		memoryDataListBox->AddItem(newLabel);
+		memoryPoolCount++;
+	}
+
+	for (unsigned int i = 0; i < memoryPoolCount; ++i)
+	{
+		memoryDataListBox->SetSelectedIndex(i);
+		auto label = static_cast<GUILabel*>(memoryDataListBox->GetSelectedItem());
+
+		char amountStringBuffer[32];
+		_itoa_s(memoryManager.GetMemoryPoolAmountAtIndex(i), amountStringBuffer, 10);
+		label->SetText(std::string(memoryManager.GetMemoryPoolNameAtIndex(i) + std::string(":  ") + std::string(amountStringBuffer)));
 	}
 }
 
@@ -79,6 +107,7 @@ void PrimaryLoop()
 
 		//  Update the sound wrapper
 		soundWrapper.Update();
+		UpdateMemoryListBox();
 
 		//  Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
@@ -141,36 +170,9 @@ void CreateTestData()
 	//  Create some test UI (2 buttons and 1 checkbox)
 	static auto useOggFiles = true;
 
-	auto listbox1 = GUIListBox::CreateTemplatedListBox("Standard", 320, 60, 640, 76, 620, 6, 16, 16, 16, 16, 16, 22, 2);
-	guiManager.GetBaseNode()->AddChild(listbox1);
-
-	GUIObjectNode* listEntryNode = new GUIObjectNode;
-	listbox1->AddItem(listEntryNode);
-
-	auto label1 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
-	label1->SetText("Test string 1 A");
-	listEntryNode->AddChild(label1);
-
-	auto label2 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 200, 6, 200, 30);
-	label2->SetText("Test string 1 B");
-	listEntryNode->AddChild(label2);
-
-
-	auto label3 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
-	label3->SetText("Test string 2");
-	listbox1->AddItem(label3);
-
-	auto label4 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
-	label4->SetText("Test string 3");
-	listbox1->AddItem(label4);
-
-	auto label5 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
-	label5->SetText("Test string 4");
-	listbox1->AddItem(label5);
-
-	auto label6 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
-	label6->SetText("Test string 5");
-	listbox1->AddItem(label6);
+	memoryDataListBox = GUIListBox::CreateTemplatedListBox("Standard", 320, 60, 640, 120, 620, 6, 16, 16, 16, 16, 16, 22, 2);
+	memoryDataListBox->SetSelectable(false);
+	guiManager.GetBaseNode()->AddChild(memoryDataListBox);
 
 	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
@@ -223,11 +225,9 @@ void CreateTestData()
 	guiManager.GetBaseNode()->AddChild(dropDown1);
 
 	//  Test the Winsock Wrapper
-	winsockWrapper.WinsockInitialize();
 	auto googleIP = Socket::GetHostIP("www.google.com");
 	auto ipAddress = winsockWrapper.ConvertIPtoUINT(googleIP.c_str());
 	auto ipString = winsockWrapper.ConvertUINTtoIP(ipAddress);
-	winsockWrapper.WinsockShutdown();
 }
 
 int main(int argc, char* args[])

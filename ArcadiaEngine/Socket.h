@@ -133,6 +133,7 @@ inline Socket* Socket::tcpaccept(int mode) const
 	SOCKET sock2;
 	if ((sock2 = accept(m_SocketID, (SOCKADDR *)&SenderAddr, &SenderAddrSize)) != INVALID_SOCKET)
 	{
+		MANAGE_MEMORY_NEW("Socket", sizeof(Socket));
 		auto sockit = new Socket(sock2);
 		if (mode >= 1)sockit->setsync(1);
 		return sockit;
@@ -252,6 +253,7 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 	if (m_IsConnectionUDP)
 	{
 		size = 8195;
+		MANAGE_MEMORY_NEW("WinsockWrapper", size);
 		buff = new char[size];
 		size = recvfrom(m_SocketID, buff, size, 0, (SOCKADDR *)&SenderAddr, &SenderAddrSize);
 	}
@@ -266,17 +268,20 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 				if (size == 0) { return 0; }
 			}
 			auto buffer_size = length_specific != 0 ? length_specific : length;
+			MANAGE_MEMORY_NEW("WinsockWrapper", buffer_size);
 			buff = new char[buffer_size];
 			size = recv(m_SocketID, buff, buffer_size, 0);
 		}
 		else if (m_DataFormat == 1 && !len)
 		{
 			size = 65536;
+			MANAGE_MEMORY_NEW("WinsockWrapper", size);
 			buff = new char[size];
 			size = receivetext(buff, size);
 		}
 		else if (m_DataFormat == 2 || len > 0)
 		{
+			MANAGE_MEMORY_NEW("WinsockWrapper", len);
 			buff = new char[len];
 			size = recv(m_SocketID, buff, len, 0);
 		}
@@ -286,7 +291,11 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 		destination->clear();
 		destination->addBuffer(buff, size);
 	}
-	if (buff != nullptr) delete [] buff;
+	if (buff != nullptr)
+	{
+		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
+		delete [] buff;
+	}
 	return size;
 }
 
@@ -294,15 +303,18 @@ inline int Socket::peekmessage(int size, SocketBuffer* destination) const
 {
 	if (m_SocketID < 0 ) return -1;
 	if (size == 0) size = 65536;
+	MANAGE_MEMORY_NEW("WinsockWrapper", size);
 	auto buff = new char[size];
 	size = recvfrom(m_SocketID, buff, size, MSG_PEEK, (SOCKADDR *)&SenderAddr, &SenderAddrSize);
 	if (size < 0)
 	{
+		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
 		delete [] buff;
 		return -1;
 	}
 	destination->clear();
 	destination->addBuffer(buff, size);
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
 	delete [] buff;
 	return size;
 }

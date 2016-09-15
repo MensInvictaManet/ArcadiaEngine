@@ -149,7 +149,11 @@ inline void WinsockWrapper::WinsockInitialize(unsigned int bufferCount)
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	for (unsigned int i = 0; i < bufferCount; ++i) AddBuffer(new SocketBuffer());
+	for (unsigned int i = 0; i < bufferCount; ++i)
+	{
+		MANAGE_MEMORY_NEW("WinsockWrapper", sizeof(SocketBuffer));
+		AddBuffer(new SocketBuffer);
+	}
 
 	//  Set the flag to ensure we don't double-initialize Winsock
 	m_WinsockInitialized = true;
@@ -159,8 +163,18 @@ inline void WinsockWrapper::WinsockShutdown()
 {
 	Socket::SockExit();
 
-	for (unsigned int i = 0; i < m_BufferList.size(); ++i) delete m_BufferList[i];
-	for (unsigned int i = 0; i < m_SocketList.size(); ++i) delete m_SocketList[i];
+	while (!m_BufferList.empty())
+	{
+		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(SocketBuffer));
+		delete (*m_BufferList.begin());
+		m_BufferList.erase(m_BufferList.begin());
+	}
+	while (!m_BufferList.empty())
+	{
+		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(Socket));
+		delete (*m_SocketList.begin());
+		m_SocketList.erase(m_SocketList.begin());
+	}
 	for (unsigned int i = 0; i < m_FileList.size(); ++i) BinaryCloseFile(m_FileList[i]);
 
 	m_BufferList.clear();
@@ -170,18 +184,22 @@ inline void WinsockWrapper::WinsockShutdown()
 
 inline int WinsockWrapper::TCPConnect(const char* ipAddress, int port, int mode)
 {
-	auto socket = new Socket();
+	MANAGE_MEMORY_NEW("WinsockWrapper", sizeof(Socket));
+	auto socket = new Socket;
 	if (socket->tcpconnect(ipAddress, port, mode)) return AddSocket(socket);
 
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(Socket));
 	delete socket;
 	return -1;
 }
 
 inline int WinsockWrapper::TCPListen(int port, int maxConnections, int mode)
 {
-	auto socket = new Socket();
+	MANAGE_MEMORY_NEW("WinsockWrapper", sizeof(Socket));
+	auto socket = new Socket;
 	if (socket->tcplisten(port, maxConnections, mode)) return AddSocket(socket);
 
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(Socket));
 	delete socket;
 	return -1;
 }
@@ -206,6 +224,7 @@ inline int WinsockWrapper::UDPConnect(int port, int mode)
 	auto socket = new Socket();
 	if (socket->udpconnect(port, mode)) return AddSocket(socket);
 
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(Socket));
 	delete socket;
 	return -1;
 }
@@ -281,6 +300,7 @@ inline bool WinsockWrapper::CloseSocket(int socketID)
 	if (socketID < 0) return false;
 	auto socket = m_SocketList[socketID];
 	if (socket == nullptr) return false;
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(Socket));
 	delete socket;
 	m_SocketList[socketID] = nullptr;
 	return true;
@@ -508,7 +528,8 @@ inline int WinsockWrapper::GetBytesLeft(int bufferID)
 
 inline int WinsockWrapper::CreateBuffer()
 {
-	auto buffer = new SocketBuffer();
+	MANAGE_MEMORY_NEW("WinsockWrapper", sizeof(SocketBuffer));
+	auto buffer = new SocketBuffer;
 	return AddBuffer(buffer);
 }
 
@@ -517,6 +538,7 @@ inline bool WinsockWrapper::FreeBuffer(int bufferID)
 	if (bufferID == 0) return false;
 	auto buff = m_BufferList[bufferID];
 	if (buff == nullptr) return false;
+	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(SocketBuffer));
 	delete buff;
 	m_BufferList[bufferID] = nullptr;
 	return true;
@@ -754,9 +776,11 @@ inline int WinsockWrapper::BinaryFileWrite(HANDLE hwnd, SocketBuffer* dataBuffer
 inline int WinsockWrapper::BinaryFileRead(HANDLE hwnd, int size, SocketBuffer* out)
 {
 	DWORD bytes_read;
+	MANAGE_MEMORY_NEW("WinsockWrapper", size);
 	auto b = new char[size];
 	ReadFile(hwnd, b, size, &bytes_read, nullptr);
 	out->StreamWrite(b, bytes_read);
+	MANAGE_MEMORY_DELETE("WinsockWrapper", size);
 	delete [] b;
 	return int(bytes_read);
 }

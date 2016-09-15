@@ -11,7 +11,7 @@ public:
 	static GUILabel* CreateLabel(const Font* font, const char* text, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUILabel(const char* text = "");
-	virtual ~GUILabel();
+	~GUILabel();
 
 	inline std::string GetText() const { return m_Text; }
 
@@ -29,6 +29,7 @@ private:
 
 inline GUILabel* GUILabel::CreateLabel(const Font* font, const char* text, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Label", sizeof(GUILabel));
 	auto newLabel = new GUILabel(text);
 	newLabel->SetFont(font);
 	newLabel->SetX(x);
@@ -49,7 +50,7 @@ inline GUILabel::GUILabel(const char* text) :
 
 inline GUILabel::~GUILabel()
 {
-
+	MANAGE_MEMORY_DELETE("MenuUI_Label", sizeof(GUILabel));
 }
 
 inline void GUILabel::Render(int xOffset, int yOffset)

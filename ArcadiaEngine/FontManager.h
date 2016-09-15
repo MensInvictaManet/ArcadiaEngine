@@ -185,6 +185,8 @@ inline bool FontManager::LoadFont(const char* font_name)
 		if (new_font.m_MaxHeight < new_font.m_Height[index]) new_font.m_MaxHeight = new_font.m_Height[index];
 	}
 
+	xmlWrapper.UnloadXMLDoc(fontXML);
+
 	m_FontList[font_name_string] = new_font;
 
 	return true;

@@ -14,7 +14,7 @@ public:
 	static GUIEditBox* CreateTemplatedEditBox(const char* editboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
 	explicit GUIEditBox(bool templated);
-	virtual ~GUIEditBox();
+	~GUIEditBox();
 
 	inline void SetFont(const Font* font) { m_Font = font; }
 	inline void SetText(const std::string text) { m_Text = text; }
@@ -43,6 +43,7 @@ private:
 
 inline GUIEditBox* GUIEditBox::CreateEditBox(const char* imageFile, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Editbox", sizeof(GUIEditBox));
 	auto newEditbox = new GUIEditBox(false);
 	newEditbox->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newEditbox->SetX(x);
@@ -54,6 +55,7 @@ inline GUIEditBox* GUIEditBox::CreateEditBox(const char* imageFile, int x, int y
 
 inline GUIEditBox* GUIEditBox::CreateTemplatedEditBox(const char* editboxTemplate, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Editbox", sizeof(GUIEditBox));
 	auto newEditbox = new GUIEditBox(true);
 
 	auto templateFolder("./UITemplates/EditBox/" + std::string(editboxTemplate) + "/");
@@ -104,7 +106,7 @@ inline GUIEditBox::GUIEditBox(bool templated) :
 
 inline GUIEditBox::~GUIEditBox()
 {
-	
+	MANAGE_MEMORY_DELETE("MenuUI_Editbox", sizeof(GUIEditBox));
 }
 
 

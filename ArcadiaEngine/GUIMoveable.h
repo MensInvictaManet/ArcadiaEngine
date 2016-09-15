@@ -10,7 +10,7 @@ public:
 	static GUIMoveable* CreateTemplatedMoveable(const char* moveableTemplate, int x = 0, int y = 0, int w = 0, int h = 0, int grab_x = 0, int grab_y = 0, int grab_w = 0, int grab_h = 0);
 
 	GUIMoveable(bool templated, int grab_x, int grab_y, int grab_w, int grab_h);
-	virtual ~GUIMoveable();
+	~GUIMoveable();
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
@@ -38,6 +38,7 @@ private:
 
 inline GUIMoveable* GUIMoveable::CreateMoveable(const char* imageFile, int x, int y, int w, int h, int grab_x, int grab_y, int grab_w, int grab_h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Moveable", sizeof(GUIMoveable));
 	auto newMoveable = new GUIMoveable(false, grab_x, grab_y, grab_w, grab_h);
 	newMoveable->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newMoveable->SetX(x);
@@ -49,6 +50,7 @@ inline GUIMoveable* GUIMoveable::CreateMoveable(const char* imageFile, int x, in
 
 inline GUIMoveable* GUIMoveable::CreateTemplatedMoveable(const char* moveableTemplate, int x, int y, int w, int h, int grab_x, int grab_y, int grab_w, int grab_h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Moveable", sizeof(GUIMoveable));
 	auto newMoveable = new GUIMoveable(true, grab_x, grab_y, grab_w, grab_h);
 
 	auto templateFolder("./UITemplates/Moveable/" + std::string(moveableTemplate) + "/");
@@ -93,7 +95,7 @@ inline GUIMoveable::GUIMoveable(bool templated, int grab_x, int grab_y, int grab
 
 inline GUIMoveable::~GUIMoveable()
 {
-	
+	MANAGE_MEMORY_DELETE("MenuUI_Moveable", sizeof(GUIMoveable));
 }
 
 inline void GUIMoveable::Input(int xOffset, int yOffset)

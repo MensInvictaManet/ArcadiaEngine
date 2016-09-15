@@ -96,7 +96,7 @@ private:
 			ALint							iBuffersProcessed, iTotalBuffersProcessed, iQueuedBuffers;
 			unsigned long					ulBytesWritten;
 
-			OggFileData(FILE* soundFile) :
+			explicit OggFileData(FILE* soundFile) :
 				m_SoundFile(soundFile),
 				m_VorbisInfo(nullptr),
 				m_Frequency(0),
@@ -218,8 +218,9 @@ inline bool SoundWrapper::Initialize()
 inline int SoundWrapper::loadSoundFile(const char* soundFileName, SoundFileType fileType)
 {
 	//  Find a new index, create a new SoundData class, and then load the sound data into it
-	int newSoundIndex = determineFirstIndex();
-	SoundData* newSoundData = new SoundData(soundFileName, fileType);
+	auto newSoundIndex = determineFirstIndex();
+	MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SoundData));
+	auto newSoundData = new SoundData(soundFileName, fileType);
 	soundDataList[newSoundIndex] = newSoundData;
 	soundDataListByName[soundFileName] = newSoundData;
 	loadSoundData(newSoundData);
@@ -241,7 +242,8 @@ inline bool SoundWrapper::loadSoundData(SoundData*& soundData) const
 			return false;
 		}
 
-		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData = new SoundData::OggFileData(pOggVorbisFile);
+		MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SoundData::OggFileData));
+		auto oggFileData = soundData->m_OggFileData = new SoundData::OggFileData(pOggVorbisFile);
 		if (fn_ov_open_callbacks(oggFileData->m_SoundFile, &oggFileData->m_OggFile, nullptr, 0, soundCallbacks) == 0)
 		{
 			// Get some information about the file (Channels, Format, and Frequency)
@@ -289,6 +291,7 @@ inline bool SoundWrapper::loadSoundData(SoundData*& soundData) const
 	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV && soundData->m_AudioEntity == nullptr)
 	{
 		SimpleAudioLib::AudioEntity* newAudioEntity;
+		MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SimpleAudioLib::AudioEntity));
 		newAudioEntity = m_SimpleAudioLib.createAudioEntityFromFile(soundData->m_SoundFileName.c_str());
 		if (newAudioEntity == nullptr)
 		{
@@ -310,7 +313,7 @@ inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 	if (soundIndex < 0) return false;
 	if (soundIndex >= int(soundDataList.size())) return false;
 
-	SoundData* soundData = soundDataList[soundIndex];
+	auto soundData = soundDataList[soundIndex];
 
 	//  If we're set to an invalid state, reload the data
 	if (soundData->m_SoundStatus == SOUNDSTATUS_INVALID)
@@ -321,11 +324,12 @@ inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 	//  Now that we have the correct sound data, play it
 	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
 	{
-		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData;
+		auto oggFileData = soundData->m_OggFileData;
 		if (oggFileData->m_Format != 0)
 		{
 			// Allocate a buffer to be used to store decoded data for all Buffers
-			oggFileData->m_DecodeBuffer = static_cast<char*>(malloc(oggFileData->m_BufferSize));
+			MANAGE_MEMORY_NEW("SoundWrapper", oggFileData->m_BufferSize);
+			oggFileData->m_DecodeBuffer = new char[oggFileData->m_BufferSize];
 			if (!oggFileData->m_DecodeBuffer)
 			{
 				ALFWprintf("Failed to allocate memory for decoded OggVorbis data\n");
@@ -340,7 +344,7 @@ inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 			alGenSources(1, &oggFileData->m_SoundSource);
 
 			// Fill all the Buffers with decoded audio data from the OggVorbis file
-			for (int i = 0; i < NUMBUFFERS; i++)
+			for (auto i = 0; i < NUMBUFFERS; i++)
 			{
 				oggFileData->ulBytesWritten = DecodeOggVorbis(&oggFileData->m_OggFile, oggFileData->m_DecodeBuffer, oggFileData->m_BufferSize, oggFileData->m_Channels);
 				if (oggFileData->ulBytesWritten)
@@ -377,57 +381,69 @@ inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 inline bool SoundWrapper::unloadSoundFile(int soundIndex)
 {
 	//  Ensure the sound index is valid before continuing;
-	if (soundIndex < 0) return false;
-	if (soundIndex >= int(soundDataList.size())) return false;
+	if (soundIndex < 0) soundIndex = soundDataList.begin()->first;
+	else if (soundIndex >= int(soundDataList.size())) return false;
 
-	SoundData* soundData = soundDataList[soundIndex];
-	if (soundData->m_SoundStatus == SOUNDSTATUS_INVALID) return true;
-
-	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
+	auto soundData = soundDataList[soundIndex];
+	if (soundData != nullptr)
 	{
-		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData;
-
-		// Stop the Source and clear the Queue
-		alSourceStop(oggFileData->m_SoundSource);
-		alSourcei(oggFileData->m_SoundSource, AL_BUFFER, 0);
-
-		if (oggFileData->m_DecodeBuffer)
+		if (soundData->m_SoundStatus != SOUNDSTATUS_INVALID)
 		{
-			free(oggFileData->m_DecodeBuffer);
-			oggFileData->m_DecodeBuffer = nullptr;
+			if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
+			{
+				auto oggFileData = soundData->m_OggFileData;
+
+				// Stop the Source and clear the Queue
+				alSourceStop(oggFileData->m_SoundSource);
+				alSourcei(oggFileData->m_SoundSource, AL_BUFFER, 0);
+
+				if (oggFileData->m_DecodeBuffer)
+				{
+					MANAGE_MEMORY_DELETE("SoundWrapper", oggFileData->m_BufferSize);
+					delete[] oggFileData->m_DecodeBuffer;
+					oggFileData->m_DecodeBuffer = nullptr;
+				}
+
+				// Clean up buffers and sources
+				alDeleteSources(1, &oggFileData->m_SoundSource);
+				alDeleteBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
+
+				//  Clear away the file data
+				fn_ov_clear(&oggFileData->m_OggFile);
+
+				MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData::OggFileData));
+				delete soundData->m_OggFileData;
+				soundData->m_OggFileData = nullptr;
+			}
+			else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV)
+			{
+				MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SimpleAudioLib::AudioEntity));
+				delete soundData->m_AudioEntity;
+				soundData->m_AudioEntity = nullptr;
+			}
 		}
 
-		// Clean up buffers and sources
-		alDeleteSources(1, &oggFileData->m_SoundSource);
-		alDeleteBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
-
-		//  Clear away the file data
-		fn_ov_clear(&oggFileData->m_OggFile);
-
-		delete soundData->m_OggFileData;
-		soundData->m_OggFileData = nullptr;
-	}
-	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV)
-	{
-		delete soundData->m_AudioEntity;
-		soundData->m_AudioEntity = nullptr;
+		//  Decrement the sound playing count and return a success
+		soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
+		m_nSoundPlayingCount--;
 	}
 
-	//  Decrement the sound playing count and return a success
-	soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
-	m_nSoundPlayingCount--;
+	MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
+	delete soundData;
+	soundDataList.erase(soundDataList.find(soundIndex));
+
 	return true;
 }
 
 inline void SoundWrapper::Update()
 {
-	for (int i = 0; i < int(soundDataList.size()); ++i)
+	for (auto i = 0; i < int(soundDataList.size()); ++i)
 	{
-		SoundData* soundData = soundDataList[i];
+		auto soundData = soundDataList[i];
 		if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) continue;
 		if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) continue;
 
-		SoundData::OggFileData*& oggFileData = soundData->m_OggFileData;
+		auto oggFileData = soundData->m_OggFileData;
 		if (oggFileData == nullptr) continue;
 
 		// Request the number of OpenAL Buffers have been processed (played) on the Source
@@ -480,7 +496,7 @@ inline void SoundWrapper::Update()
 	}
 }
 
-void SoundWrapper::Shutdown()
+inline void SoundWrapper::Shutdown()
 {
 	//  Unload all sound files that are currently still loaded
 	unloadAllSoundFiles();
@@ -524,9 +540,9 @@ inline SoundWrapper::~SoundWrapper()
 inline void SoundWrapper::unloadAllSoundFiles()
 {
 	//  Delete all sound file data
-	for (auto i = 0; i < int(soundDataList.size()); ++i)
+	while (!soundDataList.empty())
 	{
-		unloadSoundFile(i);
+		unloadSoundFile(-1);
 	}
 	soundDataList.clear();
 }

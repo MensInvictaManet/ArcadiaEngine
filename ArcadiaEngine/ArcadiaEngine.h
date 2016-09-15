@@ -53,6 +53,7 @@
 #include "FontManager.h"
 #include "TimeSlice.h"
 #include "WinsockWrapper.h"
+#include "MemoryManager.h"
 
 #if AUDIO_ENABLED
 #include "SoundWrapper.h"
@@ -62,7 +63,7 @@
 #define	SCREEN_WIDTH	1024
 #define	SCREEN_HEIGHT	768
 
-bool InitializeSDL()
+inline bool InitializeSDL()
 {
 	//  Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -99,7 +100,7 @@ bool InitializeSDL()
 	return true;
 }
 
-bool InitializeOpenGL()
+inline bool InitializeOpenGL()
 {
 	auto success = true;
 	GLenum error;
@@ -146,7 +147,7 @@ bool InitializeOpenGL()
 	return success;
 }
 
-bool InitializeEngine()
+inline bool InitializeEngine()
 {
 	//  Initialize SDL
 	if (!InitializeSDL())
@@ -182,7 +183,7 @@ bool InitializeEngine()
 	return true;
 }
 
-void ShutdownEngine()
+inline void ShutdownEngine()
 {
 
 	//  Quit all SDL sub-systems
@@ -194,10 +195,14 @@ void ShutdownEngine()
 	winsockWrapper.WinsockShutdown();
 	textureManager.Shutdown();
 	windowManager.Shutdown();
+	xmlWrapper.Shutdown();
+	guiManager.Shutdown();
 
 #if AUDIO_ENABLED
 	soundWrapper.Shutdown();
 #endif
+
+	memoryManager.Shutdown();
 
 #if USING_SDL
 	//  Disable text input
@@ -207,7 +212,7 @@ void ShutdownEngine()
 #endif
 }
 
-void ResizeWindow(void)
+inline void ResizeWindow(void)
 {
 	glViewport(0, 0, GLsizei(SCREEN_WIDTH), GLsizei(SCREEN_WIDTH));
 

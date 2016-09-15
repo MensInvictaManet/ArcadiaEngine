@@ -440,5 +440,8 @@
     <ClInclude Include="GUIDropDown.h">
       <Filter>Header Files\GUI Object Types</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

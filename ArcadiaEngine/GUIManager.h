@@ -14,6 +14,7 @@ public:
 	void Input();
 	void Render();
 	void EndStep();
+	void Shutdown();
 
 private:
 	GUIManager();
@@ -59,6 +60,14 @@ inline void GUIManager::EndStep()
 	}
 
 	m_NodesToDestroy.clear();
+}
+
+inline void GUIManager::Shutdown()
+{
+	DestroyNode(&m_BaseNode);
+	m_NodesToDestroy.erase(m_NodesToDestroy.find(&m_BaseNode));
+	m_BaseNode.m_SetToDestroy = false;
+	EndStep();
 }
 
 //  Instance to be utilized by anyone including this header

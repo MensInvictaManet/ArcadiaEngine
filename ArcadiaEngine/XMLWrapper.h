@@ -20,10 +20,15 @@ public:
 		
 		XMLListType::const_iterator findIter = m_LoadedXMLList.find( hash );
 		if (findIter != m_LoadedXMLList.end()) newFile = (*findIter).second;
-		else newFile = new RapidXML_File( filename );
+		else
+		{
+			MANAGE_MEMORY_NEW("XMLWrapper", sizeof(RapidXML_File));
+			newFile = new RapidXML_File(filename);
+		}
 
+		MANAGE_MEMORY_NEW("XMLWrapper", sizeof(RapidXML_Doc));
 		auto newDoc = new RapidXML_Doc;
-		newDoc->parse<0>( newFile->data() );
+		newDoc->parse<0>(newFile->data());
 		
 		m_LoadedXMLList[hash] = newFile;
 		return newDoc;
@@ -35,12 +40,30 @@ public:
 		XMLListType::const_iterator findIter = m_LoadedXMLList.find( hash );
 		if (findIter != m_LoadedXMLList.end())
 		{
+			MANAGE_MEMORY_DELETE("XMLWrapper", sizeof(RapidXML_File));
 			delete (*findIter).second;
 			m_LoadedXMLList.erase(findIter);
 			return true;
 		}
 
 		return false;
+	}
+
+	static void UnloadXMLDoc(const RapidXML_Doc* document)
+	{
+		MANAGE_MEMORY_DELETE("XMLWrapper", sizeof(RapidXML_Doc));
+		delete document;
+	}
+
+	void Shutdown()
+	{
+		//  Unload all XML data
+		while (!m_LoadedXMLList.empty())
+		{
+			MANAGE_MEMORY_DELETE("XMLWrapper", sizeof(RapidXML_File));
+			delete m_LoadedXMLList.begin()->second;
+			m_LoadedXMLList.erase(m_LoadedXMLList.begin());
+		}
 	}
 
 private:

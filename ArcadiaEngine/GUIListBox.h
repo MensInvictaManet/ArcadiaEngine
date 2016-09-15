@@ -18,16 +18,18 @@ public:
 	static GUIListBox* CreateTemplatedListBox(const char* listboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0, int dirButtonsX = 0, int contentY = 0, int upButtonW = 0, int upButtonH = 0, int DownButtonW = 0, int downButtonH = 0, int barColumnW = 0, int entryHeight = 0, int spaceBetweenEntries = 0);
 
 	explicit GUIListBox(bool templated);
-	virtual ~GUIListBox();
+	~GUIListBox();
 
 	void SetItemClickCallback(const GUIListBoxCallback& callback) { m_ItemClickCallback = callback; }
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
+	void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList) override;
+
 	void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
 	void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); SelectedIndex = -1; }
 	void SelectItem(unsigned int index) { SelectedIndex = std::min(index, m_ItemList.size() - 1); }
-	const GUIObjectNode* GetSelectedItem() const { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
+	GUIObjectNode* GetSelectedItem() { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 	int GetSelectedIndex() const { return SelectedIndex; }
 	void SetSelectable(bool selectable) { m_Selectable = selectable; }
 	void SetSelectedIndex(int index) { SelectedIndex = index; }
@@ -84,6 +86,7 @@ private:
 
 inline GUIListBox* GUIListBox::CreateListBox(const char* imageFile, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Listbox", sizeof(GUIListBox));
 	auto newListbox = new GUIListBox(false);
 	newListbox->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newListbox->SetX(x);
@@ -95,6 +98,7 @@ inline GUIListBox* GUIListBox::CreateListBox(const char* imageFile, int x, int y
 
 inline GUIListBox* GUIListBox::CreateTemplatedListBox(const char* listboxTemplate, int x, int y, int w, int h, int dirButtonsX, int contentY, int upButtonW, int upButtonH, int DownButtonW, int downButtonH, int barColumnW, int entryHeight, int spaceBetweenEntries)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Listbox", sizeof(GUIListBox));
 	auto newListbox = new GUIListBox(true);
 
 	auto templateFolder("./UITemplates/ListBox/" + std::string(listboxTemplate) + "/");
@@ -183,7 +187,7 @@ inline GUIListBox::GUIListBox(bool templated) :
 
 inline GUIListBox::~GUIListBox()
 {
-	
+	MANAGE_MEMORY_DELETE("MenuUI_Listbox", sizeof(GUIListBox));
 }
 
 
@@ -345,4 +349,13 @@ inline void GUIListBox::UpdateMover(int indexOverride)
 	auto mover_position_percent_delta = float(1) / float(m_ItemList.size());
 	MoverYDelta = static_cast<unsigned int>((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_position_percent_delta);
 	MoverY = static_cast<unsigned int>(float(MoverYDelta) * float(MovementIndex));
+}
+
+inline void GUIListBox::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)
+{
+	//  Pass the 'set to destroy' call to all items in item list
+	for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) (*iter)->SetToDestroy(destroyList);
+	m_ItemList.clear();
+
+	GUIObjectNode::SetToDestroy(destroyList);
 }

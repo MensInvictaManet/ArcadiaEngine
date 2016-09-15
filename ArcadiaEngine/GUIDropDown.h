@@ -15,12 +15,14 @@ public:
 	static GUIDropDown* CreateTemplatedDropDown(const char* dropdownTemplate, int x = 0, int y = 0, int w = 0, int h = 0, int dropDownX = 0, int dropDownY = 0, int dropDownW = 0, int dropDownH = 0);
 
 	explicit GUIDropDown(bool templated);
-	virtual ~GUIDropDown();
+	~GUIDropDown();
 
 	void SetItemSelectCallback(const GUIDropDownSelectCallback& callback) { m_ItemSelectCallback = callback; }
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
+
+	void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList) override;
 
 	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); if (m_Clicked) UpdateExpandedHeight(); }
 	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); }
@@ -37,7 +39,6 @@ private:
 	int DropDownY;
 	unsigned int DropDownW;
 	unsigned int DropDownH;
-	unsigned int Justification;
 
 	bool m_Templated;
 	TextureManager::ManagedTexture* TextureTopLeftCorner;
@@ -58,6 +59,7 @@ private:
 
 inline GUIDropDown* GUIDropDown::CreateDropDown(const char* imageFile, int x, int y, int w, int h)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Dropdown", sizeof(GUIDropDown));
 	auto newDropDown = new GUIDropDown(false);
 	newDropDown->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	newDropDown->SetX(x);
@@ -69,6 +71,7 @@ inline GUIDropDown* GUIDropDown::CreateDropDown(const char* imageFile, int x, in
 
 inline GUIDropDown* GUIDropDown::CreateTemplatedDropDown(const char* dropdownTemplate, int x, int y, int w, int h, int dropDownX, int dropDownY, int dropDownW, int dropDownH)
 {
+	MANAGE_MEMORY_NEW("MenuUI_Dropdown", sizeof(GUIDropDown));
 	auto newDropDown = new GUIDropDown(true);
 
 	auto templateFolder("./UITemplates/DropDown/" + std::string(dropdownTemplate) + "/");
@@ -103,25 +106,29 @@ inline GUIDropDown::GUIDropDown(bool templated) :
 	m_Clicked(false),
 	SelectedIndex(0),
 	m_Templated(templated),
-	ExpandedHeight(0)
+	ExpandedHeight(0),
+	TextureTopLeftCorner(nullptr),
+	TextureTopRightCorner(nullptr),
+	TextureBottomLeftCorner(nullptr),
+	TextureBottomRightCorner(nullptr),
+	TextureLeftSide(nullptr),
+	TextureRightSide(nullptr),
+	TextureTopSide(nullptr),
+	TextureBottomSide(nullptr),
+	TextureMiddle(nullptr),
+	TextureDropDown(nullptr),
+	TextureSelector(nullptr),
+	DropDownX(0),
+	DropDownY(0),
+	DropDownW(0),
+	DropDownH(0)
 {
-	TextureTopLeftCorner = nullptr;
-	TextureTopRightCorner = nullptr;
-	TextureBottomLeftCorner = nullptr;
-	TextureBottomRightCorner = nullptr;
-	TextureLeftSide = nullptr;
-	TextureRightSide = nullptr;
-	TextureTopSide = nullptr;
-	TextureBottomSide = nullptr;
-	TextureMiddle = nullptr;
-	TextureDropDown = nullptr;
-	TextureSelector = nullptr;
 }
 
 
 inline GUIDropDown::~GUIDropDown()
 {
-	
+	MANAGE_MEMORY_DELETE("MenuUI_Dropdown", sizeof(GUIDropDown));
 }
 
 
@@ -216,4 +223,13 @@ inline void GUIDropDown::Render(int xOffset, int yOffset)
 
 	//  Pass the render call to all children
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(xOffset + m_X, yOffset + m_Y);
+}
+
+inline void GUIDropDown::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)
+{
+	//  Pass the 'set to destroy' call to all items in item list
+	for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) (*iter)->SetToDestroy(destroyList);
+	m_ItemList.clear();
+
+	GUIObjectNode::SetToDestroy(destroyList);
 }

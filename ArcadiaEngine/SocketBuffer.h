@@ -60,7 +60,8 @@ char SocketBuffer::m_ReturnValueBuffer[RETURNVAL_BUFFER_SIZE + 1];
 inline SocketBuffer::SocketBuffer()
 {
 	m_BufferSize = 30;
-	m_BufferData = static_cast<char*>(malloc(m_BufferSize));
+	MANAGE_MEMORY_NEW("WinsockWrapper", m_BufferSize);
+	m_BufferData = new char[m_BufferSize];
 	m_BufferUtilizedCount = 0;
 	m_ReadPosition = 0;
 	m_WritePosition = 0;
@@ -68,7 +69,11 @@ inline SocketBuffer::SocketBuffer()
 
 inline SocketBuffer::~SocketBuffer()
 {
-	if (m_BufferData != nullptr) free(m_BufferData);
+	if (m_BufferData != nullptr)
+	{
+		MANAGE_MEMORY_DELETE("WinsockWrapper", m_BufferSize);
+		delete [] m_BufferData;
+	}
 }
 
 inline void SocketBuffer::StreamWrite(void *in, int size)
@@ -246,9 +251,11 @@ inline void SocketBuffer::clear()
 {
 	if (m_BufferSize > 30)
 	{
-		free(m_BufferData);
+		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(m_BufferData));
+		delete [] m_BufferData;
 		m_BufferSize = 30;
-		m_BufferData = static_cast<char*>(malloc(m_BufferSize));
+		MANAGE_MEMORY_NEW("WinsockWrapper", m_BufferSize);
+		m_BufferData = new char[m_BufferSize];
 	}
 	m_BufferUtilizedCount = 0;
 	m_ReadPosition = 0;

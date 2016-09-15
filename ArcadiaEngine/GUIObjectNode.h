@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TextureManager.h"
+#include "MemoryManager.h"
 
 #include <deque>
 #include <assert.h>
@@ -15,7 +16,7 @@ public:
 	static GUIObjectNode* CreateObjectNode(const char* imageFile);
 
 	GUIObjectNode();
-	virtual ~GUIObjectNode() {}
+	virtual ~GUIObjectNode();
 
 	virtual void Input(int xOffset = 0, int yOffset = 0);
 	virtual void Render(int xOffset = 0, int yOffset = 0);
@@ -47,11 +48,14 @@ public:
 	bool m_Visible;
 	GUIObjectNode* m_Parent;
 	bool m_SetToDestroy;
+	bool m_ExplicitObject;
 };
 
 inline GUIObjectNode* GUIObjectNode::CreateObjectNode(const char* imageFile)
 {
+	MANAGE_MEMORY_NEW("MenuUI_ObjectNode", sizeof(GUIObjectNode));
 	auto newNode = new GUIObjectNode;
+	newNode->m_ExplicitObject = true;
 	newNode->SetTextureID(textureManager.LoadTextureGetID(imageFile));
 	return newNode;
 }
@@ -65,10 +69,17 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_TextureID(0),
 	m_Visible(true),
 	m_Parent(nullptr),
-	m_SetToDestroy(false)
+	m_SetToDestroy(false),
+	m_ExplicitObject(false)
 {
 
 }
+
+inline GUIObjectNode::~GUIObjectNode()
+{
+	if (m_ExplicitObject) MANAGE_MEMORY_DELETE("MenuUI_ObjectNode", sizeof(GUIObjectNode));
+}
+
 
 inline void GUIObjectNode::Input(int xOffset, int yOffset)
 {
