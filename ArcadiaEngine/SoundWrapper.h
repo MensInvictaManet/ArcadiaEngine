@@ -136,11 +136,12 @@ public:
 	bool Initialize();
 	int loadSoundFile(const char* soundFileName, SoundFileType fileType);
 	bool playSoundFile(int soundIndex, bool looping = false);
-	bool unloadSoundFile(int soundIndex);
+	bool stopSoundFile(int soundIndex);
+	bool unloadSoundFile(int soundIndex, bool erase = true);
 	void Update();
 	void Shutdown();
 
-	int getSoundPlayingCount() const { return m_nSoundPlayingCount; }
+	int getSoundPlayingCount() const { return m_SoundPlayingCount; }
 
 private:
 	SoundWrapper();
@@ -152,7 +153,8 @@ private:
 
 	std::map<int, SoundData*> soundDataList;
 	std::map<std::string, SoundData*> soundDataListByName;
-	int m_nSoundPlayingCount;
+	std::vector<int> m_SoundsToErase;
+	int m_SoundPlayingCount;
 
 	SimpleAudioLib::CoreSystem& m_SimpleAudioLib;
 	bool m_bVorbisInitialized;
@@ -373,12 +375,49 @@ inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
 	}
 
 	soundData->m_SoundStatus = SOUNDSTATUS_PLAYING;
-	m_nSoundPlayingCount++;
+	m_SoundPlayingCount++;
 
 	return true;
 }
 
-inline bool SoundWrapper::unloadSoundFile(int soundIndex)
+inline bool SoundWrapper::stopSoundFile(int soundIndex)
+{
+	auto soundData = soundDataList[soundIndex];
+	if (soundData == nullptr) return false;
+	if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) return false;
+
+	auto oggFileData = soundData->m_OggFileData;
+	if (oggFileData == nullptr) return false;
+
+	//  If the sound data is not playing, return a failure. Otherwise, mark it unplayed for the future.
+	if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) return false;
+	soundData->m_SoundStatus = SOUNDSTATUS_LOADED;
+
+	// Stop the Source and clear the Queue
+	alSourceStop(oggFileData->m_SoundSource);
+	alSourcei(oggFileData->m_SoundSource, AL_BUFFER, 0);
+
+	if (oggFileData->m_DecodeBuffer)
+	{
+		free(oggFileData->m_DecodeBuffer);
+		oggFileData->m_DecodeBuffer = nullptr;
+	}
+
+	// Clean up buffers and sources
+	alDeleteSources(1, &oggFileData->m_SoundSource);
+	alDeleteBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
+
+	//  Clear away the file data
+	fn_ov_clear(&oggFileData->m_OggFile);
+
+	//  Decrement the sound playing count and return a success
+	m_SoundPlayingCount--;
+	m_SoundsToErase.push_back(soundIndex);
+	determineFirstIndex();
+	return true;
+}
+
+inline bool SoundWrapper::unloadSoundFile(int soundIndex, bool erase)
 {
 	//  Ensure the sound index is valid before continuing;
 	if (soundIndex < 0) soundIndex = soundDataList.begin()->first;
@@ -425,21 +464,35 @@ inline bool SoundWrapper::unloadSoundFile(int soundIndex)
 
 		//  Decrement the sound playing count and return a success
 		soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
-		m_nSoundPlayingCount--;
+		m_SoundPlayingCount--;
 	}
 
-	MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
-	delete soundData;
-	soundDataList.erase(soundDataList.find(soundIndex));
+	//  Only actually get rid of the sound data if we're told to erase it
+	if (erase)
+	{
+		MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
+		delete soundData;
+		soundDataList.erase(soundDataList.find(soundIndex));
+	}
 
 	return true;
 }
 
 inline void SoundWrapper::Update()
 {
-	for (auto i = 0; i < int(soundDataList.size()); ++i)
+	//  Remove any sounds that no longer need to be updated
+	for (auto iter = m_SoundsToErase.begin(); iter != m_SoundsToErase.end(); ++iter)
 	{
-		auto soundData = soundDataList[i];
+		auto sound = soundDataList.find((*iter));
+		soundDataListByName.erase(soundDataListByName.find(sound->second->m_SoundFileName));
+		soundDataList.erase(sound);
+	}
+	m_SoundsToErase.clear();
+
+	//  Step 1: Update all sounds that are playing
+	for (auto iter = soundDataList.begin(); iter != soundDataList.end(); ++iter)
+	{
+		auto soundData = (*iter).second;
 		if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) continue;
 		if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) continue;
 
@@ -488,8 +541,8 @@ inline void SoundWrapper::Update()
 			}
 			else
 			{
-				// Finished playing
-				unloadSoundFile(i);
+				// Finished playing, so unload it if it is an OGG file (it will reload again when played)
+				stopSoundFile((*iter).first);
 				continue;
 			}
 		}
@@ -514,7 +567,7 @@ inline void SoundWrapper::Shutdown()
 }
 
 inline SoundWrapper::SoundWrapper() :
-	m_nSoundPlayingCount(0),
+	m_SoundPlayingCount(0),
 	m_SimpleAudioLib(SimpleAudioLib::CoreSystem::getInstance()),
 	m_bVorbisInitialized(false),
 	m_VorbisFileDLL(nullptr),

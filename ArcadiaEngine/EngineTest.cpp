@@ -168,7 +168,7 @@ void CreateTestData()
 	fontManager.LoadFont("Arial-12-White");
 
 	//  Create some test UI (2 buttons and 1 checkbox)
-	static auto useOggFiles = true;
+	static auto useOggFiles = false;
 
 	memoryDataListBox = GUIListBox::CreateTemplatedListBox("Standard", 320, 60, 640, 120, 620, 6, 16, 16, 16, 16, 16, 22, 2);
 	memoryDataListBox->SetSelectable(false);
