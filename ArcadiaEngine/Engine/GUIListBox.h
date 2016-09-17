@@ -101,7 +101,7 @@ inline GUIListBox* GUIListBox::CreateTemplatedListBox(const char* listboxTemplat
 	MANAGE_MEMORY_NEW("MenuUI_Listbox", sizeof(GUIListBox));
 	auto newListbox = new GUIListBox(true);
 
-	auto templateFolder("./UITemplates/ListBox/" + std::string(listboxTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/ListBox/" + std::string(listboxTemplate) + "/");
 	newListbox->TextureTopLeftCorner = textureManager.LoadTexture(std::string(templateFolder + "TopLeftCorner.png").c_str());
 	newListbox->TextureTopRightCorner = textureManager.LoadTexture(std::string(templateFolder + "TopRightCorner.png").c_str());
 	newListbox->TextureBottomLeftCorner = textureManager.LoadTexture(std::string(templateFolder + "BottomLeftCorner.png").c_str());

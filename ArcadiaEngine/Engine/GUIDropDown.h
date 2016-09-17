@@ -74,7 +74,7 @@ inline GUIDropDown* GUIDropDown::CreateTemplatedDropDown(const char* dropdownTem
 	MANAGE_MEMORY_NEW("MenuUI_Dropdown", sizeof(GUIDropDown));
 	auto newDropDown = new GUIDropDown(true);
 
-	auto templateFolder("./UITemplates/DropDown/" + std::string(dropdownTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/DropDown/" + std::string(dropdownTemplate) + "/");
 
 	newDropDown->DropDownX = dropDownX;
 	newDropDown->DropDownY = dropDownY;

@@ -2,10 +2,8 @@
 
 #include "SDL2/SDL.h"
 #undef main
-#pragma comment(lib, "SDL2/SDL2.lib")
 
 #include "SDL2/SDL_opengl.h"
-#pragma comment(lib, "opengl32.lib")
 
 #include "MemoryManager.h"
 

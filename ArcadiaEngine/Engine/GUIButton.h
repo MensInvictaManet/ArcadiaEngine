@@ -63,7 +63,7 @@ inline GUIButton* GUIButton::CreateTemplatedButton(const char* buttonTemplate, i
 	MANAGE_MEMORY_NEW("MenuUI_Button", sizeof(GUIButton));
 	auto newButton = new GUIButton(true);
 
-	auto templateFolder("./UITemplates/Button/" + std::string(buttonTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/Button/" + std::string(buttonTemplate) + "/");
 	newButton->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
 	newButton->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
 	newButton->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());

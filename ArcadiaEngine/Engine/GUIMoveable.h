@@ -53,7 +53,7 @@ inline GUIMoveable* GUIMoveable::CreateTemplatedMoveable(const char* moveableTem
 	MANAGE_MEMORY_NEW("MenuUI_Moveable", sizeof(GUIMoveable));
 	auto newMoveable = new GUIMoveable(true, grab_x, grab_y, grab_w, grab_h);
 
-	auto templateFolder("./UITemplates/Moveable/" + std::string(moveableTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/Moveable/" + std::string(moveableTemplate) + "/");
 	newMoveable->TextureTopLeftCorner = textureManager.LoadTexture(std::string(templateFolder + "TopLeftCorner.png").c_str());
 	newMoveable->TextureTopRightCorner = textureManager.LoadTexture(std::string(templateFolder + "TopRightCorner.png").c_str());
 	newMoveable->TextureBottomLeftCorner = textureManager.LoadTexture(std::string(templateFolder + "BottomLeftCorner.png").c_str());

@@ -58,7 +58,7 @@ inline GUIEditBox* GUIEditBox::CreateTemplatedEditBox(const char* editboxTemplat
 	MANAGE_MEMORY_NEW("MenuUI_Editbox", sizeof(GUIEditBox));
 	auto newEditbox = new GUIEditBox(true);
 
-	auto templateFolder("./UITemplates/EditBox/" + std::string(editboxTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/EditBox/" + std::string(editboxTemplate) + "/");
 	newEditbox->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
 	newEditbox->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
 	newEditbox->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());

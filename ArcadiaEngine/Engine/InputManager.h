@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SDL2/SDL.h"
-#pragma comment(lib, "SDL2/SDL2.lib")
 
 enum MouseButtonState
 {

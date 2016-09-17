@@ -1,4 +1,4 @@
-#include "ArcadiaEngine.h"
+#include "Engine/ArcadiaEngine.h"
 
 //  Test variables
 GUIButton* g_TestButton1;
@@ -157,13 +157,13 @@ void PrimaryLoop()
 void CreateTestData()
 {
 	//  Load some test sounds
-	g_CoinSound[0] = soundWrapper.loadSoundFile("CoinPickup1.ogg", SOUNDFILETYPE_OGG);
-	g_CoinSound[1] = soundWrapper.loadSoundFile("CoinPickup2.ogg", SOUNDFILETYPE_OGG);
-	g_CoinSound[2] = soundWrapper.loadSoundFile("CoinPickup1.wav", SOUNDFILETYPE_WAV);
-	g_CoinSound[3] = soundWrapper.loadSoundFile("CoinPickup2.wav", SOUNDFILETYPE_WAV);
-	soundWrapper.playSoundFile(g_BackgroundMusic = soundWrapper.loadSoundFile("BackgroundMusic.ogg", SOUNDFILETYPE_OGG));
+	g_CoinSound[0] = soundWrapper.loadSoundFile("Assets/CoinPickup1.ogg", SOUNDFILETYPE_OGG);
+	g_CoinSound[1] = soundWrapper.loadSoundFile("Assets/CoinPickup2.ogg", SOUNDFILETYPE_OGG);
+	g_CoinSound[2] = soundWrapper.loadSoundFile("Assets/CoinPickup1.wav", SOUNDFILETYPE_WAV);
+	g_CoinSound[3] = soundWrapper.loadSoundFile("Assets/CoinPickup2.wav", SOUNDFILETYPE_WAV);
+	soundWrapper.playSoundFile(g_BackgroundMusic = soundWrapper.loadSoundFile("Assets/BackgroundMusic.ogg", SOUNDFILETYPE_OGG));
 
-	fontManager.SetFontFolder("Fonts/");
+	fontManager.SetFontFolder("Assets/Fonts/");
 	fontManager.LoadFont("Arial");
 	fontManager.LoadFont("Arial-12-White");
 
@@ -174,14 +174,14 @@ void CreateTestData()
 	memoryDataListBox->SetSelectable(false);
 	guiManager.GetBaseNode()->AddChild(memoryDataListBox);
 
-	auto moveable = GUIMoveable::CreateMoveable("ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
+	auto moveable = GUIMoveable::CreateMoveable("Assets/ContainerTest.png", 60, 60, 240, 240, 0, 0, 256, 25);
 	guiManager.GetBaseNode()->AddChild(moveable);
 
 	auto label7 = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 6, 200, 30);
 	label7->SetText("Move This UI Around");
 	moveable->AddChild(label7);
 
-	auto checkbox1 = GUICheckbox::CreateCheckbox("CheckboxTest1.png", "CheckboxTest2.png", 20, 40, 50, 50);
+	auto checkbox1 = GUICheckbox::CreateCheckbox("Assets/CheckboxTest1.png", "Assets/CheckboxTest2.png", 20, 40, 50, 50);
 	checkbox1->SetCheckCallback([=](GUIObjectNode* node)
 	{
 		useOggFiles = checkbox1->GetChecked();
@@ -195,7 +195,7 @@ void CreateTestData()
 	});
 	moveable->AddChild(checkbox2);
 
-	g_TestButton1 = GUIButton::CreateButton("ButtonTest1.png", 120, 40, 100, 50);
+	g_TestButton1 = GUIButton::CreateButton("Assets/ButtonTest1.png", 120, 40, 100, 50);
 	g_TestButton1->SetFont(fontManager.GetFont("Arial"));
 	g_TestButton1->SetText("Sound 1");
 	g_TestButton1->SetLeftClickCallback([=](GUIObjectNode* node)

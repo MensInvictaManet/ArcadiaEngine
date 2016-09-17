@@ -1,13 +1,10 @@
 #pragma once
 
 #include "SDL2/SDL.h"
-#pragma comment(lib, "SDL2/SDL2.lib")
 
 #include "SDL2/SDL_image.h"
-#pragma comment(lib, "SDL2/SDL2_image.lib")
 
 #include "SDL2/SDL_opengl.h"
-#pragma comment(lib, "opengl32.lib")
 
 #include <unordered_map>
 

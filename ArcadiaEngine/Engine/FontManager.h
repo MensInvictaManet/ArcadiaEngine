@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SDL2/SDL_opengl.h"
-#pragma comment(lib, "opengl32.lib")
 
 #include "TextureManager.h"
 #include "XMLWrapper.h"

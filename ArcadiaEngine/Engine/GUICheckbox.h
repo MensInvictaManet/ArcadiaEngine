@@ -67,7 +67,7 @@ inline GUICheckbox* GUICheckbox::CreateTemplatedCheckbox(const char* checkboxTem
 	MANAGE_MEMORY_NEW("MenuUI_Checkbox", sizeof(GUICheckbox));
 	auto newCheckbox = new GUICheckbox(true);
 
-	auto templateFolder("./UITemplates/Checkbox/" + std::string(checkboxTemplate) + "/");
+	auto templateFolder("Assets/UITemplates/Checkbox/" + std::string(checkboxTemplate) + "/");
 	newCheckbox->TextureTopLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopLeftCorner.png").c_str());
 	newCheckbox->TextureTopRightCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_TopRightCorner.png").c_str());
 	newCheckbox->TextureBottomLeftCorner[0] = textureManager.LoadTexture(std::string(templateFolder + "U_BottomLeftCorner.png").c_str());

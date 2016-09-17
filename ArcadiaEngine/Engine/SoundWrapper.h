@@ -28,7 +28,7 @@
 #include "OpenAL/Vorbis/vorbisfile.h"
 #include "OpenAL/SimpleAudioLib/CoreSystem.h"
 
-#pragma comment(lib, "OpenAL/OpenAL32.lib")
+#pragma comment(lib, "Engine/OpenAL/OpenAL32.lib")
 
 #include <map>
 
@@ -391,7 +391,6 @@ inline bool SoundWrapper::stopSoundFile(int soundIndex)
 
 	//  If the sound data is not playing, return a failure. Otherwise, mark it unplayed for the future.
 	if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) return false;
-	soundData->m_SoundStatus = SOUNDSTATUS_LOADED;
 
 	// Stop the Source and clear the Queue
 	alSourceStop(oggFileData->m_SoundSource);
@@ -412,7 +411,7 @@ inline bool SoundWrapper::stopSoundFile(int soundIndex)
 
 	//  Decrement the sound playing count and return a success
 	m_SoundPlayingCount--;
-	m_SoundsToErase.push_back(soundIndex);
+	soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
 	determineFirstIndex();
 	return true;
 }
@@ -471,8 +470,9 @@ inline bool SoundWrapper::unloadSoundFile(int soundIndex, bool erase)
 	if (erase)
 	{
 		MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
-		delete soundData;
+		soundDataListByName.erase(soundDataListByName.find(soundData->m_SoundFileName));
 		soundDataList.erase(soundDataList.find(soundIndex));
+		delete soundData;
 	}
 
 	return true;
@@ -484,6 +484,8 @@ inline void SoundWrapper::Update()
 	for (auto iter = m_SoundsToErase.begin(); iter != m_SoundsToErase.end(); ++iter)
 	{
 		auto sound = soundDataList.find((*iter));
+		MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
+		delete sound->second;
 		soundDataListByName.erase(soundDataListByName.find(sound->second->m_SoundFileName));
 		soundDataList.erase(sound);
 	}
@@ -542,7 +544,7 @@ inline void SoundWrapper::Update()
 			else
 			{
 				// Finished playing, so unload it if it is an OGG file (it will reload again when played)
-				stopSoundFile((*iter).first);
+				unloadSoundFile((*iter).first, false);
 				continue;
 			}
 		}
@@ -595,7 +597,7 @@ inline void SoundWrapper::unloadAllSoundFiles()
 	//  Delete all sound file data
 	while (!soundDataList.empty())
 	{
-		unloadSoundFile(-1);
+		unloadSoundFile(-1, true);
 	}
 	soundDataList.clear();
 }

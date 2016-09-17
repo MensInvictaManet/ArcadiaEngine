@@ -10,18 +10,18 @@
 #define CONSOLE_DISABLED	true
 
 #if USING_SDL
-#include "SDL2/SDL.h"
+#include "./SDL2/SDL.h"
 #undef main
-#pragma comment(lib, "SDL2/SDL2.lib")
+#pragma comment(lib, "Engine/SDL2/SDL2.lib")
 #endif
 
 #if USING_SDL_IMAGE
-#include "SDL2/SDL_image.h"
-#pragma comment(lib, "SDL2/SDL2_image.lib")
+#include "./SDL2/SDL_image.h"
+#pragma comment(lib, "Engine/SDL2/SDL2_image.lib")
 #endif
 
 #if USING_OPENGL
-#include "SDL2/SDL_opengl.h"
+#include "./SDL2/SDL_opengl.h"
 #pragma comment(lib, "opengl32.lib")
 #endif
 
