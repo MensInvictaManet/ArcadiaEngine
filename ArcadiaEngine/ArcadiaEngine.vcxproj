@@ -120,6 +120,7 @@
     <ClCompile Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineTest.h" />
     <ClInclude Include="Engine\ArcadiaEngine.h" />
     <ClInclude Include="Engine\FontManager.h" />
     <ClInclude Include="Engine\GUIButton.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Engine\GUIEditBox.h" />
     <ClInclude Include="Engine\GUILabel.h" />
     <ClInclude Include="Engine\GUIListBox.h" />
+    <ClInclude Include="Engine\GUIManager.h" />
     <ClInclude Include="Engine\GUIMoveable.h" />
     <ClInclude Include="Engine\GUIObjectNode.h" />
     <ClInclude Include="Engine\InputManager.h" />

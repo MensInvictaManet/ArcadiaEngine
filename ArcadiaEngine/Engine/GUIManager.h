@@ -12,7 +12,9 @@ public:
 
 	void DestroyNode(GUIObjectNode* nodeToDestroy);
 	void Input();
+	void Update();
 	void Render();
+	void Render3D();
 	void EndStep();
 	void Shutdown();
 
@@ -36,9 +38,19 @@ inline void GUIManager::Input()
 	m_BaseNode.Input();
 }
 
+inline void GUIManager::Update()
+{
+	m_BaseNode.Update();
+}
+
 inline void GUIManager::Render()
 {
 	m_BaseNode.Render();
+}
+
+inline void GUIManager::Render3D()
+{
+	m_BaseNode.Render3D();
 }
 
 inline GUIManager::GUIManager()

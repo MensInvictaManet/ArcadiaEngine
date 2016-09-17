@@ -19,7 +19,9 @@ public:
 	virtual ~GUIObjectNode();
 
 	virtual void Input(int xOffset = 0, int yOffset = 0);
+	virtual void Update();
 	virtual void Render(int xOffset = 0, int yOffset = 0);
+	virtual void Render3D();
 	virtual void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList);
 	virtual void Destroy();
 
@@ -89,6 +91,14 @@ inline void GUIObjectNode::Input(int xOffset, int yOffset)
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Input(xOffset + m_X, yOffset + m_Y);
 }
 
+inline void GUIObjectNode::Update()
+{
+	if (m_SetToDestroy || !m_Visible) return;
+
+	//  Pass the update call to all children
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Update();
+}
+
 inline void GUIObjectNode::Render(int xOffset, int yOffset)
 {
 	auto x = m_X + xOffset;
@@ -109,6 +119,12 @@ inline void GUIObjectNode::Render(int xOffset, int yOffset)
 
 	//  Pass the render call to all children
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(x, y);
+}
+
+inline void GUIObjectNode::Render3D()
+{
+	//  Pass the render 3D call to all children
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render3D();
 }
 
 inline void GUIObjectNode::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)

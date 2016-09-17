@@ -440,6 +440,12 @@
     <ClInclude Include="Engine\XMLWrapper.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="EngineTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GUIManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">
