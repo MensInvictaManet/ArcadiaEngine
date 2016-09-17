@@ -21,7 +21,7 @@ public:
 	void ManageMemoryDelete(std::string poolType, size_t Amount);
 	void OutputMemoryData(const char* fileName);
 
-	unsigned int GetMemoryPoolCount() const { return m_MemoryPoolList.size(); }
+	unsigned int GetMemoryPoolCount() const { return int(m_MemoryPoolList.size()); }
 	std::string GetMemoryPoolNameAtIndex(int index) const;
 	int GetMemoryPoolAmountAtIndex(int index) const;
 
@@ -38,8 +38,8 @@ private:
 inline void MemoryManager::ManageMemoryNew(std::string poolType, size_t amount)
 {
 	if (m_MemoryPoolList.find(poolType) == m_MemoryPoolList.end()) m_MemoryPoolList[poolType] = 0;
-	m_MemoryPoolList[poolType] += amount;
-	m_TotalMemoryUsed += amount;
+	m_MemoryPoolList[poolType] += int(amount);
+	m_TotalMemoryUsed += int(amount);
 }
 
 inline void MemoryManager::ManageMemoryDelete(std::string poolType, size_t amount)

@@ -28,13 +28,13 @@ public:
 
 	void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
 	void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); SelectedIndex = -1; }
-	void SelectItem(unsigned int index) { SelectedIndex = std::min(index, m_ItemList.size() - 1); }
+	void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	GUIObjectNode* GetSelectedItem() { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 	int GetSelectedIndex() const { return SelectedIndex; }
 	void SetSelectable(bool selectable) { m_Selectable = selectable; }
 	void SetSelectedIndex(int index) { SelectedIndex = index; }
 	void SetFlowToBottom(bool flowToBottom) { m_FlowToBottom = flowToBottom; }
-	unsigned int GetItemCount() const { return m_ItemList.size(); }
+	unsigned int GetItemCount() const { return static_cast<unsigned int>(m_ItemList.size()); }
 	unsigned int GetItemDisplayCount() const { return ItemDisplayCount; }
 
 private:

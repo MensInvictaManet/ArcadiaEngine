@@ -26,7 +26,7 @@ public:
 
 	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); if (m_Clicked) UpdateExpandedHeight(); }
 	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); }
-	inline void SelectItem(unsigned int index) { SelectedIndex = std::min(index, m_ItemList.size() - 1); }
+	inline void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	inline const GUIObjectNode* GetSelectedItem() const { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 
 private:
@@ -54,7 +54,7 @@ private:
 	TextureManager::ManagedTexture* TextureSelector;
 
 	unsigned int ExpandedHeight;
-	inline void UpdateExpandedHeight() { ExpandedHeight = m_ItemList.size() * m_Height + TextureTopSide->getHeight() + TextureBottomSide->getHeight(); }
+	inline void UpdateExpandedHeight() { ExpandedHeight = static_cast<unsigned int>(m_ItemList.size()) * m_Height + TextureTopSide->getHeight() + TextureBottomSide->getHeight(); }
 };
 
 inline GUIDropDown* GUIDropDown::CreateDropDown(const char* imageFile, int x, int y, int w, int h)

@@ -13,28 +13,31 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\SDL2">
-      <UniqueIdentifier>{d30da410-255d-4386-8865-c1cfd4979923}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{75b6f6e2-32a9-4086-bffd-feab60910c7d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\GUI Object Types">
+    <Filter Include="Header Files\Engine\GUI Object Types">
       <UniqueIdentifier>{4599e666-1925-4224-99ac-41dfd833b728}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenAL">
+    <Filter Include="Header Files\Engine\OpenAL">
       <UniqueIdentifier>{598f0aa8-647b-4cf7-b48f-d3bc61d5e6c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenAL\Vorbis">
+    <Filter Include="Header Files\Engine\OpenAL\Vorbis">
       <UniqueIdentifier>{e10f9fe4-2fe3-4722-a0a0-39de643471f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenAL\SimpleAudioLib">
+    <Filter Include="Header Files\Engine\OpenAL\SimpleAudioLib">
       <UniqueIdentifier>{d9b6bf4a-ace5-4e33-8b77-318d807c4e58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenAL\Ogg">
+    <Filter Include="Header Files\Engine\OpenAL\Ogg">
       <UniqueIdentifier>{a984130b-4554-417f-93f6-cca67d7aea2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenAL\Background">
+    <Filter Include="Header Files\Engine\OpenAL\Background">
       <UniqueIdentifier>{1d08bd32-8e86-4b19-a4f5-57ab2fa7909d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\WinsockWrapper">
+    <Filter Include="Header Files\Engine\SDL2">
+      <UniqueIdentifier>{d30da410-255d-4386-8865-c1cfd4979923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\WinsockWrapper">
       <UniqueIdentifier>{6dc34e35-388d-4d97-8f9c-26c84251279f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -43,432 +46,432 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\aldlist.cpp">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\CWaves.cpp">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\Framework.cpp">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\LoadOAL.cpp">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.cpp">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.cpp">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClCompile>
     <ClCompile Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.cpp">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\ArcadiaEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\FontManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\GUIDropDown.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIEditBox.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUILabel.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIListBox.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIButton.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUICheckbox.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIMoveable.h">
-      <Filter>Header Files\GUI Object Types</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIObjectNode.h">
-      <Filter>Header Files\GUI Object Types</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\SimpleMD5.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\MemoryManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\GUI Object Types</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Socket.h">
-      <Filter>Header Files\WinsockWrapper</Filter>
+      <Filter>Header Files\Engine\WinsockWrapper</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SocketBuffer.h">
-      <Filter>Header Files\WinsockWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\TimeSlice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\WindowManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\WinsockWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\XMLWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\SoundWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\TextureManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Engine\WinsockWrapper</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_audio.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_bits.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_blendmode.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_clipboard.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_android.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_iphoneos.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_macosx.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_minimal.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_pandora.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_psp.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_windows.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_winrt.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_config_wiz.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_copying.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_cpuinfo.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_egl.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_endian.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_error.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_events.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_filesystem.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_gamecontroller.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_gesture.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_haptic.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_hints.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_image.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_joystick.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_keyboard.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_keycode.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_loadso.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_log.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_main.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_messagebox.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_mixer.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_mouse.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_mutex.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_name.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengl.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengl_glext.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles2.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles2_gl2.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles2_gl2ext.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles2_gl2platform.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_opengles2_khrplatform.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_pixels.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_platform.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_power.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_quit.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_rect.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_render.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_revision.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_rwops.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_scancode.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_shape.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_stdinc.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_surface.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_system.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_syswm.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_assert.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_common.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_compare.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_crc32.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_font.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_fuzzer.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_harness.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_images.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_log.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_md5.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_test_random.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_thread.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_timer.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_touch.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_types.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_version.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_video.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\begin_code.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\close_code.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_assert.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SDL2\SDL_atomic.h">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\al.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\alc.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\aldlist.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\CWaves.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\efx.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\efx-creative.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\EFX-Util.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\Framework.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\LoadOAL.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\xram.h">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\Vorbis\codec.h">
-      <Filter>Header Files\OpenAL\Vorbis</Filter>
+      <Filter>Header Files\Engine\OpenAL\Vorbis</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\Vorbis\vorbisfile.h">
-      <Filter>Header Files\OpenAL\Vorbis</Filter>
+      <Filter>Header Files\Engine\OpenAL\Vorbis</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CorruptedFileException.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\InvalidPathException.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoContextException.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoDeviceException.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.h">
-      <Filter>Header Files\OpenAL\SimpleAudioLib</Filter>
+      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\Ogg\os_types.h">
-      <Filter>Header Files\OpenAL\Ogg</Filter>
+      <Filter>Header Files\Engine\OpenAL\Ogg</Filter>
     </ClInclude>
     <ClInclude Include="Engine\OpenAL\Ogg\ogg.h">
-      <Filter>Header Files\OpenAL\Ogg</Filter>
+      <Filter>Header Files\Engine\OpenAL\Ogg</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ArcadiaEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\FontManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\InputManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MemoryManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SimpleMD5.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SoundWrapper.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TextureManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TimeSlice.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\WindowManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\WinsockWrapper.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\XMLWrapper.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </None>
     <None Include="Engine\SDL2\SDL_config.h.in">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Engine\SDL2\SDL2.lib">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
     <Library Include="Engine\SDL2\SDL2_image.lib">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
     <Library Include="Engine\SDL2\SDL2_mixer.lib">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
     <Library Include="Engine\SDL2\SDL2main.lib">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
     <Library Include="Engine\SDL2\SDL2test.lib">
-      <Filter>Header Files\SDL2</Filter>
+      <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
     <Library Include="Engine\OpenAL\OpenAL32.lib">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </Library>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\OpenAL\XiphLicense.txt">
-      <Filter>Header Files\OpenAL\Background</Filter>
+      <Filter>Header Files\Engine\OpenAL\Background</Filter>
     </Text>
   </ItemGroup>
 </Project>
