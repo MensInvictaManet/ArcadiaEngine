@@ -110,7 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EngineTest.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\OpenAL\aldlist.cpp" />
     <ClCompile Include="Engine\OpenAL\CWaves.cpp" />
     <ClCompile Include="Engine\OpenAL\Framework.cpp" />
