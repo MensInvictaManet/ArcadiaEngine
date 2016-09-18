@@ -1,7 +1,7 @@
 #pragma once
 
 #define AUDIO_ENABLED		true
-#define CONSOLE_DISABLED	false
+#define CONSOLE_DISABLED	true
 
 #define USING_SDL			true
 #define USING_SDL_IMAGE		true
