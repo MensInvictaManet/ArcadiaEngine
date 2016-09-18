@@ -34,11 +34,11 @@ inline EngineTestDialogue::EngineTestDialogue() :
 	m_MemoryDataListBox(nullptr),
 	m_Display3DTest(false)
 {
-	m_CoinSoundID[0] = soundWrapper.loadSoundFile("Assets/CoinPickup1.ogg", SOUNDFILETYPE_OGG);
-	m_CoinSoundID[1] = soundWrapper.loadSoundFile("Assets/CoinPickup2.ogg", SOUNDFILETYPE_OGG);
-	m_CoinSoundID[2] = soundWrapper.loadSoundFile("Assets/CoinPickup1.wav", SOUNDFILETYPE_WAV);
-	m_CoinSoundID[3] = soundWrapper.loadSoundFile("Assets/CoinPickup2.wav", SOUNDFILETYPE_WAV);
-	soundWrapper.playSoundFile(m_BackgroundMusicID = soundWrapper.loadSoundFile("Assets/BackgroundMusic.ogg", SOUNDFILETYPE_OGG));
+	m_CoinSoundID[0] = soundWrapper.loadSoundFile("Assets/CoinPickup1.ogg", -1);
+	m_CoinSoundID[1] = soundWrapper.loadSoundFile("Assets/CoinPickup2.ogg", -1);
+	m_CoinSoundID[2] = soundWrapper.loadSoundFile("Assets/CoinPickup1.wav", -1);
+	m_CoinSoundID[3] = soundWrapper.loadSoundFile("Assets/CoinPickup2.wav", -1);
+	soundWrapper.playMusicFile(m_BackgroundMusicID = soundWrapper.loadMusicFile("Assets/BackgroundMusic.ogg", -1));
 
 	m_MemoryDataListBox = GUIListBox::CreateTemplatedListBox("Standard", 320, 60, 640, 120, 620, 6, 16, 16, 16, 16, 16, 22, 2);
 	m_MemoryDataListBox->SetSelectable(false);

@@ -111,13 +111,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\OpenAL\aldlist.cpp" />
-    <ClCompile Include="Engine\OpenAL\CWaves.cpp" />
-    <ClCompile Include="Engine\OpenAL\Framework.cpp" />
-    <ClCompile Include="Engine\OpenAL\LoadOAL.cpp" />
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.cpp" />
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.cpp" />
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineTest.h" />
@@ -134,27 +127,6 @@
     <ClInclude Include="Engine\GUIObjectNode.h" />
     <ClInclude Include="Engine\InputManager.h" />
     <ClInclude Include="Engine\MemoryManager.h" />
-    <ClInclude Include="Engine\OpenAL\al.h" />
-    <ClInclude Include="Engine\OpenAL\alc.h" />
-    <ClInclude Include="Engine\OpenAL\aldlist.h" />
-    <ClInclude Include="Engine\OpenAL\CWaves.h" />
-    <ClInclude Include="Engine\OpenAL\efx-creative.h" />
-    <ClInclude Include="Engine\OpenAL\EFX-Util.h" />
-    <ClInclude Include="Engine\OpenAL\efx.h" />
-    <ClInclude Include="Engine\OpenAL\Framework.h" />
-    <ClInclude Include="Engine\OpenAL\LoadOAL.h" />
-    <ClInclude Include="Engine\OpenAL\Ogg\ogg.h" />
-    <ClInclude Include="Engine\OpenAL\Ogg\os_types.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CorruptedFileException.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\InvalidPathException.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoContextException.h" />
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoDeviceException.h" />
-    <ClInclude Include="Engine\OpenAL\Vorbis\codec.h" />
-    <ClInclude Include="Engine\OpenAL\Vorbis\vorbisfile.h" />
-    <ClInclude Include="Engine\OpenAL\xram.h" />
     <ClInclude Include="Engine\SDL2\begin_code.h" />
     <ClInclude Include="Engine\SDL2\close_code.h" />
     <ClInclude Include="Engine\SDL2\SDL.h" />
@@ -252,15 +224,11 @@
     <None Include="Engine\SDL2\SDL_config.h.in" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Engine\OpenAL\OpenAL32.lib" />
     <Library Include="Engine\SDL2\SDL2.lib" />
     <Library Include="Engine\SDL2\SDL2main.lib" />
     <Library Include="Engine\SDL2\SDL2test.lib" />
     <Library Include="Engine\SDL2\SDL2_image.lib" />
     <Library Include="Engine\SDL2\SDL2_mixer.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Engine\OpenAL\XiphLicense.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

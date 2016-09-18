@@ -1,685 +1,148 @@
-/*
-* Copyright (c) 2006, Creative Labs Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided
-* that the following conditions are met:
-*
-*     * Redistributions of source code must retain the above copyright notice, this list of conditions and
-* 	     the following disclaimer.
-*     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
-* 	     and the following disclaimer in the documentation and/or other materials provided with the distribution.
-*     * Neither the name of Creative Labs Inc. nor the names of its contributors may be used to endorse or
-* 	     promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-* PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-* TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*/
-
 #pragma once
 
-#include "OpenAL/Framework.h"
-#include "OpenAL/Vorbis/vorbisfile.h"
-#include "OpenAL/SimpleAudioLib/CoreSystem.h"
+#include "MemoryManager.h"
 
-#pragma comment(lib, "Engine/OpenAL/OpenAL32.lib")
-
-#include <map>
-
-#define NUMBUFFERS              4
-
-// Background Functions (at bottom of file)
-unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuffer, unsigned long ulBufferSize, unsigned long ulChannels);
-void Swap(short &s1, short &s2);
-size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource);
-int ov_seek_func(void *datasource, ogg_int64_t offset, int whence);
-int ov_close_func(void *datasource);
-long ov_tell_func(void *datasource);
-
-// Function pointers
-typedef int(*LPOVCLEAR)(OggVorbis_File *vf);
-typedef long(*LPOVREAD)(OggVorbis_File *vf, char *buffer, int length, int bigendianp, int word, int sgned, int *bitstream);
-typedef ogg_int64_t(*LPOVPCMTOTAL)(OggVorbis_File *vf, int i);
-typedef vorbis_info * (*LPOVINFO)(OggVorbis_File *vf, int link);
-typedef vorbis_comment * (*LPOVCOMMENT)(OggVorbis_File *vf, int link);
-typedef int(*LPOVOPENCALLBACKS)(void *datasource, OggVorbis_File *vf, char *initial, long ibytes, ov_callbacks callbacks);
-
-// Variables
-ov_callbacks		soundCallbacks;
-LPOVCLEAR			fn_ov_clear = nullptr;
-LPOVREAD			fn_ov_read = nullptr;
-LPOVPCMTOTAL		fn_ov_pcm_total = nullptr;
-LPOVINFO			fn_ov_info = nullptr;
-LPOVCOMMENT			fn_ov_comment = nullptr;
-LPOVOPENCALLBACKS	fn_ov_open_callbacks = nullptr;
-
-enum SoundFileType
-{
-	SOUNDFILETYPE_UNKNOWN,
-	SOUNDFILETYPE_OGG,
-	SOUNDFILETYPE_WAV
-};
-
-enum SoundStatus
-{
-	SOUNDSTATUS_INVALID,
-	SOUNDSTATUS_LOADED,
-	SOUNDSTATUS_PLAYING
-};
+#include "SDL2\SDL_mixer.h"
 
 class SoundWrapper
 {
-private:
-	struct SoundData
-	{
-	public:
-		struct OggFileData
-		{
-		public:
-			FILE*							m_SoundFile;
-			OggVorbis_File					m_OggFile;
-			vorbis_info*					m_VorbisInfo;
-			unsigned long					m_Frequency;
-			unsigned long					m_Channels;
-			unsigned long					m_BufferSize;
-			unsigned long					m_Format;
-			char*							m_DecodeBuffer;
-			ALuint							m_SoundBuffers[NUMBUFFERS];
-			ALuint							m_SoundSource;
-			ALuint							m_BufferID;
-			ALint							iBuffersProcessed, iTotalBuffersProcessed, iQueuedBuffers;
-			unsigned long					ulBytesWritten;
-
-			explicit OggFileData(FILE* soundFile) :
-				m_SoundFile(soundFile),
-				m_VorbisInfo(nullptr),
-				m_Frequency(0),
-				m_Channels(0),
-				m_BufferSize(0),
-				m_Format(0),
-				m_DecodeBuffer(nullptr),
-				m_SoundSource(999),
-				m_BufferID(999),
-				iBuffersProcessed(0),
-				iTotalBuffersProcessed(0),
-				iQueuedBuffers(0),
-				ulBytesWritten(0)
-			{}
-
-		};
-
-		std::string						m_SoundFileName;
-		SoundStatus						m_SoundStatus;
-		SoundFileType					m_SoundFileType;
-		OggFileData*					m_OggFileData;
-		SimpleAudioLib::AudioEntity*	m_AudioEntity;	//  For WAV Files
-
-		SoundData(const char* fileName, SoundFileType fileType) :
-			m_SoundFileName(fileName),
-			m_SoundStatus(SOUNDSTATUS_INVALID),
-			m_SoundFileType(fileType),
-			m_OggFileData(nullptr),
-			m_AudioEntity(nullptr)
-		{
-		}
-	};
-
 public:
 	static SoundWrapper& GetInstance() { static SoundWrapper INSTANCE; return INSTANCE; }
 
-	bool Initialize();
-	int loadSoundFile(const char* soundFileName, SoundFileType fileType);
-	bool playSoundFile(int soundIndex, bool looping = false);
-	bool stopSoundFile(int soundIndex);
-	bool unloadSoundFile(int soundIndex, bool erase = true);
-	void Update();
+	int loadSoundFile(const char* soundFileName, int identifier = -1);
+	int loadMusicFile(const char* soundFileName, int identifier = -1);
+	bool playSoundFile(int identifier);
+	bool playMusicFile(int identifier);
+	bool unloadSoundFile(int identifier);
+	bool unloadMusicFile(int identifier);
 	void Shutdown();
 
-	int getSoundPlayingCount() const { return m_SoundPlayingCount; }
-
 private:
-	SoundWrapper();
+	SoundWrapper() {}
 	~SoundWrapper();
 
-	bool loadSoundData(SoundData*& soundData) const;
+	int FindFirstFreeSoundIndex();
+	int FindFirstFreeMusicIndex();
 	void unloadAllSoundFiles();
-	int determineFirstIndex();
 
-	std::map<int, SoundData*> soundDataList;
-	std::map<std::string, SoundData*> soundDataListByName;
-	std::vector<int> m_SoundsToErase;
-	int m_SoundPlayingCount;
-
-	SimpleAudioLib::CoreSystem& m_SimpleAudioLib;
-	bool m_bVorbisInitialized;
-	HINSTANCE m_VorbisFileDLL;
-	bool m_Shutdown;
+	std::map< int, std::pair<std::string, Mix_Chunk*> > soundDataList;
+	std::map< int, std::pair<std::string, Mix_Music*> > musicDataList;
 };
 
-inline bool SoundWrapper::Initialize()
+inline int SoundWrapper::loadSoundFile(const char* soundFileName, int identifier)
 {
-	// Initialize OpenAL Framework
-	ALFWInit();
+	if (identifier == -1) identifier = FindFirstFreeSoundIndex();
 
-	// Initialize OggVorbis libary, loading Vorbis DLLs (VorbisFile.dll will load ogg.dll and vorbis.dll)
-	if (!m_bVorbisInitialized)
+	auto nameString = std::string(soundFileName);
+	auto iterID = soundDataList.find(identifier);
+	if (iterID != soundDataList.end()) return ((*iterID).second.first.compare(nameString ) == 0 ? identifier : -1);
+
+	MANAGE_MEMORY_NEW("SoundWrapper", sizeof(Mix_Chunk));
+	auto newChunk = Mix_LoadWAV(soundFileName);
+	if (newChunk == nullptr)
 	{
-		m_VorbisFileDLL = LoadLibrary("vorbisfile.dll");
-		if (m_VorbisFileDLL)
-		{
-			fn_ov_clear = LPOVCLEAR(GetProcAddress(m_VorbisFileDLL, "ov_clear"));
-			fn_ov_read = LPOVREAD(GetProcAddress(m_VorbisFileDLL, "ov_read"));
-			fn_ov_pcm_total = LPOVPCMTOTAL(GetProcAddress(m_VorbisFileDLL, "ov_pcm_total"));
-			fn_ov_info = LPOVINFO(GetProcAddress(m_VorbisFileDLL, "ov_info"));
-			fn_ov_comment = LPOVCOMMENT(GetProcAddress(m_VorbisFileDLL, "ov_comment"));
-			fn_ov_open_callbacks = LPOVOPENCALLBACKS(GetProcAddress(m_VorbisFileDLL, "ov_open_callbacks"));
-
-			if (fn_ov_clear && fn_ov_read && fn_ov_pcm_total && fn_ov_info && fn_ov_comment && fn_ov_open_callbacks)
-			{
-				m_bVorbisInitialized = true;
-			}
-		}
+		printf("Failed to load sound file: %s\n", soundFileName);
+		return -1;
 	}
-
-	//  If we failed to initialize Vorbis, shut down OpenAL and return a failure
-	if (!m_bVorbisInitialized)
+	else
 	{
-		ALFWprintf("Failed to find OggVorbis DLLs (vorbisfile.dll, ogg.dll, or vorbis.dll)\n");
-		ALFWShutdown();
-		return false;
+		soundDataList[identifier] = std::pair<std::string, Mix_Chunk*>(nameString, newChunk);
+		return identifier;
 	}
+}
 
-	// Initialise OpenAL and get the data out to send into SimpleAudioLib
-	ALCdevice* pDevice = nullptr;
-	ALCcontext* pContext = nullptr;
-	if (!ALFWInitOpenAL(pDevice, pContext))
+inline int SoundWrapper::loadMusicFile(const char* soundFileName, int identifier)
+{
+	if (identifier == -1) identifier = FindFirstFreeMusicIndex();
+
+	auto nameString = std::string(soundFileName);
+	auto iterID = musicDataList.find(identifier);
+	if (iterID != musicDataList.end()) return ((*iterID).second.first.compare(nameString) == 0 ? identifier : -1);
+
+	MANAGE_MEMORY_NEW("SoundWrapper", 100);
+	auto newMusic = Mix_LoadMUS(soundFileName);
+	if (newMusic == nullptr)
 	{
-		ALFWprintf("Failed to initialize OpenAL\n");
-		ALFWShutdown();
-		return false;
+		printf("Failed to load music file: %s\n", soundFileName);
+		return -1;
 	}
+	else
+	{
+		musicDataList[identifier] = std::pair<std::string, Mix_Music*>(nameString, newMusic);
+		return identifier;
+	}
+}
 
-	//  Set the callback interaction functions
-	soundCallbacks.read_func = ov_read_func;
-	soundCallbacks.seek_func = ov_seek_func;
-	soundCallbacks.close_func = ov_close_func;
-	soundCallbacks.tell_func = ov_tell_func;
+inline bool SoundWrapper::playSoundFile(int identifier)
+{
+	auto findIter = soundDataList.find(identifier);
+	if (findIter == soundDataList.end()) return false;
 
-	//  Send the data in to SimpleAudioLib to be held for use with WAV files
-	m_SimpleAudioLib.initWithDefinedDevice(pDevice, pContext);
+	return (Mix_PlayChannel(-1, (*findIter).second.second, 0) != -1);
+}
 
+inline bool SoundWrapper::playMusicFile(int identifier)
+{
+	auto findIter = musicDataList.find(identifier);
+	if (findIter == musicDataList.end()) return false;
+
+	return (Mix_PlayMusic((*findIter).second.second, -1) != -1);
+}
+
+inline bool SoundWrapper::unloadSoundFile(int identifier)
+{
+	auto findIter = soundDataList.find(identifier);
+	if (findIter == soundDataList.end()) return false;
+
+	MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(Mix_Chunk));
+	Mix_FreeChunk((*findIter).second.second);
+	soundDataList.erase(findIter);
 	return true;
 }
 
-inline int SoundWrapper::loadSoundFile(const char* soundFileName, SoundFileType fileType)
+inline bool SoundWrapper::unloadMusicFile(int identifier)
 {
-	//  Find a new index, create a new SoundData class, and then load the sound data into it
-	auto newSoundIndex = determineFirstIndex();
-	MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SoundData));
-	auto newSoundData = new SoundData(soundFileName, fileType);
-	soundDataList[newSoundIndex] = newSoundData;
-	soundDataListByName[soundFileName] = newSoundData;
-	loadSoundData(newSoundData);
+	auto findIter = musicDataList.find(identifier);
+	if (findIter == musicDataList.end()) return false;
 
-	//  Return the index of the new sound data entry
-	return newSoundIndex;
-}
-
-inline bool SoundWrapper::loadSoundData(SoundData*& soundData) const
-{
-	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG && soundData->m_OggFileData == nullptr)
-	{
-		// Open the OggVorbis file
-		FILE *pOggVorbisFile;
-		fopen_s(&pOggVorbisFile, soundData->m_SoundFileName.c_str(), "rb");
-		if (!pOggVorbisFile)
-		{
-			ALFWprintf("Could not find %s\n", soundData->m_SoundFileName.c_str());
-			return false;
-		}
-
-		MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SoundData::OggFileData));
-		auto oggFileData = soundData->m_OggFileData = new SoundData::OggFileData(pOggVorbisFile);
-		if (fn_ov_open_callbacks(oggFileData->m_SoundFile, &oggFileData->m_OggFile, nullptr, 0, soundCallbacks) == 0)
-		{
-			// Get some information about the file (Channels, Format, and Frequency)
-			oggFileData->m_VorbisInfo = fn_ov_info(&oggFileData->m_OggFile, -1);
-			if (oggFileData->m_VorbisInfo)
-			{
-				oggFileData->m_Frequency = oggFileData->m_VorbisInfo->rate;
-				oggFileData->m_Channels = oggFileData->m_VorbisInfo->channels;
-
-				if (oggFileData->m_VorbisInfo->channels == 1)
-				{
-					oggFileData->m_Format = AL_FORMAT_MONO16;
-					// Set BufferSize to 250ms (Frequency * 2 (16bit) divided by 4 (quarter of a second))
-					oggFileData->m_BufferSize = oggFileData->m_Frequency >> 1;
-					// IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
-					oggFileData->m_BufferSize -= (oggFileData->m_BufferSize % 2);
-				}
-				else if (oggFileData->m_VorbisInfo->channels == 2)
-				{
-					oggFileData->m_Format = AL_FORMAT_STEREO16;
-					// Set BufferSize to 250ms (Frequency * 4 (16bit stereo) divided by 4 (quarter of a second))
-					oggFileData->m_BufferSize = oggFileData->m_Frequency;
-					// IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
-					oggFileData->m_BufferSize -= (oggFileData->m_BufferSize % 4);
-				}
-				else if (oggFileData->m_VorbisInfo->channels == 4)
-				{
-					oggFileData->m_Format = alGetEnumValue("AL_FORMAT_QUAD16");
-					// Set BufferSize to 250ms (Frequency * 8 (16bit 4-channel) divided by 4 (quarter of a second))
-					oggFileData->m_BufferSize = oggFileData->m_Frequency * 2;
-					// IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
-					oggFileData->m_BufferSize -= (oggFileData->m_BufferSize % 8);
-				}
-				else if (oggFileData->m_VorbisInfo->channels == 6)
-				{
-					oggFileData->m_Format = alGetEnumValue("AL_FORMAT_51CHN16");
-					// Set BufferSize to 250ms (Frequency * 12 (16bit 6-channel) divided by 4 (quarter of a second))
-					oggFileData->m_BufferSize = oggFileData->m_Frequency * 3;
-					// IMPORTANT : The Buffer Size must be an exact multiple of the BlockAlignment ...
-					oggFileData->m_BufferSize -= (oggFileData->m_BufferSize % 12);
-				}
-			}
-		}
-	}
-	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV && soundData->m_AudioEntity == nullptr)
-	{
-		SimpleAudioLib::AudioEntity* newAudioEntity;
-		MANAGE_MEMORY_NEW("SoundWrapper", sizeof(SimpleAudioLib::AudioEntity));
-		newAudioEntity = m_SimpleAudioLib.createAudioEntityFromFile(soundData->m_SoundFileName.c_str());
-		if (newAudioEntity == nullptr)
-		{
-			ALFWprintf("Could not create AudioEntity for %s\n", soundData->m_SoundFileName.c_str());
-			return false;
-		}
-
-		soundData->m_AudioEntity = newAudioEntity;
-	}
-
-	//  Set the sound state to loaded and return a success
-	soundData->m_SoundStatus = SOUNDSTATUS_LOADED;
+	MANAGE_MEMORY_DELETE("SoundWrapper", 100);
+	Mix_FreeMusic((*findIter).second.second);
+	musicDataList.erase(findIter);
 	return true;
-}
-
-inline bool SoundWrapper::playSoundFile(int soundIndex, bool looping)
-{
-	//  Ensure the sound index is valid before continuing;
-	if (soundIndex < 0) return false;
-	if (soundIndex >= int(soundDataList.size())) return false;
-
-	auto soundData = soundDataList[soundIndex];
-
-	//  If we're set to an invalid state, reload the data
-	if (soundData->m_SoundStatus == SOUNDSTATUS_INVALID)
-	{
-		loadSoundData(soundData);
-	}
-
-	//  Now that we have the correct sound data, play it
-	if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
-	{
-		auto oggFileData = soundData->m_OggFileData;
-		if (oggFileData->m_Format != 0)
-		{
-			// Allocate a buffer to be used to store decoded data for all Buffers
-			MANAGE_MEMORY_NEW("SoundWrapper", oggFileData->m_BufferSize);
-			oggFileData->m_DecodeBuffer = new char[oggFileData->m_BufferSize];
-			if (!oggFileData->m_DecodeBuffer)
-			{
-				ALFWprintf("Failed to allocate memory for decoded OggVorbis data\n");
-				fn_ov_clear(&oggFileData->m_OggFile);
-				return false;
-			}
-
-			// Generate some AL Buffers for streaming
-			alGenBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
-
-			// Generate a Source to playback the Buffers
-			alGenSources(1, &oggFileData->m_SoundSource);
-
-			// Fill all the Buffers with decoded audio data from the OggVorbis file
-			for (auto i = 0; i < NUMBUFFERS; i++)
-			{
-				oggFileData->ulBytesWritten = DecodeOggVorbis(&oggFileData->m_OggFile, oggFileData->m_DecodeBuffer, oggFileData->m_BufferSize, oggFileData->m_Channels);
-				if (oggFileData->ulBytesWritten)
-				{
-					alBufferData(oggFileData->m_SoundBuffers[i], oggFileData->m_Format, oggFileData->m_DecodeBuffer, oggFileData->ulBytesWritten, oggFileData->m_Frequency);
-					alSourceQueueBuffers(oggFileData->m_SoundSource, 1, &oggFileData->m_SoundBuffers[i]);
-				}
-			}
-
-			// Start playing source
-			alSourcePlay(oggFileData->m_SoundSource);
-			alSourcei(oggFileData->m_SoundSource, AL_LOOPING, looping);
-
-			oggFileData->iTotalBuffersProcessed = 0;
-		}
-		else
-		{
-			ALFWprintf("Failed to find format information, or unsupported format\n");
-			return false;
-		}
-	}
-	else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV)
-	{
-		soundData->m_AudioEntity->rewind();
-		soundData->m_AudioEntity->play();
-	}
-
-	soundData->m_SoundStatus = SOUNDSTATUS_PLAYING;
-	m_SoundPlayingCount++;
-
-	return true;
-}
-
-inline bool SoundWrapper::stopSoundFile(int soundIndex)
-{
-	auto soundData = soundDataList[soundIndex];
-	if (soundData == nullptr) return false;
-	if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) return false;
-
-	auto oggFileData = soundData->m_OggFileData;
-	if (oggFileData == nullptr) return false;
-
-	//  If the sound data is not playing, return a failure. Otherwise, mark it unplayed for the future.
-	if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) return false;
-
-	// Stop the Source and clear the Queue
-	alSourceStop(oggFileData->m_SoundSource);
-	alSourcei(oggFileData->m_SoundSource, AL_BUFFER, 0);
-
-	if (oggFileData->m_DecodeBuffer)
-	{
-		free(oggFileData->m_DecodeBuffer);
-		oggFileData->m_DecodeBuffer = nullptr;
-	}
-
-	// Clean up buffers and sources
-	alDeleteSources(1, &oggFileData->m_SoundSource);
-	alDeleteBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
-
-	//  Clear away the file data
-	fn_ov_clear(&oggFileData->m_OggFile);
-
-	//  Decrement the sound playing count and return a success
-	m_SoundPlayingCount--;
-	soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
-	determineFirstIndex();
-	return true;
-}
-
-inline bool SoundWrapper::unloadSoundFile(int soundIndex, bool erase)
-{
-	//  Ensure the sound index is valid before continuing;
-	if (soundIndex < 0) soundIndex = soundDataList.begin()->first;
-	else if (soundIndex >= int(soundDataList.size())) return false;
-
-	auto soundData = soundDataList[soundIndex];
-	if (soundData != nullptr)
-	{
-		if (soundData->m_SoundStatus != SOUNDSTATUS_INVALID)
-		{
-			if (soundData->m_SoundFileType == SOUNDFILETYPE_OGG)
-			{
-				auto oggFileData = soundData->m_OggFileData;
-
-				// Stop the Source and clear the Queue
-				alSourceStop(oggFileData->m_SoundSource);
-				alSourcei(oggFileData->m_SoundSource, AL_BUFFER, 0);
-
-				if (oggFileData->m_DecodeBuffer)
-				{
-					MANAGE_MEMORY_DELETE("SoundWrapper", oggFileData->m_BufferSize);
-					delete[] oggFileData->m_DecodeBuffer;
-					oggFileData->m_DecodeBuffer = nullptr;
-				}
-
-				// Clean up buffers and sources
-				alDeleteSources(1, &oggFileData->m_SoundSource);
-				alDeleteBuffers(NUMBUFFERS, oggFileData->m_SoundBuffers);
-
-				//  Clear away the file data
-				fn_ov_clear(&oggFileData->m_OggFile);
-
-				MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData::OggFileData));
-				delete soundData->m_OggFileData;
-				soundData->m_OggFileData = nullptr;
-			}
-			else if (soundData->m_SoundFileType == SOUNDFILETYPE_WAV)
-			{
-				MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SimpleAudioLib::AudioEntity));
-				delete soundData->m_AudioEntity;
-				soundData->m_AudioEntity = nullptr;
-			}
-		}
-
-		//  Decrement the sound playing count and return a success
-		soundData->m_SoundStatus = SOUNDSTATUS_INVALID;
-		m_SoundPlayingCount--;
-	}
-
-	//  Only actually get rid of the sound data if we're told to erase it
-	if (erase)
-	{
-		MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
-		soundDataListByName.erase(soundDataListByName.find(soundData->m_SoundFileName));
-		soundDataList.erase(soundDataList.find(soundIndex));
-		delete soundData;
-	}
-
-	return true;
-}
-
-inline void SoundWrapper::Update()
-{
-	//  Remove any sounds that no longer need to be updated
-	for (auto iter = m_SoundsToErase.begin(); iter != m_SoundsToErase.end(); ++iter)
-	{
-		auto sound = soundDataList.find((*iter));
-		MANAGE_MEMORY_DELETE("SoundWrapper", sizeof(SoundData));
-		delete sound->second;
-		soundDataListByName.erase(soundDataListByName.find(sound->second->m_SoundFileName));
-		soundDataList.erase(sound);
-	}
-	m_SoundsToErase.clear();
-
-	//  Step 1: Update all sounds that are playing
-	for (auto iter = soundDataList.begin(); iter != soundDataList.end(); ++iter)
-	{
-		auto soundData = (*iter).second;
-		if (soundData->m_SoundFileType != SOUNDFILETYPE_OGG) continue;
-		if (soundData->m_SoundStatus != SOUNDSTATUS_PLAYING) continue;
-
-		auto oggFileData = soundData->m_OggFileData;
-		if (oggFileData == nullptr) continue;
-
-		// Request the number of OpenAL Buffers have been processed (played) on the Source
-		oggFileData->iBuffersProcessed = 0;
-		alGetSourcei(oggFileData->m_SoundSource, AL_BUFFERS_PROCESSED, &oggFileData->iBuffersProcessed);
-
-		// Keep a running count of number of buffers processed (for logging purposes only)
-		oggFileData->iTotalBuffersProcessed += oggFileData->iBuffersProcessed;
-		//ALFWprintf("Buffers Processed %d\r", iTotalBuffersProcessed);
-
-		// For each processed buffer, remove it from the Source Queue, read next chunk of audio
-		// data from disk, fill buffer with new data, and add it to the Source Queue
-		while (oggFileData->iBuffersProcessed)
-		{
-			// Remove the Buffer from the Queue.  (soundData->m_BufferID contains the Buffer ID for the unqueued Buffer)
-			oggFileData->m_BufferID = 0;
-			alSourceUnqueueBuffers(oggFileData->m_SoundSource, 1, &oggFileData->m_BufferID);
-
-			// Read more audio data (if there is any)
-			oggFileData->ulBytesWritten = DecodeOggVorbis(&oggFileData->m_OggFile, oggFileData->m_DecodeBuffer, oggFileData->m_BufferSize, oggFileData->m_Channels);
-			if (oggFileData->ulBytesWritten)
-			{
-				alBufferData(oggFileData->m_BufferID, oggFileData->m_Format, oggFileData->m_DecodeBuffer, oggFileData->ulBytesWritten, oggFileData->m_Frequency);
-				alSourceQueueBuffers(oggFileData->m_SoundSource, 1, &oggFileData->m_BufferID);
-			}
-
-			oggFileData->iBuffersProcessed--;
-		}
-
-		// Check the status of the Source.  If it is not playing, then playback was completed,
-		// or the Source was starved of audio data, and needs to be restarted.
-		ALint currentState;
-		alGetSourcei(oggFileData->m_SoundSource, AL_SOURCE_STATE, &currentState);
-		if (currentState != AL_PLAYING)
-		{
-			// If there are Buffers in the Source Queue then the Source was starved of audio
-			// data, so needs to be restarted (because there is more audio data to play)
-			alGetSourcei(oggFileData->m_SoundSource, AL_BUFFERS_QUEUED, &oggFileData->iQueuedBuffers);
-			if (oggFileData->iQueuedBuffers)
-			{
-				alSourcePlay(oggFileData->m_SoundSource);
-			}
-			else
-			{
-				// Finished playing, so unload it if it is an OGG file (it will reload again when played)
-				unloadSoundFile((*iter).first, false);
-				continue;
-			}
-		}
-	}
 }
 
 inline void SoundWrapper::Shutdown()
 {
-	//  Unload all sound files that are currently still loaded
 	unloadAllSoundFiles();
-
-	//  Disconnect from the Vorbis DLL(s) and set us to de-initialized
-	if (m_VorbisFileDLL)
-	{
-		FreeLibrary(m_VorbisFileDLL);
-		m_VorbisFileDLL = nullptr;
-	}
-	m_bVorbisInitialized = false;
-
-	//  Mark that we have shut down, so as not to do so twice
-	m_Shutdown = true;
-}
-
-inline SoundWrapper::SoundWrapper() :
-	m_SoundPlayingCount(0),
-	m_SimpleAudioLib(SimpleAudioLib::CoreSystem::getInstance()),
-	m_bVorbisInitialized(false),
-	m_VorbisFileDLL(nullptr),
-	m_Shutdown(false)
-{
 }
 
 inline SoundWrapper::~SoundWrapper()
 {
-	//  Call the shutdown which will free all memory and set us back to a default state
-	if (!m_Shutdown) Shutdown();
+	Shutdown();
+}
 
-	//  Shut down the SimpleAudioLib core
-	SimpleAudioLib::CoreSystem::release();
+inline int SoundWrapper::FindFirstFreeSoundIndex()
+{
+	for (auto i = 0; ; ++i)
+	{
+		auto findIter = soundDataList.find(i);
+		if (findIter == soundDataList.end()) return i;
+	}
+}
 
-	// Shutdown AL
-	ALFWShutdownOpenAL();
-
-	// Shutdown Framework
-	ALFWShutdown();
+inline int SoundWrapper::FindFirstFreeMusicIndex()
+{
+	for (auto i = 0; ; ++i)
+	{
+		auto findIter = musicDataList.find(i);
+		if (findIter == musicDataList.end()) return i;
+	}
 }
 
 inline void SoundWrapper::unloadAllSoundFiles()
 {
-	//  Delete all sound file data
-	while (!soundDataList.empty())
-	{
-		unloadSoundFile(-1, true);
-	}
-	soundDataList.clear();
-}
-
-inline int SoundWrapper::determineFirstIndex()
-{
-	std::map<int, SoundData*>::const_iterator iter;
-	for (auto i = 0; ; ++i)
-	{
-		iter = soundDataList.find(i);
-		if (iter == soundDataList.end()) return i;
-	}
-}
-
-//  Background Functions
-inline unsigned long DecodeOggVorbis(OggVorbis_File *psOggVorbisFile, char *pDecodeBuffer, unsigned long ulBufferSize, unsigned long ulChannels)
-{
-	int current_section;
-	long lDecodeSize;
-	unsigned long ulSamples;
-	short *pSamples;
-
-	unsigned long ulBytesDone = 0;
-	while (true)
-	{
-		lDecodeSize = fn_ov_read(psOggVorbisFile, pDecodeBuffer + ulBytesDone, ulBufferSize - ulBytesDone, 0, 2, 1, &current_section);
-		if (lDecodeSize > 0)
-		{
-			ulBytesDone += lDecodeSize;
-
-			if (ulBytesDone >= ulBufferSize)
-				break;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	// Mono, Stereo and 4-Channel files decode into the same channel order as WAVEFORMATEXTENSIBLE,
-	// however 6-Channels files need to be re-ordered
-	if (ulChannels == 6)
-	{
-		pSamples = (short*)pDecodeBuffer;
-		for (ulSamples = 0; ulSamples < (ulBufferSize >> 1); ulSamples += 6)
-		{
-			// WAVEFORMATEXTENSIBLE Order : FL, FR, FC, LFE, RL, RR
-			// OggVorbis Order            : FL, FC, FR,  RL, RR, LFE
-			Swap(pSamples[ulSamples + 1], pSamples[ulSamples + 2]);
-			Swap(pSamples[ulSamples + 3], pSamples[ulSamples + 5]);
-			Swap(pSamples[ulSamples + 4], pSamples[ulSamples + 5]);
-		}
-	}
-
-	return ulBytesDone;
-}
-
-inline void Swap(short &s1, short &s2)
-{
-	auto sTemp = s1;
-	s1 = s2;
-	s2 = sTemp;
-}
-
-inline size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
-{
-	return fread(ptr, size, nmemb, (FILE*)datasource);
-}
-
-inline int ov_seek_func(void *datasource, ogg_int64_t offset, int whence)
-{
-	return fseek((FILE*)datasource, (long)offset, whence);
-}
-
-inline int ov_close_func(void *datasource)
-{
-	return fclose((FILE*)datasource);
-}
-
-inline long ov_tell_func(void *datasource)
-{
-	return ftell((FILE*)datasource);
+	while (!soundDataList.empty()) unloadSoundFile(soundDataList.begin()->first);
+	while (!musicDataList.empty()) unloadMusicFile(musicDataList.begin()->first);
 }
 
 SoundWrapper& soundWrapper = SoundWrapper::GetInstance();

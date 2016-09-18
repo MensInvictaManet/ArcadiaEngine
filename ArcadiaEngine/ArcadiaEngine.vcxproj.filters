@@ -19,21 +19,6 @@
     <Filter Include="Header Files\Engine\GUI Object Types">
       <UniqueIdentifier>{4599e666-1925-4224-99ac-41dfd833b728}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\OpenAL">
-      <UniqueIdentifier>{598f0aa8-647b-4cf7-b48f-d3bc61d5e6c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\OpenAL\Vorbis">
-      <UniqueIdentifier>{e10f9fe4-2fe3-4722-a0a0-39de643471f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\OpenAL\SimpleAudioLib">
-      <UniqueIdentifier>{d9b6bf4a-ace5-4e33-8b77-318d807c4e58}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\OpenAL\Ogg">
-      <UniqueIdentifier>{a984130b-4554-417f-93f6-cca67d7aea2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\OpenAL\Background">
-      <UniqueIdentifier>{1d08bd32-8e86-4b19-a4f5-57ab2fa7909d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\SDL2">
       <UniqueIdentifier>{d30da410-255d-4386-8865-c1cfd4979923}</UniqueIdentifier>
     </Filter>
@@ -42,27 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\OpenAL\aldlist.cpp">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\CWaves.cpp">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\Framework.cpp">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\LoadOAL.cpp">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.cpp">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.cpp">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.cpp">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -344,69 +308,6 @@
     <ClInclude Include="Engine\SDL2\SDL_atomic.h">
       <Filter>Header Files\Engine\SDL2</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\OpenAL\al.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\alc.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\aldlist.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\CWaves.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\efx.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\efx-creative.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\EFX-Util.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\Framework.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\LoadOAL.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\xram.h">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\Vorbis\codec.h">
-      <Filter>Header Files\Engine\OpenAL\Vorbis</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\Vorbis\vorbisfile.h">
-      <Filter>Header Files\Engine\OpenAL\Vorbis</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CorruptedFileException.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\InvalidPathException.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoContextException.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\NoDeviceException.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\AudioEntity.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\BaseMessageException.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\SimpleAudioLib\CoreSystem.h">
-      <Filter>Header Files\Engine\OpenAL\SimpleAudioLib</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\Ogg\os_types.h">
-      <Filter>Header Files\Engine\OpenAL\Ogg</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\OpenAL\Ogg\ogg.h">
-      <Filter>Header Files\Engine\OpenAL\Ogg</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\ArcadiaEngine.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -420,9 +321,6 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SimpleMD5.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\SoundWrapper.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\TextureManager.h">
@@ -444,6 +342,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SoundWrapper.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -471,13 +372,5 @@
     <Library Include="Engine\SDL2\SDL2test.lib">
       <Filter>Header Files\Engine\SDL2</Filter>
     </Library>
-    <Library Include="Engine\OpenAL\OpenAL32.lib">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </Library>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Engine\OpenAL\XiphLicense.txt">
-      <Filter>Header Files\Engine\OpenAL\Background</Filter>
-    </Text>
   </ItemGroup>
 </Project>

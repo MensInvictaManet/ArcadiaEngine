@@ -1,13 +1,13 @@
 #pragma once
 
+#define AUDIO_ENABLED		true
+#define CONSOLE_DISABLED	false
+
 #define USING_SDL			true
 #define USING_SDL_IMAGE		true
+#define USING_SDL_MIXER		true
 #define	USING_OPENGL		true
 #define	USING_GLU			true
-#define USING_SDL_MIXER		false
-
-#define AUDIO_ENABLED		true
-#define CONSOLE_DISABLED	true
 
 #if USING_SDL
 #include "./SDL2/SDL.h"
@@ -20,6 +20,13 @@
 #pragma comment(lib, "Engine/SDL2/SDL2_image.lib")
 #endif
 
+#if AUDIO_ENABLED
+#if USING_SDL_MIXER
+#include "./SDL2/SDL_mixer.h"
+#pragma comment(lib, "Engine/SDL2/SDL2_mixer.lib")
+#endif
+#endif
+
 #if USING_OPENGL
 #include "./SDL2/SDL_opengl.h"
 #pragma comment(lib, "opengl32.lib")
@@ -28,11 +35,6 @@
 #if USING_GLU
 #include <GL/GLU.h>
 #pragma comment(lib, "glu32.lib")
-#endif
-
-#if AUDIO_ENABLED
-#if USING_SDL_MIXER
-#endif
 #endif
 
 #if CONSOLE_DISABLED
@@ -78,7 +80,7 @@ inline void ResizeWindow(void)
 inline bool InitializeSDL()
 {
 	//  Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		return false;
@@ -184,12 +186,14 @@ inline bool InitializeEngine()
 	}
 
 #if AUDIO_ENABLED
-	//  Initialize the sound wrapper
-	if (soundWrapper.Initialize() == false)
+#if USING_SDL_MIXER
+	//Initialize SDL_mixer 
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
 	{
-		printf("Unable to initialize SoundWrapper!\n");
+		printf("Unable to initialize SDL_mixer!\n");
 		return false;
 	}
+#endif
 #endif
 
 	return true;
@@ -211,7 +215,10 @@ inline void ShutdownEngine()
 	guiManager.Shutdown();
 
 #if AUDIO_ENABLED
+#if USING_SDL_MIXER
 	soundWrapper.Shutdown();
+	Mix_CloseAudio();
+#endif
 #endif
 
 	memoryManager.Shutdown();
@@ -270,7 +277,6 @@ void PrimaryLoop()
 		inputManager.GetInputForFrame();
 
 		//  Update the sound wrapper
-		soundWrapper.Update();
 		guiManager.Update();
 
 		//  Handle events on queue
