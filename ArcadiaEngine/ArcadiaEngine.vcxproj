@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\ArcadiaEngine.h" />
+    <ClInclude Include="Engine\Color.h" />
     <ClInclude Include="Engine\FontManager.h" />
     <ClInclude Include="Engine\GUIButton.h" />
     <ClInclude Include="Engine\GUICheckbox.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Engine\Socket.h" />
     <ClInclude Include="Engine\SocketBuffer.h" />
     <ClInclude Include="Engine\SoundWrapper.h" />
+    <ClInclude Include="Engine\TextureAnimation.h" />
     <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\TimeSlice.h" />
     <ClInclude Include="Engine\WindowManager.h" />

@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Engine\WinsockWrapper">
       <UniqueIdentifier>{6dc34e35-388d-4d97-8f9c-26c84251279f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Utilities">
+      <UniqueIdentifier>{8f47b028-a496-4e1d-bdb6-150d244a9cb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -355,6 +358,12 @@
     </ClInclude>
     <ClInclude Include="WinsockShowcase.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\TextureAnimation.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Color.h">
+      <Filter>Header Files\Engine\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

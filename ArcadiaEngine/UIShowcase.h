@@ -8,6 +8,10 @@
 #include "Engine/GUICheckbox.h"
 #include "Engine/GUIButton.h"
 #include "Engine/GUIDropDown.h"
+#include "Engine/GUIEditBox.h"
+#include "Engine/TextureAnimation.h"
+
+TextureAnimation* animationTest = nullptr;
 
 class UIShowcaseDialogue : public GUIObjectNode
 {
@@ -92,4 +96,19 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 		editbox1->SetText("");
 	});
 	container1->AddChild(button2);
+
+	//  NOTE: Push TextureAnimation into a zelda-like example showcase
+	/*animationTest = TextureAnimation::CreateTextureAnimation("Assets/Sprites/IdleAnim.xml");
+	animationTest->AddAnimationCallback("Start", [=](TextureAnimation*)
+	{
+		static float alpha = 1.0f;
+		alpha -= 0.22f;
+		if (alpha <= 0.0f) alpha = 1.0f;
+
+		animationTest->SetColor(1.0f, 1.0f, 1.0f, alpha);
+	});
+	auto animNode = GUIObjectNode::CreateObjectNode(animationTest);
+	animNode->SetWidth(30);
+	animNode->SetHeight(60);
+	container1->AddChild(animNode);*/
 }

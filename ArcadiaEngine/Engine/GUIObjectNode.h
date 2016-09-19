@@ -2,22 +2,12 @@
 
 #include "TextureManager.h"
 #include "MemoryManager.h"
+#include "TextureAnimation.h"
+#include "Color.h"
 
 #include <deque>
 #include <assert.h>
 #include <stack>
-
-struct NodeColor
-{
-	NodeColor(float r, float g, float b, float a)
-	{
-		colorValues[0] = r;
-		colorValues[1] = g;
-		colorValues[2] = b;
-		colorValues[3] = a;
-	}
-	float colorValues[4];
-};
 
 class GUIObjectNode
 {
@@ -27,6 +17,7 @@ protected:
 
 public:
 	static GUIObjectNode* CreateObjectNode(const char* imageFile);
+	static GUIObjectNode* CreateObjectNode(TextureAnimation* anim);
 
 	GUIObjectNode();
 	virtual ~GUIObjectNode();
@@ -43,6 +34,7 @@ public:
 	void SetWidth(int width) { m_Width = width; }
 	void SetHeight(int height) { m_Height = height; }
 	void SetTextureID(int textureID) { m_TextureID = textureID; }
+	void SetTextureAnimation(TextureAnimation* anim) { m_TextureAnimation = anim; }
 	void SetVisible(bool visible) { m_Visible = visible; }
 	void SetParent(GUIObjectNode* parent) { m_Parent = parent; }
 	void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
@@ -52,6 +44,7 @@ public:
 	int GetWidth() const { return m_Width; }
 	int GetHeight() const { return m_Height; }
 	int GetTextureID() const { return m_TextureID; }
+	TextureAnimation* GetTextureAnimation() const { return m_TextureAnimation; }
 	bool GetVisible() { return m_Visible; }
 	GUIObjectNode* GetParent() { return m_Parent; }
 	float getColorR() const { return m_Color.colorValues[0]; }
@@ -68,12 +61,13 @@ public:
 	int m_Width;
 	int m_Height;
 	GLuint m_TextureID;
+	TextureAnimation* m_TextureAnimation;
 	bool m_Visible;
 	GUIObjectNode* m_Parent;
 	bool m_Created;
 	bool m_SetToDestroy;
 	bool m_ExplicitObject;
-	NodeColor m_Color;
+	Color m_Color;
 };
 
 inline GUIObjectNode* GUIObjectNode::CreateObjectNode(const char* imageFile)
@@ -85,6 +79,15 @@ inline GUIObjectNode* GUIObjectNode::CreateObjectNode(const char* imageFile)
 	return newNode;
 }
 
+inline GUIObjectNode* GUIObjectNode::CreateObjectNode(TextureAnimation* anim)
+{
+	MANAGE_MEMORY_NEW("MenuUI_ObjectNode", sizeof(GUIObjectNode));
+	auto newNode = new GUIObjectNode;
+	newNode->m_ExplicitObject = true;
+	newNode->SetTextureAnimation(anim);
+	return newNode;
+}
+
 inline GUIObjectNode::GUIObjectNode() :
 	m_ZOrder(0),
 	m_X(0),
@@ -92,6 +95,7 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_Width(0),
 	m_Height(0),
 	m_TextureID(0),
+	m_TextureAnimation(nullptr),
 	m_Visible(true),
 	m_Parent(nullptr),
 	m_Created(false),
@@ -139,16 +143,23 @@ inline void GUIObjectNode::Render(int xOffset, int yOffset)
 	auto y = m_Y + yOffset;
 
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && m_TextureID != 0 && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && m_Width > 0 && m_Height > 0)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_TextureID);
+		if (m_TextureID != 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
-		glEnd();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
+			glEnd();
+		}
+		else if (m_TextureAnimation != nullptr)
+		{
+			m_TextureAnimation->Render(x, y);
+		}
 	}
 
 	//  Pass the render call to all children
