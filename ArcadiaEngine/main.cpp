@@ -2,6 +2,7 @@
 
 #include "UIShowcase.h"
 #include "SoundShowcase.h"
+#include "MemoryShowcase.h"
 
 GUIObjectNode* currentDialogue;
 
@@ -50,8 +51,10 @@ void CreateTestData()
 			currentDialogue = new SoundShowcaseDialogue;
 			guiManager.GetBaseNode()->AddChild(currentDialogue);
 			break;
-
 		case 2: //  Memory Manager Showcase
+			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
+			currentDialogue = new MemoryShowcaseDialogue;
+			guiManager.GetBaseNode()->AddChild(currentDialogue);
 			break;
 		}
 	});

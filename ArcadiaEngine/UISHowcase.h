@@ -23,7 +23,7 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 	AddChild(introductionLabel);
 
 	//  Create the container that holds all of the main objects in the scene
-	auto container1 = GUIMoveable::CreateTemplatedMoveable("Standard", 10, 40, 600, 400, 0, 0, 400, 16);
+	auto container1 = GUIMoveable::CreateTemplatedMoveable("Standard", 10, 40, 600, 420, 0, 0, 400, 16);
 	AddChild(container1);
 
 	//  Create the label that acts as an explanation of the container / moveable
@@ -35,11 +35,11 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 	container1->AddChild(callbackLabel);
 
 	//  Create the label that acts as an explanation of the listbox
-	auto listboxLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "This is a basic listbox that you can throw GUI object into.", 10, 130, 300, 32);
+	auto listboxLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "This is a basic listbox that you can throw GUI object into.", 10, 150, 300, 32);
 	container1->AddChild(listboxLabel);
 
 	//  Create the listbox that shows actions taken in the UI
-	auto listbox1 = GUIListBox::CreateTemplatedListBox("Standard", 10, 150, 580, 240, 560, 4, 16, 16, 16, 16, 16, 22, 2);
+	auto listbox1 = GUIListBox::CreateTemplatedListBox("Standard", 10, 170, 580, 240, 560, 4, 16, 16, 16, 16, 16, 22, 2);
 	container1->AddChild(listbox1);
 
 	//  Create the checkbox that allows us to disable the button's ability to alter the label
@@ -74,4 +74,21 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 		callbackLabel->SetVisible(!callbackLabel->GetVisible());
 	});
 	container1->AddChild(button1);
+
+	//  Create the edit box for submitting strings to the listbox
+	auto editbox1 = GUIEditBox::CreateTemplatedEditBox("Standard", 260, 58, 200, 24);
+	editbox1->SetFont(fontManager.GetFont("Arial"));
+	container1->AddChild(editbox1);
+
+	//  Create the button that submits the contents of the edit box to the listbox
+	auto button2 = GUIButton::CreateTemplatedButton("Standard", 470, 50, 120, 40);
+	button2->SetFont(fontManager.GetFont("Arial"));
+	button2->SetText("Submit");
+	button2->SetLeftClickCallback([=](GUIObjectNode*)
+	{
+		if (editbox1->GetText().length() == 0) return;
+		listbox1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), (std::string("Editbox text: ") + editbox1->GetText()).c_str(), 10, 6, 300, 22));
+		editbox1->SetText("");
+	});
+	container1->AddChild(button2);
 }
