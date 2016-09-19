@@ -1,6 +1,9 @@
 #include "Engine/ArcadiaEngine.h"
 
 #include "UIShowcase.h"
+#include "SoundShowcase.h"
+
+GUIObjectNode* currentDialogue;
 
 void CreateTestData()
 {
@@ -10,7 +13,49 @@ void CreateTestData()
 	fontManager.LoadFont("Arial-12-White");
 
 	//  Create the first test dialogue and add it to the scene
-	guiManager.GetBaseNode()->AddChild(new UIShowcaseDialogue);
+	currentDialogue = new UIShowcaseDialogue;
+	guiManager.GetBaseNode()->AddChild(currentDialogue);
+
+	//  Create the container that holds the showcase choice drop-down and button
+	auto showcaseChoiceContainer = GUIMoveable::CreateTemplatedMoveable("Standard", 744, -16, 280, 140, 0, 0, 0, 0);
+	showcaseChoiceContainer->SetMoveable(false);
+	guiManager.AddChild(showcaseChoiceContainer);
+
+	//  Create the showcase choice introduction label
+	auto showcaseChoiceIntroductionLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Choose which showcase to display.", 10, 60, 260, 22);
+	showcaseChoiceContainer->AddChild(showcaseChoiceIntroductionLabel);
+
+	//  Create the drop-down that allows us to pick the next dialogue to display
+	auto showcaseDropdown = GUIDropDown::CreateTemplatedDropDown("Standard", 10, 26, 200, 24, 180, 4, 16, 16);
+	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "GUI Manager", 10, 4, 160, 20));
+	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Sound Wrapper", 10, 4, 160, 20));
+	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Memory Manager", 10, 4, 160, 20));
+	showcaseChoiceContainer->AddChild(showcaseDropdown);
+
+	//  Create the button that allows us to move to a new dialogue based on the drop-down setting
+	auto showcaseGoButton = GUIButton::CreateTemplatedButton("Standard", 220, 26, 50, 24);
+	showcaseGoButton->SetFont(fontManager.GetFont("Arial"));
+	showcaseGoButton->SetText("Go");
+	showcaseGoButton->SetLeftClickCallback([=](GUIObjectNode*)
+	{
+		switch (showcaseDropdown->GetSelectedIndex())
+		{
+		case 0: //  GUI Manager Showcase
+			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
+			currentDialogue = new UIShowcaseDialogue;
+			guiManager.GetBaseNode()->AddChild(currentDialogue);
+			break;
+		case 1: //  Sound Wrapper Showcase
+			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
+			currentDialogue = new SoundShowcaseDialogue;
+			guiManager.GetBaseNode()->AddChild(currentDialogue);
+			break;
+
+		case 2: //  Memory Manager Showcase
+			break;
+		}
+	});
+	showcaseChoiceContainer->AddChild(showcaseGoButton);
 }
 
 int main(int argc, char* args[])

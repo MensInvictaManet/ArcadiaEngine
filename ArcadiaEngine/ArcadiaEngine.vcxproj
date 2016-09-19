@@ -113,7 +113,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EngineTest.h" />
     <ClInclude Include="Engine\ArcadiaEngine.h" />
     <ClInclude Include="Engine\FontManager.h" />
     <ClInclude Include="Engine\GUIButton.h" />
@@ -218,6 +217,7 @@
     <ClInclude Include="Engine\WindowManager.h" />
     <ClInclude Include="Engine\WinsockWrapper.h" />
     <ClInclude Include="Engine\XMLWrapper.h" />
+    <ClInclude Include="SoundShowcase.h" />
     <ClInclude Include="UIShowcase.h" />
   </ItemGroup>
   <ItemGroup>

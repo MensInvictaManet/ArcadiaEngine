@@ -11,11 +11,11 @@
 #include "Engine/SoundWrapper.h"
 #include "Engine/WinsockWrapper.h"
 
-class EngineTestDialogue : public GUIObjectNode
+class SoundShowcaseDialogue : public GUIObjectNode
 {
 public:
-	EngineTestDialogue();
-	~EngineTestDialogue();
+	SoundShowcaseDialogue();
+	~SoundShowcaseDialogue();
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Update() override;
@@ -32,7 +32,7 @@ private:
 	bool m_Display3DTest;
 };
 
-inline EngineTestDialogue::EngineTestDialogue() :
+inline SoundShowcaseDialogue::SoundShowcaseDialogue() :
 	m_UseOggFiles(false),
 	m_MemoryDataListBox(nullptr),
 	m_Display3DTest(false)
@@ -103,12 +103,12 @@ inline EngineTestDialogue::EngineTestDialogue() :
 	auto ipString = winsockWrapper.ConvertUINTtoIP(ipAddress);
 }
 
-inline EngineTestDialogue::~EngineTestDialogue()
+inline SoundShowcaseDialogue::~SoundShowcaseDialogue()
 {
 
 }
 
-inline void EngineTestDialogue::Input(int xOffset, int yOffset)
+inline void SoundShowcaseDialogue::Input(int xOffset, int yOffset)
 {
 	// Set a flag to render a 3D object if we're holding the DOWN key
 	m_Display3DTest = inputManager.GetKeyDown(SDL_SCANCODE_DOWN);
@@ -116,7 +116,7 @@ inline void EngineTestDialogue::Input(int xOffset, int yOffset)
 	GUIObjectNode::Input(xOffset, yOffset);
 }
 
-inline void EngineTestDialogue::Update()
+inline void SoundShowcaseDialogue::Update()
 {
 	//  Update the memory list box based on data from the memory manager
 	UpdateMemoryListBox();
@@ -124,12 +124,12 @@ inline void EngineTestDialogue::Update()
 	GUIObjectNode::Update();
 }
 
-inline void EngineTestDialogue::Render(int xOffset, int yOffset)
+inline void SoundShowcaseDialogue::Render(int xOffset, int yOffset)
 {
 	GUIObjectNode::Render(xOffset, yOffset);
 }
 
-inline void EngineTestDialogue::Render3D()
+inline void SoundShowcaseDialogue::Render3D()
 {
 	//  Render the 3D quad if the bool is set to true
 	if (m_Display3DTest)
@@ -145,7 +145,7 @@ inline void EngineTestDialogue::Render3D()
 	GUIObjectNode::Render3D();
 }
 
-inline void EngineTestDialogue::UpdateMemoryListBox()
+inline void SoundShowcaseDialogue::UpdateMemoryListBox()
 {
 	if (m_MemoryDataListBox == nullptr) return;
 	if (MEMORY_MANAGER_ACTIVE == false) return;

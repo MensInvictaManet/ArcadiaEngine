@@ -15,6 +15,8 @@ public:
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
+	inline void SetMoveable(bool moveable) { m_Moveable = moveable; if (!moveable) m_Grabbed = false; }
+
 private:
 	bool m_Templated;
 	TextureManager::ManagedTexture* TextureTopLeftCorner;
@@ -27,6 +29,7 @@ private:
 	TextureManager::ManagedTexture* TextureBottomSide;
 	TextureManager::ManagedTexture* TextureMiddle;
 
+	bool m_Moveable;
 	bool m_Grabbed;
 	int m_GrabX;
 	int m_GrabY;
@@ -74,6 +77,7 @@ inline GUIMoveable* GUIMoveable::CreateTemplatedMoveable(const char* moveableTem
 
 inline GUIMoveable::GUIMoveable(bool templated, int grab_x, int grab_y, int grab_w, int grab_h) :
 	m_Templated(templated),
+	m_Moveable(true),
 	m_Grabbed(false),
 	m_GrabX(grab_x),
 	m_GrabY(grab_y),
@@ -106,26 +110,29 @@ inline void GUIMoveable::Input(int xOffset, int yOffset)
 	auto x = inputManager.GetMouseX();
 	auto y = inputManager.GetMouseY();
 
-	if (leftButtonState == MOUSE_BUTTON_UNPRESSED) m_Grabbed = false;
-	else if (m_Grabbed == false)
+	if (m_Moveable)
 	{
-		if ((x > xOffset + m_X + m_GrabX) && (x < xOffset + m_X + m_GrabX + m_GrabW) && (y > yOffset + m_Y + m_GrabY) && (y < yOffset + m_Y + m_GrabY + m_GrabH))
+		if (leftButtonState == MOUSE_BUTTON_UNPRESSED) m_Grabbed = false;
+		else if (m_Grabbed == false)
 		{
-			if (leftButtonState == MOUSE_BUTTON_PRESSED)
+			if ((x > xOffset + m_X + m_GrabX) && (x < xOffset + m_X + m_GrabX + m_GrabW) && (y > yOffset + m_Y + m_GrabY) && (y < yOffset + m_Y + m_GrabY + m_GrabH))
 			{
-				inputManager.TakeMouseButtonLeft();
-				m_Grabbed = true;
-				m_GrabLastX = x;
-				m_GrabLastY = y;
+				if (leftButtonState == MOUSE_BUTTON_PRESSED)
+				{
+					inputManager.TakeMouseButtonLeft();
+					m_Grabbed = true;
+					m_GrabLastX = x;
+					m_GrabLastY = y;
+				}
 			}
 		}
-	}
-	else
-	{
-		m_X += (x - m_GrabLastX);
-		m_Y += (y - m_GrabLastY);
-		m_GrabLastX = x;
-		m_GrabLastY = y;
+		else
+		{
+			m_X += (x - m_GrabLastX);
+			m_Y += (y - m_GrabLastY);
+			m_GrabLastX = x;
+			m_GrabLastY = y;
+		}
 	}
 
 	//  Take base node input

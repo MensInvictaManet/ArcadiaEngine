@@ -10,6 +10,7 @@ public:
 
 	GUIObjectNode* GetBaseNode() { return m_BaseNode; }
 	std::stack<GUIObjectNode*>& GetDestroyList() { return m_NodesToDestroy; }
+	void AddChild(GUIObjectNode* node) { if (m_BaseNode != nullptr) m_BaseNode->AddChild(node); }
 
 	void DestroyNode(GUIObjectNode* nodeToDestroy);
 	void Input();

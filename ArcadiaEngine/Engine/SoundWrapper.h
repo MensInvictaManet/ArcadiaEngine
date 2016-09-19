@@ -13,9 +13,18 @@ public:
 	int loadMusicFile(const char* soundFileName, int identifier = -1);
 	bool playSoundFile(int identifier);
 	bool playMusicFile(int identifier);
+	bool pauseSoundFile(int identifier);
+	bool pauseMusicFile(int identifier);
+	bool stopSoundFile(int identifier);
+	bool stopMusicFile(int identifier);
 	bool unloadSoundFile(int identifier);
 	bool unloadMusicFile(int identifier);
 	void Shutdown();
+
+	inline bool GetMusicPlaying() const { return (Mix_PlayingMusic() != 0); }
+	inline bool GetMusicPaused() const { return (Mix_PausedMusic() != 0); }
+
+	inline void ResumeMusic() const { Mix_ResumeMusic(); }
 
 private:
 	SoundWrapper() {}
@@ -86,7 +95,52 @@ inline bool SoundWrapper::playMusicFile(int identifier)
 	auto findIter = musicDataList.find(identifier);
 	if (findIter == musicDataList.end()) return false;
 
-	return (Mix_PlayMusic((*findIter).second.second, -1) != -1);
+	if (GetMusicPlaying() && GetMusicPaused())
+	{
+		ResumeMusic();
+		return true;
+	}
+	else
+	{
+		Mix_HaltMusic();
+		return (Mix_PlayMusic((*findIter).second.second, -1) != -1);
+	}
+}
+
+inline bool SoundWrapper::pauseSoundFile(int identifier)
+{
+	auto findIter = soundDataList.find(identifier);
+	if (findIter == soundDataList.end()) return false;
+
+	Mix_Pause(-1);
+	return true;
+}
+
+inline bool SoundWrapper::pauseMusicFile(int identifier)
+{
+	auto findIter = musicDataList.find(identifier);
+	if (findIter == musicDataList.end()) return false;
+
+	if (Mix_PlayingMusic()) Mix_PauseMusic();
+	return true;
+}
+
+inline bool SoundWrapper::stopSoundFile(int identifier)
+{
+	auto findIter = soundDataList.find(identifier);
+	if (findIter == soundDataList.end()) return false;
+	
+	Mix_HaltChannel(-1);
+	return true;
+}
+
+inline bool SoundWrapper::stopMusicFile(int identifier)
+{
+	auto findIter = musicDataList.find(identifier);
+	if (findIter == musicDataList.end()) return false;
+
+	Mix_HaltMusic();
+	return true;
 }
 
 inline bool SoundWrapper::unloadSoundFile(int identifier)
