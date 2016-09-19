@@ -141,6 +141,8 @@ inline void GUIMoveable::Input(int xOffset, int yOffset)
 
 inline void GUIMoveable::Render(int xOffset, int yOffset)
 {
+	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
+
 	//  Render the object if we're able
 	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
 	{

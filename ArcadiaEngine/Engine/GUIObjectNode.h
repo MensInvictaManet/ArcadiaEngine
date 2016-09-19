@@ -7,6 +7,18 @@
 #include <assert.h>
 #include <stack>
 
+struct NodeColor
+{
+	NodeColor(float r, float g, float b, float a)
+	{
+		colorValues[0] = r;
+		colorValues[1] = g;
+		colorValues[2] = b;
+		colorValues[3] = a;
+	}
+	float colorValues[4];
+};
+
 class GUIObjectNode
 {
 protected:
@@ -33,6 +45,7 @@ public:
 	void SetTextureID(int textureID) { m_TextureID = textureID; }
 	void SetVisible(bool visible) { m_Visible = visible; }
 	void SetParent(GUIObjectNode* parent) { m_Parent = parent; }
+	void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
 
 	int GetX() const { return m_X; }
 	int GetY() const { return m_Y; }
@@ -41,6 +54,10 @@ public:
 	int GetTextureID() const { return m_TextureID; }
 	bool GetVisible() { return m_Visible; }
 	GUIObjectNode* GetParent() { return m_Parent; }
+	float getColorR() const { return m_Color.colorValues[0]; }
+	float getColorG() const { return m_Color.colorValues[1]; }
+	float getColorB() const { return m_Color.colorValues[2]; }
+	float getColorA() const { return m_Color.colorValues[3]; }
 
 	void AddChild(GUIObjectNode* child);
 	void RemoveChild(GUIObjectNode* child);
@@ -56,6 +73,7 @@ public:
 	bool m_Created;
 	bool m_SetToDestroy;
 	bool m_ExplicitObject;
+	NodeColor m_Color;
 };
 
 inline GUIObjectNode* GUIObjectNode::CreateObjectNode(const char* imageFile)
@@ -78,7 +96,8 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_Parent(nullptr),
 	m_Created(false),
 	m_SetToDestroy(false),
-	m_ExplicitObject(false)
+	m_ExplicitObject(false),
+	m_Color(1.0f, 1.0f, 1.0f, 1.0f)
 {
 
 }
@@ -114,6 +133,8 @@ inline void GUIObjectNode::Update()
 
 inline void GUIObjectNode::Render(int xOffset, int yOffset)
 {
+	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
+
 	auto x = m_X + xOffset;
 	auto y = m_Y + yOffset;
 

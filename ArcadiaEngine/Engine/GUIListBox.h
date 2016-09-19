@@ -273,6 +273,8 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 
 inline void GUIListBox::Render(int xOffset, int yOffset)
 {
+	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
+
 	auto x = m_X + xOffset;
 	auto y = m_Y + yOffset;
 

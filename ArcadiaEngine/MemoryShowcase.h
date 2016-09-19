@@ -35,12 +35,12 @@ inline MemoryShowcaseDialogue::MemoryShowcaseDialogue() :
 	auto memoryExplanationLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "The Memory Manager allows you to track memory usage across sections of your code", 10, 40, 300, 32);
 	AddChild(memoryExplanationLabel);
 
-	m_MemoryDataListBox = GUIListBox::CreateTemplatedListBox("Standard", 10, 60, 640, 300, 620, 6, 16, 16, 16, 16, 16, 22, 2);
+	m_MemoryDataListBox = GUIListBox::CreateTemplatedListBox("Standard", 10, 90, 640, 300, 620, 6, 16, 16, 16, 16, 16, 22, 2);
 	m_MemoryDataListBox->SetSelectable(false);
 	AddChild(m_MemoryDataListBox);
 
 	//  Create shutdownExplanationLabel label that acts as an explanation of the current showcase UI
-	auto shutdownExplanationLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "At shutdown, it will let you know if you have a memory leak.", 10, 366, 300, 32);
+	auto shutdownExplanationLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "At shutdown, it will let you know if you have a memory leak.", 10, 396, 300, 32);
 	AddChild(shutdownExplanationLabel);
 }
 

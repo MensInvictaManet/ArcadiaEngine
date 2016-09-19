@@ -55,6 +55,7 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 
 	//  Create the button that allows us to alter a label's visibility and text
 	auto button1 = GUIButton::CreateTemplatedButton("Standard", 10, 50, 120, 40);
+	button1->SetColor(0.5f, 0.5f, 1.0f, 1.0f);
 	button1->SetFont(fontManager.GetFont("Arial"));
 	button1->SetText("Click Me");
 	button1->SetLeftClickCallback([=](GUIObjectNode*)
