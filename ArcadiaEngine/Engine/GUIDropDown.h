@@ -22,12 +22,13 @@ public:
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
-	void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList) override;
+	void SetToDestroy(std::stack<GUIObjectNode*>& destroyList) override;
 
-	inline void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); if (m_Clicked) UpdateExpandedHeight(); }
+	inline void AddItem(GUIObjectNode* item) { item->m_Created = true;  m_ItemList.push_back(item); if (m_Clicked) UpdateExpandedHeight(); }
 	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); }
 	inline void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	inline const GUIObjectNode* GetSelectedItem() const { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
+	inline int GetSelectedIndex() const { return SelectedIndex; }
 
 private:
 	GUIDropDownSelectCallback	m_ItemSelectCallback;
@@ -195,17 +196,20 @@ inline void GUIDropDown::Render(int xOffset, int yOffset)
 			TextureMiddle->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight(), m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth(), m_Height - TextureTopSide->getHeight() - TextureBottomSide->getHeight() + ExpandedHeight);
 			TextureDropDown->RenderTexture(x + DropDownX, y + DropDownY, DropDownW, DropDownH);
 
-			m_ItemList[SelectedIndex]->Render(x + 10, y);
-
-			if (m_Clicked)
+			if (!m_ItemList.empty())
 			{
-				auto i = 1;
-				for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter, ++i)
-				{
-					(*iter)->Render(x + 10, y + m_Height * i);
-				}
+				m_ItemList[SelectedIndex]->Render(x + 10, y);
 
-				TextureSelector->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight() + m_Height * (SelectedIndex + 1), m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth(), m_Height - TextureTopSide->getHeight() - TextureBottomSide->getHeight());
+				if (m_Clicked)
+				{
+					auto i = 1;
+					for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter, ++i)
+					{
+						(*iter)->Render(x + 10, y + m_Height * i);
+					}
+
+					TextureSelector->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight() + m_Height * (SelectedIndex + 1), m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth(), m_Height - TextureTopSide->getHeight() - TextureBottomSide->getHeight());
+				}
 			}
 		}
 		else
@@ -225,11 +229,10 @@ inline void GUIDropDown::Render(int xOffset, int yOffset)
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(xOffset + m_X, yOffset + m_Y);
 }
 
-inline void GUIDropDown::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)
+inline void GUIDropDown::SetToDestroy(std::stack<GUIObjectNode*>& destroyList)
 {
 	//  Pass the 'set to destroy' call to all items in item list
 	for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) (*iter)->SetToDestroy(destroyList);
-	m_ItemList.clear();
 
 	GUIObjectNode::SetToDestroy(destroyList);
 }

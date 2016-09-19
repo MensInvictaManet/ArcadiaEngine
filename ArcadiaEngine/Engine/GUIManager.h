@@ -1,14 +1,15 @@
 #pragma once
 
 #include "GUIObjectNode.h"
-#include <map>
+#include <stack>
 
 class GUIManager
 {
 public:
 	static GUIManager& GetInstance() { static GUIManager INSTANCE; return INSTANCE; }
 
-	GUIObjectNode* GetBaseNode() { return &m_BaseNode; }
+	GUIObjectNode* GetBaseNode() { return m_BaseNode; }
+	std::stack<GUIObjectNode*>& GetDestroyList() { return m_NodesToDestroy; }
 
 	void DestroyNode(GUIObjectNode* nodeToDestroy);
 	void Input();
@@ -22,8 +23,8 @@ private:
 	GUIManager();
 	~GUIManager();
 
-	GUIObjectNode m_BaseNode;
-	std::map<GUIObjectNode*, bool> m_NodesToDestroy;
+	GUIObjectNode* m_BaseNode;
+	std::stack<GUIObjectNode*> m_NodesToDestroy;
 };
 
 inline void GUIManager::DestroyNode(GUIObjectNode* nodeToDestroy)
@@ -35,27 +36,28 @@ inline void GUIManager::DestroyNode(GUIObjectNode* nodeToDestroy)
 
 inline void GUIManager::Input()
 {
-	m_BaseNode.Input();
+	m_BaseNode->Input();
 }
 
 inline void GUIManager::Update()
 {
-	m_BaseNode.Update();
+	m_BaseNode->Update();
 }
 
 inline void GUIManager::Render()
 {
-	m_BaseNode.Render();
+	m_BaseNode->Render();
 }
 
 inline void GUIManager::Render3D()
 {
-	m_BaseNode.Render3D();
+	m_BaseNode->Render3D();
 }
 
 inline GUIManager::GUIManager()
 {
-
+	m_BaseNode = GUIObjectNode::CreateObjectNode("");
+	m_BaseNode->m_Created = true;
 }
 
 inline GUIManager::~GUIManager()
@@ -65,20 +67,18 @@ inline GUIManager::~GUIManager()
 
 inline void GUIManager::EndStep()
 {
-	for (auto iter = m_NodesToDestroy.begin(); iter != m_NodesToDestroy.end(); ++iter)
+	while (!m_NodesToDestroy.empty())
 	{
-		(*iter).first->Destroy();
-		delete (*iter).first;
+		auto node = m_NodesToDestroy.top();
+		node->Destroy();
+		delete node;
+		m_NodesToDestroy.pop();
 	}
-
-	m_NodesToDestroy.clear();
 }
 
 inline void GUIManager::Shutdown()
 {
-	DestroyNode(&m_BaseNode);
-	m_NodesToDestroy.erase(m_NodesToDestroy.find(&m_BaseNode));
-	m_BaseNode.m_SetToDestroy = false;
+	m_BaseNode->SetToDestroy(m_NodesToDestroy);
 	EndStep();
 }
 

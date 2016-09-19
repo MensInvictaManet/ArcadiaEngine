@@ -347,6 +347,9 @@
     <ClInclude Include="Engine\SoundWrapper.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="UIShowcase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">

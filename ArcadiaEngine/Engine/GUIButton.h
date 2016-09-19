@@ -133,9 +133,9 @@ inline void GUIButton::Input(int xOffset, int yOffset)
 	{
 		if (leftButtonState == MOUSE_BUTTON_PRESSED) m_Pressed = true;
 
-		if (leftButtonState == MOUSE_BUTTON_PRESSED) { inputManager.TakeMouseButtonLeft(); m_LeftClickCallback(this); }
-		if (middleButtonState == MOUSE_BUTTON_PRESSED) { inputManager.TakeMouseButtonMiddle(); m_MiddleClickCallback(this); }
-		if (rightButtonState == MOUSE_BUTTON_PRESSED) { inputManager.TakeMouseButtonRight(); m_RightClickCallback(this); }
+		if (leftButtonState == MOUSE_BUTTON_PRESSED && m_LeftClickCallback != nullptr) { inputManager.TakeMouseButtonLeft(); m_LeftClickCallback(this); }
+		if (middleButtonState == MOUSE_BUTTON_PRESSED && m_MiddleClickCallback != nullptr) { inputManager.TakeMouseButtonMiddle(); m_MiddleClickCallback(this); }
+		if (rightButtonState == MOUSE_BUTTON_PRESSED && m_RightClickCallback != nullptr) { inputManager.TakeMouseButtonRight(); m_RightClickCallback(this); }
 	}
 	else m_Pressed = false;
 
@@ -150,10 +150,12 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 	{
 		auto x = m_X + xOffset;
 		auto y = m_Y + yOffset;
+		float pressedSqueeze = 0.95f;
 
 		if (m_Templated)
 		{
 			auto pressedIndex = (m_Pressed ? 1 : 0);
+			pressedSqueeze = 1.0f;
 
 			TextureTopLeftCorner[pressedIndex]->RenderTexture(x, y, TextureTopLeftCorner[pressedIndex]->getWidth(), TextureTopLeftCorner[pressedIndex]->getHeight());
 			TextureTopRightCorner[pressedIndex]->RenderTexture(x + m_Width - TextureTopRightCorner[pressedIndex]->getWidth(), y, TextureTopRightCorner[pressedIndex]->getWidth(), TextureTopRightCorner[pressedIndex]->getHeight());
@@ -169,8 +171,8 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 		{
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
-			auto pressedWidthDelta = m_Pressed ? int(m_Width * 0.05f) : 0;
-			auto pressedHeightDelta = m_Pressed ? int(m_Height * 0.05f) : 0;
+			auto pressedWidthDelta = m_Pressed ? int(m_Width * (1.0f - pressedSqueeze)) : 0;
+			auto pressedHeightDelta = m_Pressed ? int(m_Height * (1.0f - pressedSqueeze)) : 0;
 
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f); glVertex2i(x + pressedWidthDelta, y + pressedHeightDelta);
@@ -183,7 +185,7 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 		//  Render the font the same way regardless of templating
 		if (m_Font != nullptr && !m_Text.empty())
 		{
-			m_Font->RenderText(m_Text.c_str(), x + m_Width / 2, y + m_Height / 2, true, true, m_Pressed ? 0.95f : 1.0f, m_Pressed ? 0.95f : 1.0f);
+			m_Font->RenderText(m_Text.c_str(), x + m_Width / 2, y + m_Height / 2, true, true, m_Pressed ? pressedSqueeze : 1.0f, m_Pressed ? pressedSqueeze : 1.0f);
 		}
 	}
 

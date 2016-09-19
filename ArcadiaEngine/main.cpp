@@ -1,8 +1,6 @@
 #include "Engine/ArcadiaEngine.h"
 
-#include "EngineTest.h"
-
-EngineTestDialogue* g_EngineTestDialogue = nullptr;
+#include "UIShowcase.h"
 
 void CreateTestData()
 {
@@ -11,9 +9,8 @@ void CreateTestData()
 	fontManager.LoadFont("Arial");
 	fontManager.LoadFont("Arial-12-White");
 
-	//  Create the engine test dialogue and add it to the scene
-	g_EngineTestDialogue = new EngineTestDialogue;
-	guiManager.GetBaseNode()->AddChild(g_EngineTestDialogue);
+	//  Create the first test dialogue and add it to the scene
+	guiManager.GetBaseNode()->AddChild(new UIShowcaseDialogue);
 }
 
 int main(int argc, char* args[])

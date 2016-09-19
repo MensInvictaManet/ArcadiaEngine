@@ -24,9 +24,9 @@ public:
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
 
-	void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList) override;
+	void SetToDestroy(std::stack<GUIObjectNode*>& destroyList) override;
 
-	void AddItem(GUIObjectNode* item) { m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
+	void AddItem(GUIObjectNode* item) { item->m_Created = true; m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
 	void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); SelectedIndex = -1; }
 	void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	GUIObjectNode* GetSelectedItem() { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
@@ -351,11 +351,10 @@ inline void GUIListBox::UpdateMover(int indexOverride)
 	MoverY = static_cast<unsigned int>(float(MoverYDelta) * float(MovementIndex));
 }
 
-inline void GUIListBox::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)
+inline void GUIListBox::SetToDestroy(std::stack<GUIObjectNode*>& destroyList)
 {
 	//  Pass the 'set to destroy' call to all items in item list
 	for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) (*iter)->SetToDestroy(destroyList);
-	m_ItemList.clear();
 
 	GUIObjectNode::SetToDestroy(destroyList);
 }

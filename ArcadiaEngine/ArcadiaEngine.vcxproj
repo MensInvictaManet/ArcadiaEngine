@@ -218,6 +218,7 @@
     <ClInclude Include="Engine\WindowManager.h" />
     <ClInclude Include="Engine\WinsockWrapper.h" />
     <ClInclude Include="Engine\XMLWrapper.h" />
+    <ClInclude Include="UIShowcase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake" />

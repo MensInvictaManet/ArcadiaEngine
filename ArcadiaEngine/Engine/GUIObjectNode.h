@@ -5,12 +5,13 @@
 
 #include <deque>
 #include <assert.h>
-#include <map>
+#include <stack>
 
 class GUIObjectNode
 {
 protected:
 	std::deque<GUIObjectNode*> m_Children;
+	std::deque<GUIObjectNode*> m_NewChildren;
 
 public:
 	static GUIObjectNode* CreateObjectNode(const char* imageFile);
@@ -22,7 +23,7 @@ public:
 	virtual void Update();
 	virtual void Render(int xOffset = 0, int yOffset = 0);
 	virtual void Render3D();
-	virtual void SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList);
+	virtual void SetToDestroy(std::stack<GUIObjectNode*>& destroyList);
 	virtual void Destroy();
 
 	void SetX(int x) { m_X = x; }
@@ -37,6 +38,9 @@ public:
 	int GetY() const { return m_Y; }
 	int GetWidth() const { return m_Width; }
 	int GetHeight() const { return m_Height; }
+	int GetTextureID() const { return m_TextureID; }
+	bool GetVisible() { return m_Visible; }
+	GUIObjectNode* GetParent() { return m_Parent; }
 
 	void AddChild(GUIObjectNode* child);
 	void RemoveChild(GUIObjectNode* child);
@@ -49,6 +53,7 @@ public:
 	GLuint m_TextureID;
 	bool m_Visible;
 	GUIObjectNode* m_Parent;
+	bool m_Created;
 	bool m_SetToDestroy;
 	bool m_ExplicitObject;
 };
@@ -71,6 +76,7 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_TextureID(0),
 	m_Visible(true),
 	m_Parent(nullptr),
+	m_Created(false),
 	m_SetToDestroy(false),
 	m_ExplicitObject(false)
 {
@@ -94,6 +100,13 @@ inline void GUIObjectNode::Input(int xOffset, int yOffset)
 inline void GUIObjectNode::Update()
 {
 	if (m_SetToDestroy || !m_Visible) return;
+
+	for (auto iter = m_NewChildren.begin(); iter != m_NewChildren.end(); ++iter)
+	{
+		m_Children.push_back((*iter));
+		(*iter)->m_Created = true;
+	}
+	m_NewChildren.clear();
 
 	//  Pass the update call to all children
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Update();
@@ -127,39 +140,34 @@ inline void GUIObjectNode::Render3D()
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render3D();
 }
 
-inline void GUIObjectNode::SetToDestroy(std::map<GUIObjectNode*, bool>& destroyList)
+inline void GUIObjectNode::SetToDestroy(std::stack<GUIObjectNode*>& destroyList)
 {
-	m_SetToDestroy = true;
-	destroyList[this] = true;
+	assert(m_Created);
 
-	//  Pass the 'set to destroy' call to all children
+	m_SetToDestroy = true;
+	destroyList.push(this);
+
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->SetToDestroy(destroyList);
 }
 
 inline void GUIObjectNode::Destroy()
 {
 	if (m_Parent != nullptr) m_Parent->RemoveChild(this);
-
-	//  Pass the destroy call to all children
-	while (!m_Children.empty())
-	{
-		auto child = m_Children.back();
-		m_Children.pop_back();
-		child->SetParent(nullptr);
-		child->Destroy();
-	}
+	assert(m_Created);
 }
 
 inline void GUIObjectNode::AddChild(GUIObjectNode* child)
 {
 	assert(!m_SetToDestroy);
 
-	m_Children.push_back(child);
+	m_NewChildren.push_back(child);
 	child->m_Parent = this;
 }
 
 inline void GUIObjectNode::RemoveChild(GUIObjectNode* child)
 {
+	assert(child->m_Created);
+
 	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter)
 	{
 		if ((*iter) != child) continue;
