@@ -221,6 +221,7 @@
     <ClInclude Include="Engine\XMLWrapper.h" />
     <ClInclude Include="MemoryShowcase.h" />
     <ClInclude Include="SoundShowcase.h" />
+    <ClInclude Include="TopDownExample.h" />
     <ClInclude Include="UIShowcase.h" />
     <ClInclude Include="WinsockShowcase.h" />
   </ItemGroup>

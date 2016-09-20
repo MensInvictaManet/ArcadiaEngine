@@ -3,6 +3,7 @@
 #include "UIShowcase.h"
 #include "SoundShowcase.h"
 #include "MemoryShowcase.h"
+#include "TopDownExample.h"
 
 GUIObjectNode* currentDialogue;
 
@@ -31,6 +32,7 @@ void CreateTestData()
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "GUI Manager", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Sound Wrapper", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Memory Manager", 10, 4, 160, 20));
+	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "TopDown Example", 10, 4, 160, 20));
 	showcaseChoiceContainer->AddChild(showcaseDropdown);
 
 	//  Create the button that allows us to move to a new dialogue based on the drop-down setting
@@ -54,6 +56,11 @@ void CreateTestData()
 		case 2: //  Memory Manager Showcase
 			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
 			currentDialogue = new MemoryShowcaseDialogue;
+			guiManager.GetBaseNode()->AddChild(currentDialogue);
+			break;
+		case 3: //  Top Down Example
+			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
+			currentDialogue = new TopDownExample;
 			guiManager.GetBaseNode()->AddChild(currentDialogue);
 			break;
 		}

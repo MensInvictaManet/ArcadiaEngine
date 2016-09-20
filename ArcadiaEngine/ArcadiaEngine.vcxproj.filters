@@ -365,6 +365,9 @@
     <ClInclude Include="Engine\Color.h">
       <Filter>Header Files\Engine\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="TopDownExample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">

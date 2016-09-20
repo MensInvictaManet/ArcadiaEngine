@@ -1,10 +1,10 @@
-<TextureAnimation length="4.0" file="Assets/Sprites/Link.png">
-	<Keyframe t="0.0" x="249" y="208" w="19" h="24" xOff="0" yOff="0"/>
-	<Keyframe t="0.5" x="277" y="208" w="18" h="24" xOff="0" yOff="0"/>
-	<Keyframe t="1.0" x="301" y="209" w="19" h="23" xOff="0" yOff="0"/>
-	<Keyframe t="1.5" x="326" y="209" w="19" h="23" xOff="0" yOff="0"/>
-	<Keyframe t="2.0" x="351" y="208" w="19" h="24" xOff="0" yOff="0"/>
-	<Keyframe t="2.5" x="376" y="208" w="19" h="24" xOff="0" yOff="0"/>
-	<Keyframe t="3.0" x="402" y="208" w="18" h="24" xOff="0" yOff="0"/>
-	<Keyframe t="3.5" x="425" y="209" w="19" h="23" xOff="0" yOff="0"/>
+<TextureAnimation length="0.64" file="Assets/Sprites/Link.png">
+	<Keyframe t="0.00" x="249" y="208" w="19" h="24" xOff="0" yOff="0"/>
+	<Keyframe t="0.08" x="277" y="208" w="18" h="24" xOff="0" yOff="0"/>
+	<Keyframe t="0.16" x="301" y="209" w="19" h="23" xOff="0" yOff="0"/>
+	<Keyframe t="0.24" x="326" y="209" w="19" h="23" xOff="0" yOff="0"/>
+	<Keyframe t="0.32" x="351" y="208" w="19" h="24" xOff="0" yOff="0"/>
+	<Keyframe t="0.40" x="376" y="208" w="19" h="24" xOff="0" yOff="0"/>
+	<Keyframe t="0.48" x="402" y="208" w="18" h="24" xOff="0" yOff="0"/>
+	<Keyframe t="0.56" x="425" y="209" w="19" h="23" xOff="0" yOff="0"/>
 </TextureAnimation>
