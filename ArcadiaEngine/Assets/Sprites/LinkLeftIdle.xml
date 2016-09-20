@@ -1,0 +1,3 @@
+<TextureAnimation length="1.200" file="Assets/Sprites/Link.png">
+	<Keyframe t="0.0" x="226" y="240" w="19" h="23" xOff="0" yOff="0"/>
+</TextureAnimation>
