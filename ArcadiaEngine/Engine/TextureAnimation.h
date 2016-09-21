@@ -18,13 +18,14 @@ private:
 	struct TextureAnimationKeyframe
 	{
 	public:
-		TextureAnimationKeyframe(float t, int x, int y, int w, int h, int xOff, int yOff, std::string callback = "") :
+		TextureAnimationKeyframe(float t, int x, int y, int w, int h, float a, int xOff, int yOff, std::string callback = "") :
 			m_Time(t),
 			m_Length(0.0f),
 			m_X(x),
 			m_Y(y),
 			m_W(w),
 			m_H(h),
+			m_Alpha(a),
 			m_XOff(xOff),
 			m_YOff(yOff),
 			m_Callback(callback)
@@ -36,6 +37,7 @@ private:
 		int m_Y;
 		int m_W;
 		int m_H;
+		float m_Alpha;
 		int m_XOff;
 		int m_YOff;
 		std::string m_Callback;
@@ -56,7 +58,7 @@ private:
 public:
 	static TextureAnimation* CreateTextureAnimation(const char* xmlFilename);
 
-	void AddKeyframeData(float t, int x, int y, int w, int h, int xOff, int yOff, std::string callback);
+	void AddKeyframeData(float t, int x, int y, int w, int h, float a, int xOff, int yOff, std::string callback);
 	void ResetAnimation();
 	void Render(int x, int y);
 	void AddAnimationCallback(std::string callbackTrigger, TextureAnimationCallback callback) { m_CallbackList[callbackTrigger] = callback; }
@@ -104,6 +106,8 @@ inline TextureAnimation* TextureAnimation::CreateTextureAnimation(const char* xm
 		int w = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("h");
 		int h = int(atoi(dataAttribute->value()));
+		dataAttribute = dataAttribute->next_attribute("a");
+		float a = float(atof(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("xOff");
 		int xOff = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("yOff");
@@ -113,7 +117,7 @@ inline TextureAnimation* TextureAnimation::CreateTextureAnimation(const char* xm
 		
 		auto lastKeyframe = anim->GetLastKeyframe();
 		if (lastKeyframe != nullptr) lastKeyframe->m_Length = t - lastKeyframe->m_Time;
-		anim->AddKeyframeData(t, x, y, w, h, xOff, yOff, callback);
+		anim->AddKeyframeData(t, x, y, w, h, a, xOff, yOff, callback);
 	}
 
 	auto lastKeyframe = anim->GetLastKeyframe();
@@ -123,9 +127,9 @@ inline TextureAnimation* TextureAnimation::CreateTextureAnimation(const char* xm
 	return anim;
 }
 
-inline void TextureAnimation::AddKeyframeData(float t, int x, int y, int w, int h, int xOff, int yOff, std::string callback)
+inline void TextureAnimation::AddKeyframeData(float t, int x, int y, int w, int h, float a, int xOff, int yOff, std::string callback)
 {
-	m_KeyframeList.push_back(TextureAnimationKeyframe(t, x, y, w, h, xOff, yOff, callback));
+	m_KeyframeList.push_back(TextureAnimationKeyframe(t, x, y, w, h, a, xOff, yOff, callback));
 }
 
 inline void TextureAnimation::ResetAnimation()

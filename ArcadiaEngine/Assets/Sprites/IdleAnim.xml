@@ -1,8 +1,8 @@
 <TextureAnimation length="1.200" file="Assets/Sprites/IdleAnim.png">
-	<Keyframe t="0.0" x="000" y="0" w="27" h="52" xOff="0" yOff="0" callback="Start"/>
-	<Keyframe t="0.2" x="042" y="0" w="28" h="52" xOff="2" yOff="0"/>
-	<Keyframe t="0.4" x="083" y="0" w="28" h="52" xOff="3" yOff="0"/>
-	<Keyframe t="0.6" x="120" y="0" w="29" h="52" xOff="0" yOff="0"/>
-	<Keyframe t="0.8" x="159" y="0" w="28" h="52" xOff="-1" yOff="0"/>
-	<Keyframe t="1.0" x="198" y="0" w="27" h="52" xOff="-2" yOff="0"/>
+	<Keyframe t="0.0" x="000" y="0" w="27" h="52" a="1" xOff="0" yOff="0" callback="Start"/>
+	<Keyframe t="0.2" x="042" y="0" w="28" h="52" a="1" xOff="2" yOff="0"/>
+	<Keyframe t="0.4" x="083" y="0" w="28" h="52" a="1" xOff="3" yOff="0"/>
+	<Keyframe t="0.6" x="120" y="0" w="29" h="52" a="1" xOff="0" yOff="0"/>
+	<Keyframe t="0.8" x="159" y="0" w="28" h="52" a="1" xOff="-1" yOff="0"/>
+	<Keyframe t="1.0" x="198" y="0" w="27" h="52" a="1" xOff="-2" yOff="0"/>
 </TextureAnimation>
