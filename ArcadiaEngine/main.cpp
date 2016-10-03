@@ -15,7 +15,7 @@ void CreateTestData()
 	fontManager.LoadFont("Arial-12-White");
 
 	//  Create the first test dialogue and add it to the scene
-	currentDialogue = new UIShowcaseDialogue;
+	currentDialogue = new TopDownExample;
 	guiManager.GetBaseNode()->AddChild(currentDialogue);
 
 	//  Create the container that holds the showcase choice drop-down and button
@@ -63,6 +63,7 @@ void CreateTestData()
 			currentDialogue = new TopDownExample;
 			guiManager.GetBaseNode()->AddChild(currentDialogue);
 			break;
+		default:break;
 		}
 	});
 	showcaseChoiceContainer->AddChild(showcaseGoButton);

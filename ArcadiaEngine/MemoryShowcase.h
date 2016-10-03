@@ -2,14 +2,7 @@
 
 #include "Engine/GUIObjectNode.h"
 #include "Engine/GUIListBox.h"
-#include "Engine/GUIMoveable.h"
 #include "Engine/GUILabel.h"
-#include "Engine/GUICheckbox.h"
-#include "Engine/GUIEditBox.h"
-#include "Engine/GUIButton.h"
-#include "Engine/GUIDropDown.h"
-#include "Engine/SoundWrapper.h"
-#include "Engine/WinsockWrapper.h"
 
 class MemoryShowcaseDialogue : public GUIObjectNode
 {
@@ -19,7 +12,7 @@ public:
 	void Update() override;
 
 private:
-	void UpdateMemoryListBox();
+	void UpdateMemoryListBox() const;
 
 	GUIListBox* m_MemoryDataListBox;
 };
@@ -52,11 +45,11 @@ inline void MemoryShowcaseDialogue::Update()
 	GUIObjectNode::Update();
 }
 
-inline void MemoryShowcaseDialogue::UpdateMemoryListBox()
+inline void MemoryShowcaseDialogue::UpdateMemoryListBox() const
 {
 	if (m_MemoryDataListBox == nullptr) return;
-	if (MEMORY_MANAGER_ACTIVE == false) return;
 
+#if MEMORY_MANAGER_ACTIVE
 	static unsigned int memoryPoolCount = 0;
 	auto currentMemoryPoolCount = memoryManager.GetMemoryPoolCount();
 
@@ -77,4 +70,5 @@ inline void MemoryShowcaseDialogue::UpdateMemoryListBox()
 		_itoa_s(memoryManager.GetMemoryPoolAmountAtIndex(i), amountStringBuffer, 10);
 		label->SetText(std::string(memoryManager.GetMemoryPoolNameAtIndex(i) + std::string(":  ") + std::string(amountStringBuffer)));
 	}
+#endif
 }

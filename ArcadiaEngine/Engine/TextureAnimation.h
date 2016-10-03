@@ -60,6 +60,7 @@ public:
 
 	void AddKeyframeData(float t, int x, int y, int w, int h, float a, int xOff, int yOff, std::string callback);
 	void ResetAnimation();
+	void Update();
 	void Render(int x, int y);
 	void AddAnimationCallback(std::string callbackTrigger, TextureAnimationCallback callback) { m_CallbackList[callbackTrigger] = callback; }
 
@@ -93,25 +94,24 @@ inline TextureAnimation* TextureAnimation::CreateTextureAnimation(const char* xm
 	anim->m_Length = SECONDS_TO_TICKS(length);
 	anim->m_Texture = texture;
 
-	auto keyframeStartTime = 0.0f;
 	for (auto iter = baseNode->first_node(); iter != nullptr; iter = iter->next_sibling())
 	{
 		auto dataAttribute = iter->first_attribute("t");
-		float t = float(atof(dataAttribute->value()));
+		auto t = float(atof(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("x");
-		int x = int(atoi(dataAttribute->value()));
+		auto x = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("y");
-		int y = int(atoi(dataAttribute->value()));
+		auto y = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("w");
-		int w = int(atoi(dataAttribute->value()));
+		auto w = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("h");
-		int h = int(atoi(dataAttribute->value()));
+		auto h = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("a");
-		float a = float(atof(dataAttribute->value()));
+		auto a = float(atof(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("xOff");
-		int xOff = int(atoi(dataAttribute->value()));
+		auto xOff = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("yOff");
-		int yOff = int(atoi(dataAttribute->value()));
+		auto yOff = int(atoi(dataAttribute->value()));
 		dataAttribute = dataAttribute->next_attribute("callback");
 		std::string callback = (dataAttribute == nullptr) ? "" : dataAttribute->value();
 		
@@ -124,6 +124,8 @@ inline TextureAnimation* TextureAnimation::CreateTextureAnimation(const char* xm
 	if (lastKeyframe != nullptr) lastKeyframe->m_Length = anim->m_Length - lastKeyframe->m_Time;
 
 	anim->m_StartTime = gameTicksUint;
+
+	xmlWrapper.RemoveXMLFile(xmlFilename);
 	return anim;
 }
 
@@ -137,28 +139,38 @@ inline void TextureAnimation::ResetAnimation()
 	m_StartTime = gameTicksUint;
 }
 
-inline void TextureAnimation::Render(int x, int y)
+inline void TextureAnimation::Update()
 {
 	if (m_Texture == nullptr) return;
 
-	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
-
-	Uint32 animTimeUint = ((gameTicksUint - m_StartTime) % m_Length);
-	float animTime = TICKS_TO_SECONDS(animTimeUint);
+	auto animTimeTotalUint = (gameTicksUint - m_StartTime);
+	auto animTimeUint = (animTimeTotalUint % m_Length);
+	auto animTime = TICKS_TO_SECONDS(animTimeUint);
 	auto index = 0;
 	for (auto iter = m_KeyframeList.begin(); iter != m_KeyframeList.end(); ++iter, ++index)
 	{
 		if (animTime < (*iter).m_Time) continue;
 		if (animTime > (*iter).m_Time + (*iter).m_Length) continue;
 
-		//  if it's a new frame and a callback exists, call the function
+		//  if it's a new frame index, we need to check for callbacks and call them if needed
 		if (m_CurrentFrame != index)
 		{
-			if ((*iter).m_Callback.compare("") != 0) m_CallbackList[(*iter).m_Callback](this);
+			//  We always call the "Finished" callback when we go over the time of the animation and are about to restart
+			if (index == 0 && (animTimeTotalUint > animTimeUint) && (m_CallbackList.find("Finished") != m_CallbackList.end())) m_CallbackList["Finished"](this);
+
+			//  If any other callback exists for this frame, call it as well
+			if ((*iter).m_Callback.compare("") != 0 && (m_CallbackList.find((*iter).m_Callback) != m_CallbackList.end())) m_CallbackList[(*iter).m_Callback](this);
+
+			//  Set the new frame index
 			m_CurrentFrame = index;
 		}
-
-		m_Texture->RenderTexturePart(x + (*iter).m_XOff, y + (*iter).m_YOff, (*iter).m_X, (*iter).m_Y, (*iter).m_W, (*iter).m_H);
-		return;
 	}
+}
+
+inline void TextureAnimation::Render(int x, int y)
+{
+	if (m_Texture == nullptr) return;
+
+	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
+	m_Texture->RenderTexturePart(x + m_KeyframeList[m_CurrentFrame].m_XOff, y + m_KeyframeList[m_CurrentFrame].m_YOff, m_KeyframeList[m_CurrentFrame].m_X, m_KeyframeList[m_CurrentFrame].m_Y, m_KeyframeList[m_CurrentFrame].m_W, m_KeyframeList[m_CurrentFrame].m_H);
 }

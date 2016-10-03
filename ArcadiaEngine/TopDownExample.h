@@ -8,7 +8,7 @@
 class TopDownCharacter
 {
 public:
-	enum CharacterState { CHARSTATE_IDLE_UP, CHARSTATE_IDLE_DOWN, CHARSTATE_IDLE_LEFT, CHARSTATE_IDLE_RIGHT, CHARSTATE_WALK_UP, CHARSTATE_WALK_DOWN, CHARSTATE_WALK_LEFT, CHARSTATE_WALK_RIGHT, CHARSTATE_COUNT };
+	enum CharacterState { CHARSTATE_IDLE_UP, CHARSTATE_IDLE_DOWN, CHARSTATE_IDLE_LEFT, CHARSTATE_IDLE_RIGHT, CHARSTATE_WALK_UP, CHARSTATE_WALK_DOWN, CHARSTATE_WALK_LEFT, CHARSTATE_WALK_RIGHT, CHARSTATE_SWING_UP, CHARSTATE_SWING_DOWN, CHARSTATE_SWING_LEFT, CHARSTATE_SWING_RIGHT, CHARSTATE_COUNT };
 
 	TopDownCharacter(int x, int y) :
 		m_X(x),
@@ -18,14 +18,48 @@ public:
 		for (auto i = 0; i < CHARSTATE_COUNT; ++i) m_StateAnimation[i] = nullptr;
 	}
 
-	inline CharacterState GetCurrentState() const { return m_CurrentState; }
-	inline int GetCharacterX() const { return m_X; }
-	inline int GetCharacterY() const { return m_Y; }
+	//  Accessors
+	CharacterState GetCurrentState() const { return m_CurrentState; }
+	int GetCharacterX() const { return m_X; }
+	int GetCharacterY() const { return m_Y; }
+	bool IsCharacterSwinging() const { return (m_CurrentState == CHARSTATE_SWING_UP || m_CurrentState == CHARSTATE_SWING_DOWN || m_CurrentState == CHARSTATE_SWING_LEFT || m_CurrentState == CHARSTATE_SWING_RIGHT); }
 
-	inline void LoadCharacterAnimation(CharacterState charState, const char* animationFile) { m_StateAnimation[charState] = TextureAnimation::CreateTextureAnimation(animationFile); }
-	inline void SetCharacterState(CharacterState newState) { m_CurrentState = newState; }
-	inline void SetCharacterX(int x) { m_X = x; }
-	inline void SetCharacterY(int y) { m_Y = y; }
+	//  Modifiers
+	void LoadCharacterAnimation(CharacterState charState, const char* animationFile) { m_StateAnimation[charState] = TextureAnimation::CreateTextureAnimation(animationFile); }
+	void SetCharacterState(CharacterState newState) { if (m_CurrentState != newState) m_StateAnimation[newState]->ResetAnimation(); m_CurrentState = newState; }
+	void SetCharacterX(int x) { m_X = x; }
+	void SetCharacterY(int y) { m_Y = y; }
+
+	void AddAnimationCallback(CharacterState charState, std::string callbackTrigger, TextureAnimation::TextureAnimationCallback callback)
+	{
+		if (m_StateAnimation[charState] == nullptr) return;
+		m_StateAnimation[charState]->AddAnimationCallback(callbackTrigger, callback);
+	}
+
+	void FinishedSwing()
+	{
+		switch (m_CurrentState)
+		{
+		case CHARSTATE_SWING_UP:
+			m_CurrentState = CHARSTATE_IDLE_UP;
+			break;
+		case CHARSTATE_SWING_DOWN:
+			m_CurrentState = CHARSTATE_IDLE_DOWN;
+			break;
+		case CHARSTATE_SWING_LEFT:
+			m_CurrentState = CHARSTATE_IDLE_LEFT;
+			break;
+		case CHARSTATE_SWING_RIGHT:
+			m_CurrentState = CHARSTATE_IDLE_RIGHT;
+			break;
+		default:break;
+		}
+	}
+
+	void Update() const
+	{
+		m_StateAnimation[m_CurrentState]->Update();
+	}
 
 	void Render(int xOffset, int yOffset) const
 	{
@@ -53,11 +87,11 @@ public:
 private:
 	void TakeCharacterInput();
 	void UpdateCharacter();
-	void RenderCharacter(int xOffset, int yOffset);
+	void RenderCharacter(int xOffset, int yOffset) const;
 
 	TopDownCharacter* m_Characters[2];
 
-	enum KeyPress { KEYPRESS_UP, KEYPRESS_DOWN, KEYPRESS_LEFT, KEYPRESS_RIGHT, KEYPRESS_COUNT };
+	enum KeyPress { KEYPRESS_UP, KEYPRESS_DOWN, KEYPRESS_LEFT, KEYPRESS_RIGHT, KEYPRESS_CTRL, KEYPRESS_COUNT };
 	bool m_Pressed[KEYPRESS_COUNT];
 };
 
@@ -74,6 +108,15 @@ inline TopDownExample::TopDownExample()
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/Sprites/LinkLeftWalk.xml");
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/Sprites/LinkRightWalk.xml");
 
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/LinkUpSwing.xml");
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/LinkDownSwing.xml");
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/LinkLeftSwing.xml");
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/Sprites/LinkRightSwing.xml");
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
+
 	//  Load the enemy character
 	m_Characters[1] = new TopDownCharacter(700, 384);
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/Sprites/GuardUpIdle.xml");
@@ -84,6 +127,10 @@ inline TopDownExample::TopDownExample()
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_DOWN, "Assets/Sprites/GuardDownWalk.xml");
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/Sprites/GuardLeftWalk.xml");
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/Sprites/GuardRightWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/GuardUpWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/GuardDownWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/GuardLeftWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/Sprites/GuardRightWalk.xml");
 }
 
 inline TopDownExample::~TopDownExample()
@@ -122,24 +169,53 @@ inline void TopDownExample::TakeCharacterInput()
 	m_Pressed[KEYPRESS_DOWN] = inputManager.GetKeyDown(SDL_SCANCODE_DOWN);
 	m_Pressed[KEYPRESS_LEFT] = inputManager.GetKeyDown(SDL_SCANCODE_LEFT);
 	m_Pressed[KEYPRESS_RIGHT] = inputManager.GetKeyDown(SDL_SCANCODE_RIGHT);
+	m_Pressed[KEYPRESS_CTRL] = inputManager.GetKeyDown(SDL_SCANCODE_LCTRL) | inputManager.GetKeyDown(SDL_SCANCODE_RCTRL);
 
 	if (m_Pressed[KEYPRESS_UP] && m_Pressed[KEYPRESS_DOWN]) { m_Pressed[KEYPRESS_UP] = false; m_Pressed[KEYPRESS_DOWN] = false; }
 	if (m_Pressed[KEYPRESS_LEFT] && m_Pressed[KEYPRESS_RIGHT]) { m_Pressed[KEYPRESS_LEFT] = false; m_Pressed[KEYPRESS_RIGHT] = false; }
 
-	TopDownCharacter::CharacterState currentState = m_Characters[0]->GetCurrentState();
-	if (m_Pressed[KEYPRESS_UP])		currentState = TopDownCharacter::CHARSTATE_WALK_UP;
-	if (m_Pressed[KEYPRESS_DOWN])	currentState = TopDownCharacter::CHARSTATE_WALK_DOWN;
-	if (m_Pressed[KEYPRESS_LEFT])	currentState = TopDownCharacter::CHARSTATE_WALK_LEFT;
-	if (m_Pressed[KEYPRESS_RIGHT])	currentState = TopDownCharacter::CHARSTATE_WALK_RIGHT;
-
-	if (!m_Pressed[KEYPRESS_UP] && !m_Pressed[KEYPRESS_DOWN] && !m_Pressed[KEYPRESS_LEFT] && !m_Pressed[KEYPRESS_RIGHT])
+	auto currentState = m_Characters[0]->GetCurrentState();
+	if (!m_Characters[0]->IsCharacterSwinging())
 	{
-		switch (currentState)
+		if (m_Pressed[KEYPRESS_UP])		currentState = TopDownCharacter::CHARSTATE_WALK_UP;
+		if (m_Pressed[KEYPRESS_DOWN])	currentState = TopDownCharacter::CHARSTATE_WALK_DOWN;
+		if (m_Pressed[KEYPRESS_LEFT])	currentState = TopDownCharacter::CHARSTATE_WALK_LEFT;
+		if (m_Pressed[KEYPRESS_RIGHT])	currentState = TopDownCharacter::CHARSTATE_WALK_RIGHT;
+
+		if (!m_Pressed[KEYPRESS_UP] && !m_Pressed[KEYPRESS_DOWN] && !m_Pressed[KEYPRESS_LEFT] && !m_Pressed[KEYPRESS_RIGHT])
 		{
-		case TopDownCharacter::CHARSTATE_WALK_UP:		currentState = TopDownCharacter::CHARSTATE_IDLE_UP;		break;
-		case TopDownCharacter::CHARSTATE_WALK_DOWN:		currentState = TopDownCharacter::CHARSTATE_IDLE_DOWN;	break;
-		case TopDownCharacter::CHARSTATE_WALK_LEFT:		currentState = TopDownCharacter::CHARSTATE_IDLE_LEFT;	break;
-		case TopDownCharacter::CHARSTATE_WALK_RIGHT:	currentState = TopDownCharacter::CHARSTATE_IDLE_RIGHT;	break;
+			switch (currentState)
+			{
+			case TopDownCharacter::CHARSTATE_WALK_UP:		currentState = TopDownCharacter::CHARSTATE_IDLE_UP;		break;
+			case TopDownCharacter::CHARSTATE_WALK_DOWN:		currentState = TopDownCharacter::CHARSTATE_IDLE_DOWN;	break;
+			case TopDownCharacter::CHARSTATE_WALK_LEFT:		currentState = TopDownCharacter::CHARSTATE_IDLE_LEFT;	break;
+			case TopDownCharacter::CHARSTATE_WALK_RIGHT:	currentState = TopDownCharacter::CHARSTATE_IDLE_RIGHT;	break;
+			default:break;
+			}
+		}
+
+		if (m_Pressed[KEYPRESS_CTRL])
+		{
+			switch (currentState)
+			{
+			case TopDownCharacter::CHARSTATE_WALK_UP:
+			case TopDownCharacter::CHARSTATE_IDLE_UP:
+				currentState = TopDownCharacter::CHARSTATE_SWING_UP;
+				break;
+			case TopDownCharacter::CHARSTATE_WALK_DOWN:
+			case TopDownCharacter::CHARSTATE_IDLE_DOWN:
+				currentState = TopDownCharacter::CHARSTATE_SWING_DOWN;
+				break;
+			case TopDownCharacter::CHARSTATE_WALK_LEFT:
+			case TopDownCharacter::CHARSTATE_IDLE_LEFT:
+				currentState = TopDownCharacter::CHARSTATE_SWING_LEFT;
+				break;
+			case TopDownCharacter::CHARSTATE_WALK_RIGHT:
+			case TopDownCharacter::CHARSTATE_IDLE_RIGHT:
+				currentState = TopDownCharacter::CHARSTATE_SWING_RIGHT;
+				break;
+			default:break;
+			}
 		}
 	}
 
@@ -149,8 +225,8 @@ inline void TopDownExample::TakeCharacterInput()
 
 inline void TopDownExample::UpdateCharacter()
 {
-	int x = m_Characters[0]->GetCharacterX();
-	int y = m_Characters[0]->GetCharacterY();
+	auto x = m_Characters[0]->GetCharacterX();
+	auto y = m_Characters[0]->GetCharacterY();
 	if (m_Pressed[KEYPRESS_UP]) y -= int(frameSeconds * 110.0f);
 	if (m_Pressed[KEYPRESS_DOWN]) y += int(frameSeconds * 110.0f);
 	if (m_Pressed[KEYPRESS_LEFT]) x -= int(frameSeconds * 110.0f);
@@ -160,9 +236,12 @@ inline void TopDownExample::UpdateCharacter()
 	m_Characters[0]->SetCharacterY(y);
 	m_Characters[1]->SetCharacterX(x + 100);
 	m_Characters[1]->SetCharacterY(y - 4);
+
+	if (m_Characters[0] != nullptr) m_Characters[0]->Update();
+	if (m_Characters[1] != nullptr) m_Characters[1]->Update();
 }
 
-inline void TopDownExample::RenderCharacter(int xOffset, int yOffset)
+inline void TopDownExample::RenderCharacter(int xOffset, int yOffset) const
 {
 	if (m_Characters[0] != nullptr) m_Characters[0]->Render(xOffset, yOffset);
 	if (m_Characters[1] != nullptr) m_Characters[1]->Render(xOffset, yOffset);

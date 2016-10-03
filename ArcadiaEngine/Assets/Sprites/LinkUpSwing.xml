@@ -1,0 +1,8 @@
+<TextureAnimation length="0.36" file="Assets/Sprites/Link.png">
+	<Keyframe t="0.00" x="517" y="267" w="20" h="23" a="1" xOff="0" yOff="0"/>
+	<Keyframe t="0.06" x="546" y="259" w="22" h="30" a="1" xOff="0" yOff="-6"/>
+	<Keyframe t="0.12" x="582" y="257" w="20" h="32" a="1" xOff="0" yOff="-5"/>
+	<Keyframe t="0.18" x="611" y="259" w="24" h="30" a="1" xOff="-4" yOff="-5"/>
+	<Keyframe t="0.24" x="643" y="266" w="32" h="23" a="1" xOff="-12" yOff="-1"/>
+	<Keyframe t="0.30" x="686" y="263" w="19" h="26" a="1" xOff="-1" yOff="-3"/>
+</TextureAnimation>
