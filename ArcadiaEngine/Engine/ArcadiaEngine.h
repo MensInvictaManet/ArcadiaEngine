@@ -44,13 +44,6 @@
 #include "WindowManager.h"
 #include "TextureManager.h"
 #include "GUIManager.h"
-#include "GUIMoveable.h"
-#include "GUILabel.h"
-#include "GUIButton.h"
-#include "GUICheckbox.h"
-#include "GUIEditBox.h"
-#include "GUIListBox.h"
-#include "GUIDropDown.h"
 #include "InputManager.h"
 #include "FontManager.h"
 #include "TimeSlice.h"
@@ -231,7 +224,7 @@ inline void ShutdownEngine()
 #endif
 }
 
-void RenderScreen()
+inline void RenderScreen()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -260,7 +253,7 @@ void RenderScreen()
 	guiManager.Render();
 }
 
-void PrimaryLoop()
+inline void PrimaryLoop()
 {
 	//  The event handler
 	SDL_Event e;

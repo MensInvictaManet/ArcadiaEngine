@@ -4,6 +4,10 @@
 #include "SoundShowcase.h"
 #include "MemoryShowcase.h"
 #include "TopDownExample.h"
+#include "Engine/GUIMoveable.h"
+#include "Engine/GUIDropDown.h"
+#include "Engine/GUILabel.h"
+#include "Engine/GUIButton.h"
 
 GUIObjectNode* currentDialogue;
 

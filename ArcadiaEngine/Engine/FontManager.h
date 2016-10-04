@@ -6,7 +6,6 @@
 #include "XMLWrapper.h"
 
 #include <unordered_map>
-#include <string>
 
 class FontManager;
 
@@ -110,7 +109,7 @@ inline unsigned int Font::GetTextWidth(const char* text) const
 
 inline unsigned int Font::GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces) const
 {
-	unsigned int character_count = 0;
+	unsigned int character_count;
 	std::string new_string("");
 	for (character_count = 0; character_count < strlen(text); ++character_count)
 	{
