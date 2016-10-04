@@ -138,6 +138,7 @@ inline void TextureAnimation::AddKeyframeData(float t, int x, int y, int w, int 
 inline void TextureAnimation::ResetAnimation()
 {
 	m_StartTime = gameTicksUint;
+	m_CurrentFrame = -1;
 }
 
 inline void TextureAnimation::Update()

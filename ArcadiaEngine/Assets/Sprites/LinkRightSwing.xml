@@ -1,9 +1,9 @@
-<TextureAnimation length="04.2" file="Assets/Sprites/Link.png">
-	<Keyframe t="00.0" x="705" y="221" w="16" h="23" a="1" xOff="0" yOff="0" callback="RightSwingHit1"/>
-	<Keyframe t="00.6" x="671" y="220" w="23" h="24" a="1" xOff="0" yOff="0" callback="RightSwingHit2"/>
-	<Keyframe t="01.2" x="637" y="223" w="29" h="21" a="1" xOff="0" yOff="0" callback="RightSwingHit3"/>
-	<Keyframe t="01.8" x="598" y="223" w="31" h="21" a="1" xOff="0" yOff="0" callback="RightSwingHit4"/>
-	<Keyframe t="02.4" x="560" y="222" w="28" h="28" a="1" xOff="0" yOff="0" callback="RightSwingHit5"/>
-	<Keyframe t="03.0" x="536" y="222" w="23" h="31" a="1" xOff="0" yOff="0" callback="RightSwingHit6"/>
-	<Keyframe t="03.6" x="508" y="221" w="24" h="23" a="1" xOff="0" yOff="0"/>
+<TextureAnimation length="0.42" file="Assets/Sprites/Link.png">
+	<Keyframe t="0.00" x="705" y="221" w="16" h="23" a="1" xOff="0" yOff="0" callback="SwingHit1"/>
+	<Keyframe t="0.06" x="671" y="220" w="23" h="24" a="1" xOff="0" yOff="0" callback="SwingHit2"/>
+	<Keyframe t="0.12" x="637" y="223" w="29" h="21" a="1" xOff="0" yOff="0" callback="SwingHit3"/>
+	<Keyframe t="0.18" x="598" y="223" w="31" h="21" a="1" xOff="0" yOff="0" callback="SwingHit4"/>
+	<Keyframe t="0.24" x="560" y="222" w="28" h="28" a="1" xOff="0" yOff="0" callback="SwingHit5"/>
+	<Keyframe t="0.30" x="536" y="222" w="23" h="31" a="1" xOff="0" yOff="0" callback="SwingHit6"/>
+	<Keyframe t="0.36" x="508" y="221" w="24" h="23" a="1" xOff="0" yOff="0"/>
 </TextureAnimation>
