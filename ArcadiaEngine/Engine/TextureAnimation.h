@@ -65,6 +65,7 @@ public:
 	void AddAnimationCallback(std::string callbackTrigger, TextureAnimationCallback callback) { m_CallbackList[callbackTrigger] = callback; }
 
 	TextureAnimationKeyframe* GetLastKeyframe() { return m_KeyframeList.empty() ? nullptr : &m_KeyframeList.back(); }
+	const TextureAnimationKeyframe* GetCurrentFrame() const { return &m_KeyframeList[m_CurrentFrame]; }
 
 	void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
 

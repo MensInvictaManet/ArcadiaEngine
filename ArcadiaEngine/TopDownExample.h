@@ -22,6 +22,8 @@ public:
 	CharacterState GetCurrentState() const { return m_CurrentState; }
 	int GetCharacterX() const { return m_X; }
 	int GetCharacterY() const { return m_Y; }
+	int GetCharacterWidth() const { return m_StateAnimation[m_CurrentState]->GetCurrentFrame()->m_W; }
+	int GetCharacterHeight() const { return m_StateAnimation[m_CurrentState]->GetCurrentFrame()->m_H; }
 	bool IsCharacterSwinging() const { return (m_CurrentState == CHARSTATE_SWING_UP || m_CurrentState == CHARSTATE_SWING_DOWN || m_CurrentState == CHARSTATE_SWING_LEFT || m_CurrentState == CHARSTATE_SWING_RIGHT); }
 
 	//  Modifiers
@@ -89,6 +91,73 @@ private:
 	void UpdateCharacter();
 	void RenderCharacter(int xOffset, int yOffset) const;
 
+	void HitCheck(int xOffset, int yOffset)
+	{
+		//  Check if the position collides with the second player and if so, damage them
+		auto halfWidth = m_Characters[1]->GetCharacterWidth() / 2;
+		auto halfHeight = m_Characters[1]->GetCharacterHeight() / 2;
+		if (std::abs(m_Characters[1]->GetCharacterX() + halfWidth - xOffset) > halfWidth) return;
+		if (std::abs(m_Characters[1]->GetCharacterY() + halfHeight - yOffset) > halfHeight) return;
+
+		//  Damage the second character
+		m_Characters[1]->SetCharacterState(TopDownCharacter::CHARSTATE_IDLE_DOWN);
+	}
+
+	void SwingCheck(TopDownCharacter::CharacterState charState, int xOffset, int yOffset, int hitIdentifier)
+	{
+		switch (charState)
+		{
+		case TopDownCharacter::CHARSTATE_SWING_UP:
+			switch (hitIdentifier)
+			{
+			case 1: HitCheck(xOffset + 21, yOffset + 15); break;
+			case 2: HitCheck(xOffset + 13, yOffset - 4); break;
+			case 3: HitCheck(xOffset + 3, yOffset - 5); break;
+			case 4: HitCheck(xOffset - 4, yOffset - 5); break;
+			case 5: HitCheck(xOffset - 4, yOffset + 1); break;
+			default:break;
+			}
+			break;
+		case TopDownCharacter::CHARSTATE_SWING_DOWN:
+			switch (hitIdentifier)
+			{
+			case 1: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 2: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 3: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 4: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 5: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 6: HitCheck(xOffset + 0, yOffset + 0); break;
+			default:break;
+			}
+			break;
+		case TopDownCharacter::CHARSTATE_SWING_LEFT:
+			switch (hitIdentifier)
+			{
+			case 1: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 2: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 3: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 4: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 5: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 6: HitCheck(xOffset + 0, yOffset + 0); break;
+			default:break;
+			}
+			break;
+		case TopDownCharacter::CHARSTATE_SWING_RIGHT:
+			switch (hitIdentifier)
+			{
+			case 1: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 2: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 3: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 4: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 5: HitCheck(xOffset + 0, yOffset + 0); break;
+			case 6: HitCheck(xOffset + 0, yOffset + 0); break;
+			default:break;
+			}
+			break;
+		default:break;
+		}
+	}
+
 	TopDownCharacter* m_Characters[2];
 
 	enum KeyPress { KEYPRESS_UP, KEYPRESS_DOWN, KEYPRESS_LEFT, KEYPRESS_RIGHT, KEYPRESS_CTRL, KEYPRESS_COUNT };
@@ -110,6 +179,11 @@ inline TopDownExample::TopDownExample()
 
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/LinkUpSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "UpSwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 1); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "UpSwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 2); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "UpSwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 3); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "UpSwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 4); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "UpSwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 5); });
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/LinkDownSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/LinkLeftSwing.xml");
@@ -220,7 +294,7 @@ inline void TopDownExample::TakeCharacterInput()
 	}
 
 	m_Characters[0]->SetCharacterState(currentState);
-	m_Characters[1]->SetCharacterState(currentState);
+	//m_Characters[1]->SetCharacterState(currentState);
 }
 
 inline void TopDownExample::UpdateCharacter()
@@ -234,11 +308,11 @@ inline void TopDownExample::UpdateCharacter()
 
 	m_Characters[0]->SetCharacterX(x);
 	m_Characters[0]->SetCharacterY(y);
-	m_Characters[1]->SetCharacterX(x + 100);
-	m_Characters[1]->SetCharacterY(y - 4);
-
 	if (m_Characters[0] != nullptr) m_Characters[0]->Update();
-	if (m_Characters[1] != nullptr) m_Characters[1]->Update();
+
+	//m_Characters[1]->SetCharacterX(x + 100);
+	//m_Characters[1]->SetCharacterY(y - 4);
+	//if (m_Characters[1] != nullptr) m_Characters[1]->Update();
 }
 
 inline void TopDownExample::RenderCharacter(int xOffset, int yOffset) const
