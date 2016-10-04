@@ -2,6 +2,8 @@
 
 #include "SDL2/SDL.h"
 
+#include "Engine/WindowManager.h"
+
 enum MouseButtonState
 {
 	MOUSE_BUTTON_UNPRESSED,
@@ -33,6 +35,8 @@ public:
 	void SetMouseButtonMiddle(bool setting) { if (setting != (m_MouseButtonMiddle != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonMiddle = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void SetMouseButtonRight(bool setting) { if (setting != (m_MouseButtonRight != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonRight = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void AddKeyToString(int key);
+
+	static void SetMousePosition(int xPos = 0, int yPos = 0, bool inWindow = true);
 
 private:
 	InputManager();
@@ -113,6 +117,27 @@ inline void InputManager::AddKeyToString(int key)
 	}
 
 	m_KeyboardString += (unsigned char)key;
+}
+
+inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
+{
+	RECT rect = { 0 };
+
+	if (inWindow)
+	{
+		auto window = windowManager.GetWindow(-1);
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(window, &wmInfo);
+		auto hwnd = wmInfo.info.win.window;
+
+		SetForegroundWindow(hwnd);
+		SetActiveWindow(hwnd);
+		SetFocus(hwnd);
+		GetWindowRect(hwnd, &rect);
+	}
+
+	SetCursorPos(rect.left + xPos, rect.top + yPos);
 }
 
 

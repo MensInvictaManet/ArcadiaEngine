@@ -2,7 +2,6 @@
 
 #include "GUIObjectNode.h"
 #include "InputManager.h"
-#include "FontManager.h"
 
 #include <functional>
 
@@ -26,7 +25,7 @@ public:
 
 	inline void AddItem(GUIObjectNode* item) { item->m_Created = true;  m_ItemList.push_back(item); if (m_Clicked) UpdateExpandedHeight(); }
 	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); }
-	inline void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
+	inline void SelectItem(unsigned int index) { SelectedIndex = std::min<int>(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	inline const GUIObjectNode* GetSelectedItem() const { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 	inline int GetSelectedIndex() const { return SelectedIndex; }
 

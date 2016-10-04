@@ -598,7 +598,7 @@ inline bool WinsockWrapper::EncryptBuffer(char* pass, int bufferID)
 	auto *inp = buffer->m_BufferData;
 	unsigned int inplen = buffer->m_BufferUtilizedCount;
 	char KeyBox[257];
-	auto keylen = std::min(int(strlen(pass)), 256);
+	auto keylen = std::min<int>(int(strlen(pass)), 256);
 	if (keylen <= 0) return false;
 	unsigned long i, j, t, x;
 	char temp;

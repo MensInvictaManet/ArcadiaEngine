@@ -230,7 +230,7 @@ inline char* SocketBuffer::readstring(bool peek)
 
 	if (i == m_BufferUtilizedCount) return nullptr;
 	i -= m_ReadPosition;
-	i = std::min(RETURNVAL_BUFFER_SIZE, i);
+	i = std::min<int>(RETURNVAL_BUFFER_SIZE, i);
 	StreamRead(&m_ReturnValueBuffer, i + 1, peek);
 	return m_ReturnValueBuffer;
 }

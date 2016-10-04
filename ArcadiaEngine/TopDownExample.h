@@ -91,7 +91,7 @@ private:
 	void UpdateCharacter();
 	void RenderCharacter(int xOffset, int yOffset) const;
 
-	void HitCheck(int xOffset, int yOffset)
+	void HitCheck(int xOffset, int yOffset) const
 	{
 		//  Check if the position collides with the second player and if so, damage them
 		auto halfWidth = m_Characters[1]->GetCharacterWidth() / 2;
@@ -100,10 +100,10 @@ private:
 		if (std::abs(m_Characters[1]->GetCharacterY() + halfHeight - yOffset) > halfHeight) return;
 
 		//  Damage the second character
-		m_Characters[1]->SetCharacterState(TopDownCharacter::CHARSTATE_IDLE_DOWN);
+		InputManager::SetMousePosition(200, 200, true);
 	}
 
-	void SwingCheck(TopDownCharacter::CharacterState charState, int xOffset, int yOffset, int hitIdentifier)
+	void SwingCheck(TopDownCharacter::CharacterState charState, int xOffset, int yOffset, int hitIdentifier) const
 	{
 		switch (charState)
 		{

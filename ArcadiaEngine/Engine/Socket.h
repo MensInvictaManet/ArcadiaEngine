@@ -201,7 +201,7 @@ inline int Socket::sendmessage(const char *ip, int port, SocketBuffer *source)
 		struct sockaddr_in sa;
 		inet_pton(AF_INET, ip, &(sa.sin_addr)); //  TODO: Is this line even needed?
 
-		size = std::min(source->m_BufferUtilizedCount, 8195);
+		size = std::min<int>(source->m_BufferUtilizedCount, 8195);
 		addr.sin_family = AF_INET;
 		addr.sin_port = htons(port);
 		addr.sin_addr.s_addr = sa.sin_addr.S_un.S_addr;

@@ -26,9 +26,9 @@ public:
 
 	void SetToDestroy(std::stack<GUIObjectNode*>& destroyList) override;
 
-	void AddItem(GUIObjectNode* item) { item->m_Created = true; m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
+	void AddItem(GUIObjectNode* item) { item->m_Created = true; m_ItemList.push_back(item); UpdateMover(m_FlowToBottom ? std::max<int>(int(m_ItemList.size()) - ItemDisplayCount, 0) : -1); }
 	void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); SelectedIndex = -1; }
-	void SelectItem(unsigned int index) { SelectedIndex = std::min(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
+	void SelectItem(unsigned int index) { SelectedIndex = std::min<int>(index, static_cast<unsigned int>(m_ItemList.size() - 1)); }
 	GUIObjectNode* GetSelectedItem() { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 	int GetSelectedIndex() const { return SelectedIndex; }
 	void SetSelectable(bool selectable) { m_Selectable = selectable; }
@@ -212,7 +212,7 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 		if (std::abs(my - ClickedY) > MoverYDelta)
 		{
 			//  The farthest we can shift is to the top or bottom of the list
-			auto indexChange = std::min(std::max((my - ClickedY) / MoverYDelta, -MovementIndex), (int(m_ItemList.size()) - ItemDisplayCount - MovementIndex));
+			auto indexChange = std::min<int>(std::max<int>((my - ClickedY) / MoverYDelta, -MovementIndex), (int(m_ItemList.size()) - ItemDisplayCount - MovementIndex));
 			ClickedY += indexChange * MoverYDelta;
 			MovementIndex += indexChange;
 			UpdateMover();
@@ -343,7 +343,7 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 
 inline void GUIListBox::UpdateMover(int indexOverride)
 {
-	if (indexOverride != -1) MovementIndex = std::max(std::min(indexOverride, int(m_ItemList.size()) - ItemDisplayCount), 0);
+	if (indexOverride != -1) MovementIndex = std::max<int>(std::min<int>(indexOverride, int(m_ItemList.size()) - ItemDisplayCount), 0);
 
 	auto mover_size_percent = float(ItemDisplayCount) / float(m_ItemList.size());
 	MoverHeight = static_cast<unsigned int>((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_size_percent);

@@ -11,6 +11,7 @@
 
 #if USING_SDL
 #include "./SDL2/SDL.h"
+#include "./SDL2/SDL_syswm.h"
 #undef main
 #pragma comment(lib, "Engine/SDL2/SDL2.lib")
 #endif
