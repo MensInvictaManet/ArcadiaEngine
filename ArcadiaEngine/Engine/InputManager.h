@@ -18,6 +18,7 @@ public:
 	static InputManager& GetInstance() { static InputManager INSTANCE; return INSTANCE; }
 
 	void GetInputForFrame();
+	void Update();
 
 	int GetMouseX() const { return m_MouseX; }
 	int GetMouseY() const { return m_MouseY; }
@@ -38,6 +39,8 @@ public:
 	void SetMouseButtonMiddle(bool setting) { if (setting != (m_MouseButtonMiddle != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonMiddle = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void SetMouseButtonRight(bool setting) { if (setting != (m_MouseButtonRight != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonRight = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void AddKeyToString(int key);
+	void SetMousePositionTarget(int xPos, int yPos, float time);
+	void SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed);
 
 	static void SetMousePosition(int xPos = 0, int yPos = 0, bool inWindow = true);
 
@@ -52,6 +55,11 @@ private:
 	MouseButtonState m_MouseButtonRight;
 	char m_KeyStates[SDL_NUM_SCANCODES];
 	std::string m_KeyboardString;
+
+	int m_MouseTargetPositionX;
+	int m_MouseTargetPositionY;
+	int m_MouseTargetPositionSpeedX;
+	int m_MouseTargetPositionSpeedY;
 };
 
 inline void InputManager::GetInputForFrame()
@@ -127,6 +135,25 @@ inline void InputManager::AddKeyToString(int key)
 	m_KeyboardString += (unsigned char)key;
 }
 
+inline void InputManager::SetMousePositionTarget(int xPos, int yPos, float time)
+{
+	POINT mousePosition;
+	GetCursorPos(&mousePosition);
+
+	auto speedX = int((xPos - mousePosition.x) / time);
+	auto speedY = int((yPos - mousePosition.y) / time);
+
+	SetMousePositionTarget(xPos, yPos, speedX, speedY);
+}
+
+inline void InputManager::SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed)
+{
+	m_MouseTargetPositionX = xPos;
+	m_MouseTargetPositionY = yPos;
+	m_MouseTargetPositionSpeedX = xSpeed;
+	m_MouseTargetPositionSpeedY = ySpeed;
+}
+
 inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
 {
 	RECT rect = { 0 };
@@ -168,7 +195,12 @@ inline InputManager::InputManager() :
 	m_MouseY(0),
 	m_MouseButtonLeft(MOUSE_BUTTON_UNPRESSED),
 	m_MouseButtonMiddle(MOUSE_BUTTON_UNPRESSED),
-	m_MouseButtonRight(MOUSE_BUTTON_UNPRESSED)
+	m_MouseButtonRight(MOUSE_BUTTON_UNPRESSED),
+	m_KeyboardString(""),
+	m_MouseTargetPositionX(-1),
+	m_MouseTargetPositionY(-1),
+	m_MouseTargetPositionSpeedX(0),
+	m_MouseTargetPositionSpeedY(0)
 {
 	memset(m_KeyStates, 0, sizeof(m_KeyStates));
 }

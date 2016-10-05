@@ -24,10 +24,48 @@ void CreateTestData()
 	//  Create Debug Console command functionality
 	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool
 	{
-		int mouseX = 0;
-		int mouseY = 0;
-		bool objectFound = guiManager.GetClickPosition(commandString, mouseX, mouseY);
-		InputManager::SetMousePosition(mouseX, mouseY);
+		std::string args[3];
+		auto argCount = 0;
+
+		for (auto i = 0; i < 3; ++i)
+		{
+			if (commandString.empty()) break;
+			int firstSpace = commandString.find_first_of(' ');
+			if (firstSpace == -1) firstSpace = commandString.length();
+			args[i] = commandString.substr(0, firstSpace);
+			argCount = i + 1;
+			commandString = (firstSpace == commandString.length()) ? "" : commandString.substr(firstSpace + 1, commandString.length());
+		}
+
+		auto mouseX = 0;
+		auto mouseY = 0;
+		auto objectFound = guiManager.GetClickPosition(args[0], mouseX, mouseY);
+		switch (argCount)
+		{
+		case 1:
+			InputManager::SetMousePosition(mouseX, mouseY);
+			break;
+
+		case 2: //  A float for time was provided
+			{
+				auto time = float(atof(args[1].c_str()));
+				inputManager.SetMousePositionTarget(mouseX, mouseY, time);
+				break;
+			}
+			break;
+
+		case 3: //  Two ints for speed were provided
+			{
+				auto speedX = atoi(args[1].c_str());
+				auto speedY = atoi(args[2].c_str());
+				inputManager.SetMousePositionTarget(mouseX, mouseY, speedX, speedY);
+				break;
+			}
+			break;
+
+		default: break;
+		}
+
 		return objectFound;
 	});
 
