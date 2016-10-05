@@ -45,6 +45,8 @@ private:
 public:
 	static WindowManager& GetInstance() { static WindowManager INSTANCE; return INSTANCE; }
 
+	bool GetWindowTopLeft(int& xPos, int& yPos, const int index = -1);
+
 	int CreateNewWindow(const char* title = "", int x = SDL_WINDOWPOS_UNDEFINED, int y = SDL_WINDOWPOS_UNDEFINED, int w = 100, int h = 100, bool shown = true, bool current = false, bool vsync = true);
 	bool DestroyWindow(const int index);
 	void HandleEvent(SDL_Event& e);
@@ -62,7 +64,6 @@ public:
 	bool SetWindowCaption(const int index = -1, const char* newCaption = "");
 
 private:
-
 	WindowManager();
 	~WindowManager();
 
@@ -264,6 +265,39 @@ inline void WindowManager::Shutdown()
 		delete m_WindowList.begin()->second;
 		m_WindowList.erase(m_WindowList.begin());
 	}
+}
+
+
+inline bool WindowManager::GetWindowTopLeft(int& xPos, int& yPos, const int index)
+{
+	SDL_Window* window = nullptr;
+	if (index == -1) window = m_WindowList[m_CurrentWindow]->m_Window;
+	else
+	{
+		auto iter = m_WindowList.find(index);
+		if (iter == m_WindowList.end()) return false;
+		window = iter->second->m_Window;
+	}
+
+	SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
+	SDL_GetWindowWMInfo(window, &wmInfo);
+	auto hwnd = wmInfo.info.win.window;
+
+	RECT rcClient, rcWind;
+	POINT ptDiff;
+	GetClientRect(hwnd, &rcClient);
+	GetWindowRect(hwnd, &rcWind);
+	ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
+	ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
+
+	auto side_border_width = (ptDiff.x / 2);
+	auto top_border_thickness = GetSystemMetrics(SM_CYCAPTION);
+	auto top_border_full_height = top_border_thickness + ((ptDiff.y - top_border_thickness) / 2);
+
+	xPos = rcWind.left + side_border_width;
+	yPos = rcWind.top + top_border_full_height;
+	return true;
 }
 
 inline SDL_Window* WindowManager::GetWindow(int index)

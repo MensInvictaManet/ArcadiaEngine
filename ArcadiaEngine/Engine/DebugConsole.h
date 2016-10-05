@@ -20,7 +20,7 @@ public:
 
 	static DebugConsole* GetInstance()
 	{
-		static DebugConsole* INSTANCE = new DebugConsole;
+		static auto INSTANCE = new DebugConsole;
 		guiManager.AddChild(INSTANCE);
 		return INSTANCE;
 	}
@@ -47,7 +47,7 @@ inline DebugConsole::DebugConsole() :
 	m_WindowWidth(1),
 	m_WindowHeight(1),
 	m_Font(nullptr),
-	m_Text("This is a test"),
+	m_Text(""),
 	m_LastBackspaceTime(0)
 {
 	SetVisible(false);
@@ -58,19 +58,19 @@ inline DebugConsole::~DebugConsole()
 {
 }
 
-void DebugConsole::EnterCommand(std::string& commandString)
+inline void DebugConsole::EnterCommand(std::string& commandString)
 {
-	bool soleCommand = false;
+	auto soleCommand = false;
 	int firstSpace = commandString.find_first_of(' ');
 	if (firstSpace == -1) { soleCommand = true; firstSpace = commandString.length(); }
-	std::string command = commandString.substr(0, firstSpace);
+	auto command = commandString.substr(0, firstSpace);
 
 	auto debugCommand = m_DebugConsoleCommands.find(command);
 	if (debugCommand == m_DebugConsoleCommands.end()) return;
 
 	commandString = soleCommand ? "" : commandString.substr(firstSpace + 1, commandString.length());
-	bool returnVal = debugCommand->second(commandString);
-	return;
+	/*auto returnVal = debugCommand->second(commandString);*/
+	debugCommand->second(commandString);
 }
 
 inline void DebugConsole::SetWindowDimensions(int width, int height)
@@ -85,6 +85,7 @@ inline void DebugConsole::Input(int xOffset, int yOffset)
 	if (inputManager.GetKeyState(SDL_SCANCODE_GRAVE) == 1)
 	{
 		SetVisible(!GetVisible());
+		m_Text.clear();
 		return;
 	}
 

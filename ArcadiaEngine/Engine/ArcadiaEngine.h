@@ -274,9 +274,6 @@ inline void PrimaryLoop()
 		//  Get the current state of mouse and keyboard input
 		inputManager.GetInputForFrame();
 
-		//  Update the sound wrapper
-		guiManager.Update();
-
 		//  Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
@@ -311,6 +308,7 @@ inline void PrimaryLoop()
 
 		//  Update
 		guiManager.Update();
+		inputManager.Update();
 
 		//  Render
 		RenderScreen();

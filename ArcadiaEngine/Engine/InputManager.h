@@ -42,6 +42,7 @@ public:
 	void SetMousePositionTarget(int xPos, int yPos, float time);
 	void SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed);
 
+	static void GetMousePosition(int& xPos, int& yPos, bool inWindow = true);
 	static void SetMousePosition(int xPos = 0, int yPos = 0, bool inWindow = true);
 
 private:
@@ -75,6 +76,39 @@ inline void InputManager::GetInputForFrame()
 	{
 		m_KeyStates[i] = (keyStates[i] == 0) ? 0 : (m_KeyStates[i] == 0 ? 1 : 2);
 	}
+}
+
+inline void InputManager::Update()
+{
+	if (m_MouseTargetPositionSpeedX == 0 && m_MouseTargetPositionSpeedY == 0) return;
+
+	auto mouseX = 0;
+	auto mouseY = 0;
+	GetMousePosition(mouseX, mouseY, false);
+
+	auto left = 0;
+	auto top = 0;
+	windowManager.GetWindowTopLeft(left, top, -1);
+
+	if (mouseX == left + m_MouseTargetPositionX) m_MouseTargetPositionSpeedX = 0;
+	if (mouseY == top + m_MouseTargetPositionY) m_MouseTargetPositionSpeedY = 0;
+
+	auto frameSecondsMaxed = std::min<float>(frameSeconds, 0.1f);
+
+	if (m_MouseTargetPositionSpeedX != 0)
+	{
+		if (abs(left + m_MouseTargetPositionX - mouseX) <= std::max<int>(int(m_MouseTargetPositionSpeedX * frameSecondsMaxed), 1)) mouseX = left + m_MouseTargetPositionX;
+		else mouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedX * frameSecondsMaxed), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedX * frameSecondsMaxed), -1);
+	}
+
+	if (m_MouseTargetPositionSpeedY != 0)
+	{
+		if (abs(top + m_MouseTargetPositionY - mouseY) <= std::max<int>(int(m_MouseTargetPositionSpeedY * frameSecondsMaxed), 1)) mouseY = top + m_MouseTargetPositionY;
+		else mouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedY * frameSecondsMaxed), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedY * frameSecondsMaxed), -1);
+	}
+
+	//  Update the mouse position
+	SetMousePosition(mouseX, mouseY, false);
 }
 
 inline void InputManager::AddKeyToString(int key)
@@ -132,16 +166,18 @@ inline void InputManager::AddKeyToString(int key)
 	default:break;
 	}
 
-	m_KeyboardString += (unsigned char)key;
+	
+	m_KeyboardString += UCHAR(key);
 }
 
 inline void InputManager::SetMousePositionTarget(int xPos, int yPos, float time)
 {
-	POINT mousePosition;
-	GetCursorPos(&mousePosition);
+	int mouseX;
+	int mouseY;
+	GetMousePosition(mouseX, mouseY);
 
-	auto speedX = int((xPos - mousePosition.x) / time);
-	auto speedY = int((yPos - mousePosition.y) / time);
+	auto speedX = abs(int((xPos - mouseX) / time));
+	auto speedY = abs(int((yPos - mouseY) / time));
 
 	SetMousePositionTarget(xPos, yPos, speedX, speedY);
 }
@@ -152,6 +188,44 @@ inline void InputManager::SetMousePositionTarget(int xPos, int yPos, int xSpeed,
 	m_MouseTargetPositionY = yPos;
 	m_MouseTargetPositionSpeedX = xSpeed;
 	m_MouseTargetPositionSpeedY = ySpeed;
+}
+
+inline void InputManager::GetMousePosition(int& xPos, int& yPos, bool inWindow)
+{
+	RECT rect = { 0 };
+
+	if (inWindow)
+	{
+		auto window = windowManager.GetWindow(-1);
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(window, &wmInfo);
+		auto hwnd = wmInfo.info.win.window;
+
+		RECT rcClient, rcWind;
+		POINT ptDiff;
+		GetClientRect(hwnd, &rcClient);
+		GetWindowRect(hwnd, &rcWind);
+		ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
+		ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
+
+		auto side_border_width = (ptDiff.x / 2);
+		auto top_border_thickness = GetSystemMetrics(SM_CYCAPTION);
+		auto top_border_full_height = top_border_thickness + ((ptDiff.y - top_border_thickness) / 2);
+
+		rect.left += side_border_width;
+		rect.top += top_border_full_height;
+
+		SetForegroundWindow(hwnd);
+		SetActiveWindow(hwnd);
+		SetFocus(hwnd);
+		GetWindowRect(hwnd, &rect);
+	}
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	xPos = mousePos.x - rect.left;
+	yPos = mousePos.y - rect.top;
 }
 
 inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
@@ -173,17 +247,17 @@ inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
 		ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
 		ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
 
-		const int side_border_width = (ptDiff.x / 2);
-		const int top_border_thickness = GetSystemMetrics(SM_CYCAPTION);
-		const int top_border_full_height = top_border_thickness + ((ptDiff.y - top_border_thickness) / 2);
-
-		xPos += side_border_width;
-		yPos += top_border_full_height;
+		auto side_border_width = (ptDiff.x / 2);
+		auto top_border_thickness = GetSystemMetrics(SM_CYCAPTION);
+		auto top_border_full_height = top_border_thickness + ((ptDiff.y - top_border_thickness) / 2);
 
 		SetForegroundWindow(hwnd);
 		SetActiveWindow(hwnd);
 		SetFocus(hwnd);
 		GetWindowRect(hwnd, &rect);
+
+		rect.left += side_border_width;
+		rect.top += top_border_full_height;
 	}
 
 	SetCursorPos(rect.left + xPos, rect.top + yPos);
