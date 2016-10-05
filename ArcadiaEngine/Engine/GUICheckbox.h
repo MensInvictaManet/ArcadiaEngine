@@ -159,6 +159,7 @@ inline void GUICheckbox::Render(int xOffset, int yOffset)
 		auto x = m_X + xOffset;
 		auto y = m_Y + yOffset;
 
+
 		if (m_Templated)
 		{
 			auto checkedIndex = (m_Checked ? 1 : 0);
@@ -175,6 +176,7 @@ inline void GUICheckbox::Render(int xOffset, int yOffset)
 		}
 		else
 		{
+			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);

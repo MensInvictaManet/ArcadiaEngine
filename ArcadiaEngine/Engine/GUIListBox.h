@@ -281,6 +281,7 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 	//  Render the object if we're able
 	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
 	{
+
 		//  Render the background object, templated or single-textured
 		if (m_Templated)
 		{
@@ -296,13 +297,14 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 		}
 		else
 		{
+			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
 			glEnd();
 		}
 

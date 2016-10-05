@@ -62,6 +62,7 @@ public:
 			if (width < 0) width = m_Width;
 			if (height < 0) height = m_Height;
 
+			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
@@ -78,6 +79,7 @@ public:
 			if (sub_w <= 0) sub_w = m_Width - sub_x;
 			if (sub_h <= 0) sub_h = m_Height - sub_y;
 
+			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);

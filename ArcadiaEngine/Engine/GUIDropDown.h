@@ -98,6 +98,10 @@ inline GUIDropDown* GUIDropDown::CreateTemplatedDropDown(const char* dropdownTem
 	newDropDown->SetY(y);
 	newDropDown->SetWidth(w);
 	newDropDown->SetHeight(h);
+
+	newDropDown->SetClickX(dropDownX + dropDownW / 2);
+	newDropDown->SetClickY(dropDownY + dropDownH / 2);
+
 	return newDropDown;
 }
 
@@ -218,10 +222,10 @@ inline void GUIDropDown::Render(int xOffset, int yOffset)
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(x + m_Width, y + m_Height);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - m_Width, y + m_Height);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - m_Width, y + m_Height - m_Height);
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height - m_Height);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(x + m_Width, y + m_Height);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - m_Width, y + m_Height);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - m_Width, y + m_Height - m_Height);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height - m_Height);
 			glEnd();
 		}
 	}

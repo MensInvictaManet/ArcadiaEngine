@@ -88,6 +88,10 @@ inline GUIButton* GUIButton::CreateTemplatedButton(const char* buttonTemplate, i
 	newButton->SetY(y);
 	newButton->SetWidth(w);
 	newButton->SetHeight(h);
+
+	newButton->SetClickX(w / 2);
+	newButton->SetClickY(h / 2);
+
 	return newButton;
 }
 
@@ -171,6 +175,7 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 		}
 		else
 		{
+			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			auto pressedWidthDelta = m_Pressed ? int(m_Width * (1.0f - pressedSqueeze)) : 0;

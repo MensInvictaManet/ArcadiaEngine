@@ -20,6 +20,8 @@ public:
 	void EndStep();
 	void Shutdown();
 
+	bool GetClickPosition(std::string& objectName, int& xPos, int& yPos);
+
 private:
 	GUIManager();
 	~GUIManager();
@@ -81,6 +83,11 @@ inline void GUIManager::Shutdown()
 {
 	m_BaseNode->SetToDestroy(m_NodesToDestroy);
 	EndStep();
+}
+
+inline bool GUIManager::GetClickPosition(std::string& objectName, int& xPos, int& yPos)
+{
+	return m_BaseNode->GetClickPosition(objectName, xPos, yPos);
 }
 
 //  Instance to be utilized by anyone including this header

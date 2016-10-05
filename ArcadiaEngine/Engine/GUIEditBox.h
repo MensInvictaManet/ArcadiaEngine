@@ -5,8 +5,6 @@
 #include "FontManager.h"
 #include "TimeSlice.h"
 
-const float TIME_BETWEEN_BACKSPACES = 0.1f;
-
 class GUIEditBox : public GUIObjectNode
 {
 public:
@@ -39,6 +37,8 @@ private:
 	TextureManager::ManagedTexture* TextureTopSide[2];
 	TextureManager::ManagedTexture* TextureBottomSide[2];
 	TextureManager::ManagedTexture* TextureMiddle[2];
+
+	const float TIME_BETWEEN_BACKSPACES = 0.1f;
 };
 
 inline GUIEditBox* GUIEditBox::CreateEditBox(const char* imageFile, int x, int y, int w, int h)
@@ -90,7 +90,8 @@ inline GUIEditBox::GUIEditBox(bool templated) :
 	m_Selected(false),
 	m_Font(nullptr),
 	m_Text(""),
-	m_Templated(templated)
+	m_Templated(templated),
+	m_LastBackspaceTime(0)
 {
 	TextureTopLeftCorner[0] = TextureTopLeftCorner[1] = nullptr;
 	TextureTopRightCorner[0] = TextureTopRightCorner[1] = nullptr;
@@ -163,7 +164,7 @@ inline void GUIEditBox::Render(int xOffset, int yOffset)
 			TextureBottomSide[pressedIndex]->RenderTexture(x + TextureBottomLeftCorner[pressedIndex]->getWidth(), y + m_Height - TextureBottomSide[pressedIndex]->getHeight(), m_Width - TextureBottomLeftCorner[pressedIndex]->getWidth() - TextureBottomRightCorner[pressedIndex]->getWidth(), TextureBottomSide[pressedIndex]->getHeight());
 			TextureMiddle[pressedIndex]->RenderTexture(x + TextureLeftSide[pressedIndex]->getWidth(), y + TextureTopSide[pressedIndex]->getHeight(), m_Width - TextureLeftSide[pressedIndex]->getWidth() - TextureRightSide[pressedIndex]->getWidth(), m_Height - TextureTopSide[pressedIndex]->getHeight() - TextureBottomSide[pressedIndex]->getHeight());
 		}
-		else
+		else if (m_TextureID != 0)
 		{
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 

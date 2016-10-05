@@ -50,6 +50,7 @@
 #include "TimeSlice.h"
 #include "WinsockWrapper.h"
 #include "MemoryManager.h"
+#include "DebugConsole.h"
 
 #if AUDIO_ENABLED
 #include "SoundWrapper.h"
@@ -171,6 +172,9 @@ inline bool InitializeEngine()
 
 	//  Initialize Winsock
 	winsockWrapper.WinsockInitialize();
+
+	//  Add the Debug Console to the GUI Manager
+	debugConsole->SetWindowDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	//  Initialize OpenGL
 	if (!InitializeOpenGL())

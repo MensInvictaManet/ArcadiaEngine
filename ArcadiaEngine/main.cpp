@@ -18,6 +18,19 @@ void CreateTestData()
 	fontManager.LoadFont("Arial");
 	fontManager.LoadFont("Arial-12-White");
 
+	//  Set the font on the Debug Console
+	debugConsole->SetFont(fontManager.GetFont("Arial-12-White"));
+
+	//  Create Debug Console command functionality
+	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool
+	{
+		int mouseX = 0;
+		int mouseY = 0;
+		bool objectFound = guiManager.GetClickPosition(commandString, mouseX, mouseY);
+		InputManager::SetMousePosition(mouseX, mouseY);
+		return objectFound;
+	});
+
 	//  Create the first test dialogue and add it to the scene
 	currentDialogue = new TopDownExample;
 	guiManager.GetBaseNode()->AddChild(currentDialogue);
@@ -33,6 +46,7 @@ void CreateTestData()
 
 	//  Create the drop-down that allows us to pick the next dialogue to display
 	auto showcaseDropdown = GUIDropDown::CreateTemplatedDropDown("Standard", 10, 26, 200, 24, 180, 4, 16, 16);
+	showcaseDropdown->SetObjectName("DialogueDropdown");
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "GUI Manager", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Sound Wrapper", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Memory Manager", 10, 4, 160, 20));
@@ -41,6 +55,7 @@ void CreateTestData()
 
 	//  Create the button that allows us to move to a new dialogue based on the drop-down setting
 	auto showcaseGoButton = GUIButton::CreateTemplatedButton("Standard", 220, 26, 50, 24);
+	showcaseGoButton->SetObjectName("DialogueGoButton");
 	showcaseGoButton->SetFont(fontManager.GetFont("Arial"));
 	showcaseGoButton->SetText("Go");
 	showcaseGoButton->SetLeftClickCallback([=](GUIObjectNode*)

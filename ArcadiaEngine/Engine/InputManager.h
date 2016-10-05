@@ -27,8 +27,11 @@ public:
 	void TakeMouseButtonLeft() { if (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) m_MouseButtonLeft = MOUSE_BUTTON_PRESSED_TAKEN; }
 	void TakeMouseButtonMiddle() { if (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) m_MouseButtonMiddle = MOUSE_BUTTON_PRESSED_TAKEN; }
 	void TakeMouseButtonRight() { if (m_MouseButtonRight == MOUSE_BUTTON_PRESSED) m_MouseButtonRight = MOUSE_BUTTON_PRESSED_TAKEN; }
-	bool GetKeyDown(const Uint8& sdlKey) const { return (m_KeyStates != nullptr) ? (m_KeyStates[sdlKey] != 0) : false; }
-	bool GetBackspace() const { return m_KeyStates[SDL_SCANCODE_BACKSPACE] != 0; }
+	bool GetKeyDown(int scanCode) const { return (m_KeyStates[scanCode] == 1); }
+	bool GetKeyPressed(int scanCode) const { return (m_KeyStates[scanCode] != 0); }
+	char GetKeyState(int scanCode) const { return m_KeyStates[scanCode]; }
+	char GetBackspace() const { return m_KeyStates[SDL_SCANCODE_BACKSPACE] != 0; }
+	char GetEnter() const { return m_KeyStates[SDL_SCANCODE_RETURN] != 0; }
 	const std::string& GetKeyboardString() const { return m_KeyboardString; }
 
 	void SetMouseButtonLeft(bool setting) { if (setting != (m_MouseButtonLeft != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonLeft = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
@@ -47,7 +50,7 @@ private:
 	MouseButtonState m_MouseButtonLeft;
 	MouseButtonState m_MouseButtonMiddle;
 	MouseButtonState m_MouseButtonRight;
-	const Uint8* m_KeyStates;
+	char m_KeyStates[SDL_NUM_SCANCODES];
 	std::string m_KeyboardString;
 };
 
@@ -58,7 +61,12 @@ inline void InputManager::GetInputForFrame()
 	if (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) m_MouseButtonLeft = MOUSE_BUTTON_HELD;
 	if (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) m_MouseButtonMiddle = MOUSE_BUTTON_HELD;
 	if (m_MouseButtonRight == MOUSE_BUTTON_PRESSED) m_MouseButtonRight = MOUSE_BUTTON_HELD;
-	m_KeyStates = SDL_GetKeyboardState(nullptr);
+
+	auto keyStates = SDL_GetKeyboardState(nullptr);
+	for (auto i = 0; i < SDL_NUM_SCANCODES; ++i)
+	{
+		m_KeyStates[i] = (keyStates[i] == 0) ? 0 : (m_KeyStates[i] == 0 ? 1 : 2);
+	}
 }
 
 inline void InputManager::AddKeyToString(int key)
@@ -131,6 +139,20 @@ inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
 		SDL_GetWindowWMInfo(window, &wmInfo);
 		auto hwnd = wmInfo.info.win.window;
 
+		RECT rcClient, rcWind;
+		POINT ptDiff;
+		GetClientRect(hwnd, &rcClient);
+		GetWindowRect(hwnd, &rcWind);
+		ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
+		ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
+
+		const int side_border_width = (ptDiff.x / 2);
+		const int top_border_thickness = GetSystemMetrics(SM_CYCAPTION);
+		const int top_border_full_height = top_border_thickness + ((ptDiff.y - top_border_thickness) / 2);
+
+		xPos += side_border_width;
+		yPos += top_border_full_height;
+
 		SetForegroundWindow(hwnd);
 		SetActiveWindow(hwnd);
 		SetFocus(hwnd);
@@ -146,15 +168,13 @@ inline InputManager::InputManager() :
 	m_MouseY(0),
 	m_MouseButtonLeft(MOUSE_BUTTON_UNPRESSED),
 	m_MouseButtonMiddle(MOUSE_BUTTON_UNPRESSED),
-	m_MouseButtonRight(MOUSE_BUTTON_UNPRESSED),
-	m_KeyStates(nullptr)
+	m_MouseButtonRight(MOUSE_BUTTON_UNPRESSED)
 {
-
+	memset(m_KeyStates, 0, sizeof(m_KeyStates));
 }
 
 inline InputManager::~InputManager()
 {
-
 }
 
 //  Instance to be utilized by anyone including this header

@@ -115,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="Engine\ArcadiaEngine.h" />
     <ClInclude Include="Engine\Color.h" />
+    <ClInclude Include="Engine\DebugConsole.h" />
     <ClInclude Include="Engine\FontManager.h" />
     <ClInclude Include="Engine\GUIButton.h" />
     <ClInclude Include="Engine\GUICheckbox.h" />

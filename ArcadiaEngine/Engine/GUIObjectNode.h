@@ -29,6 +29,10 @@ public:
 	virtual void SetToDestroy(std::stack<GUIObjectNode*>& destroyList);
 	virtual void Destroy();
 
+	bool GetClickPosition(const std::string& objectName, int& xPos, int& yPos);
+	int GetTrueX() const;
+	int GetTrueY() const;
+
 	void SetX(int x) { m_X = x; }
 	void SetY(int y) { m_Y = y; }
 	void SetWidth(int width) { m_Width = width; }
@@ -38,6 +42,9 @@ public:
 	void SetVisible(bool visible) { m_Visible = visible; }
 	void SetParent(GUIObjectNode* parent) { m_Parent = parent; }
 	void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
+	void SetObjectName(std::string objectName) { m_ObjectName = objectName; }
+	void SetClickX(int clickX) { m_ClickX = clickX; }
+	void SetClickY(int clickY) { m_ClickY = clickY; }
 
 	int GetX() const { return m_X; }
 	int GetY() const { return m_Y; }
@@ -47,6 +54,7 @@ public:
 	TextureAnimation* GetTextureAnimation() const { return m_TextureAnimation; }
 	bool GetVisible() { return m_Visible; }
 	GUIObjectNode* GetParent() { return m_Parent; }
+	const GUIObjectNode* GetParent() const { return m_Parent; }
 	float getColorR() const { return m_Color.colorValues[0]; }
 	float getColorG() const { return m_Color.colorValues[1]; }
 	float getColorB() const { return m_Color.colorValues[2]; }
@@ -68,6 +76,10 @@ public:
 	bool m_SetToDestroy;
 	bool m_ExplicitObject;
 	Color m_Color;
+
+	std::string m_ObjectName;
+	int m_ClickX;
+	int m_ClickY;
 };
 
 inline GUIObjectNode* GUIObjectNode::CreateObjectNode(const char* imageFile)
@@ -101,7 +113,10 @@ inline GUIObjectNode::GUIObjectNode() :
 	m_Created(false),
 	m_SetToDestroy(false),
 	m_ExplicitObject(false),
-	m_Color(1.0f, 1.0f, 1.0f, 1.0f)
+	m_Color(1.0f, 1.0f, 1.0f, 1.0f),
+	m_ObjectName(""),
+	m_ClickX(0),
+	m_ClickY(0)
 {
 
 }
@@ -186,6 +201,33 @@ inline void GUIObjectNode::Destroy()
 {
 	if (m_Parent != nullptr) m_Parent->RemoveChild(this);
 	assert(m_Created);
+}
+
+inline bool GUIObjectNode::GetClickPosition(const std::string& objectName, int& xPos, int& yPos)
+{
+	if (m_ObjectName.compare(objectName) == 0)
+	{
+		xPos = GetTrueX() + m_ClickX;
+		yPos = GetTrueY() + m_ClickY;
+		return true;
+	}
+
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter)
+	{
+		if ((*iter)->GetClickPosition(objectName, xPos, yPos)) return true;
+	}
+
+	return false;
+}
+
+inline int GUIObjectNode::GetTrueX() const
+{
+	return GetX() + (GetParent() ? GetParent()->GetTrueX() : 0);
+}
+
+inline int GUIObjectNode::GetTrueY() const
+{
+	return GetY() + (GetParent() ? GetParent()->GetTrueY() : 0);
 }
 
 inline void GUIObjectNode::AddChild(GUIObjectNode* child)
