@@ -2,7 +2,20 @@
 
 #include "SDL2/SDL.h"
 
-#include "Engine/WindowManager.h"
+#include "WindowManager.h"
+
+enum MouseButtonSimulation
+{
+	SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED,		//  Button wants to simulate an unpress, but is pressed
+	SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD,			//  Button wants to simulate an unpress, but is held
+	SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED,		//  Button wants to simulate a press, but is unpressed
+	SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED,			//  Button wants to simulate a press, and is pressed
+	SIMULATED_MOUSE_BUTTON_PRESSED_HELD,			//  Button wants to simulate a press, but is held
+	SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED,			//  Button wants to simulate a hold, but is unpressed
+	SIMULATED_MOUSE_BUTTON_HELD_PRESSED,			//  Button wants to simulate a hold, but is pressed
+	SIMULATED_MOUSE_BUTTON_HELD_HELD,				//  Button wants to simulate a hold, and is held (must continue)
+	SIMULATED_MOUSE_UNSIMULATED						//  No simulation, don't use the simulation override at all
+};
 
 enum MouseButtonState
 {
@@ -41,6 +54,9 @@ public:
 	void AddKeyToString(int key);
 	void SetMousePositionTarget(int xPos, int yPos, float time);
 	void SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed);
+	void SetSimulatedMouseButtonLeft(MouseButtonState simulatedState);
+	void SetSimulatedMouseButtonMiddle(MouseButtonState simulatedState);
+	void SetSimulatedMouseButtonRight(MouseButtonState simulatedState);
 
 	static void GetMousePosition(int& xPos, int& yPos, bool inWindow = true);
 	static void SetMousePosition(int xPos = 0, int yPos = 0, bool inWindow = true);
@@ -48,6 +64,8 @@ public:
 private:
 	InputManager();
 	~InputManager();
+
+	void DetermineMouseClickStates();
 
 	int m_MouseX;
 	int m_MouseY;
@@ -57,19 +75,24 @@ private:
 	char m_KeyStates[SDL_NUM_SCANCODES];
 	std::string m_KeyboardString;
 
+	//  Automated mouse movement
 	int m_MouseTargetPositionX;
 	int m_MouseTargetPositionY;
 	int m_MouseTargetPositionSpeedX;
 	int m_MouseTargetPositionSpeedY;
+
+	//  Simulated mouse control
+	MouseButtonSimulation m_SimulatedMouseButtonLeft;
+	MouseButtonSimulation m_SimulatedMouseButtonMiddle;
+	MouseButtonSimulation m_SimulatedMouseButtonRight;
 };
 
 inline void InputManager::GetInputForFrame()
 {
 	m_KeyboardString = "";
 	SDL_GetMouseState(&m_MouseX, &m_MouseY);
-	if (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) m_MouseButtonLeft = MOUSE_BUTTON_HELD;
-	if (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) m_MouseButtonMiddle = MOUSE_BUTTON_HELD;
-	if (m_MouseButtonRight == MOUSE_BUTTON_PRESSED) m_MouseButtonRight = MOUSE_BUTTON_HELD;
+
+	DetermineMouseClickStates();
 
 	auto keyStates = SDL_GetKeyboardState(nullptr);
 	for (auto i = 0; i < SDL_NUM_SCANCODES; ++i)
@@ -190,6 +213,60 @@ inline void InputManager::SetMousePositionTarget(int xPos, int yPos, int xSpeed,
 	m_MouseTargetPositionSpeedY = ySpeed;
 }
 
+inline void InputManager::SetSimulatedMouseButtonLeft(MouseButtonState simulatedState)
+{
+	switch (simulatedState)
+	{
+	default:
+	case MOUSE_BUTTON_UNPRESSED:
+		m_SimulatedMouseButtonLeft = (m_MouseButtonLeft == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_UNSIMULATED : ((m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_PRESSED:
+	case MOUSE_BUTTON_PRESSED_TAKEN:
+		m_SimulatedMouseButtonLeft = (m_MouseButtonLeft == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED : ((m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_PRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_HELD:
+		m_SimulatedMouseButtonLeft = (m_MouseButtonLeft == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED : ((m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_PRESSED : SIMULATED_MOUSE_BUTTON_HELD_HELD);
+		break;
+	}
+}
+
+inline void InputManager::SetSimulatedMouseButtonMiddle(MouseButtonState simulatedState)
+{
+	switch (simulatedState)
+	{
+	default:
+	case MOUSE_BUTTON_UNPRESSED:
+		m_SimulatedMouseButtonMiddle= (m_MouseButtonMiddle == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_UNSIMULATED : ((m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_PRESSED:
+	case MOUSE_BUTTON_PRESSED_TAKEN:
+		m_SimulatedMouseButtonMiddle = (m_MouseButtonMiddle == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED : ((m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_PRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_HELD:
+		m_SimulatedMouseButtonMiddle = (m_MouseButtonMiddle == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED : ((m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_PRESSED : SIMULATED_MOUSE_BUTTON_HELD_HELD);
+		break;
+	}
+}
+
+inline void InputManager::SetSimulatedMouseButtonRight(MouseButtonState simulatedState)
+{
+	switch (simulatedState)
+	{
+	default:
+	case MOUSE_BUTTON_UNPRESSED:
+		m_SimulatedMouseButtonRight = (m_MouseButtonRight == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_UNSIMULATED : ((m_MouseButtonRight == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_PRESSED:
+	case MOUSE_BUTTON_PRESSED_TAKEN:
+		m_SimulatedMouseButtonRight = (m_MouseButtonRight == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED : ((m_MouseButtonRight == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED : SIMULATED_MOUSE_BUTTON_PRESSED_HELD);
+		break;
+	case MOUSE_BUTTON_HELD:
+		m_SimulatedMouseButtonRight = (m_MouseButtonRight == MOUSE_BUTTON_UNPRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED : ((m_MouseButtonRight == MOUSE_BUTTON_PRESSED) ? SIMULATED_MOUSE_BUTTON_HELD_PRESSED : SIMULATED_MOUSE_BUTTON_HELD_HELD);
+		break;
+	}
+}
+
 inline void InputManager::GetMousePosition(int& xPos, int& yPos, bool inWindow)
 {
 	RECT rect = { 0 };
@@ -281,6 +358,136 @@ inline InputManager::InputManager() :
 
 inline InputManager::~InputManager()
 {
+}
+
+inline void InputManager::DetermineMouseClickStates()
+{
+	if (m_MouseButtonLeft == MOUSE_BUTTON_PRESSED) m_MouseButtonLeft = MOUSE_BUTTON_HELD;
+	if (m_MouseButtonMiddle == MOUSE_BUTTON_PRESSED) m_MouseButtonMiddle = MOUSE_BUTTON_HELD;
+	if (m_MouseButtonRight == MOUSE_BUTTON_PRESSED) m_MouseButtonRight = MOUSE_BUTTON_HELD;
+
+	switch (m_SimulatedMouseButtonLeft)
+	{
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED:
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD:
+		m_MouseButtonLeft = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED:
+		m_MouseButtonLeft = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED:
+		m_MouseButtonLeft = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_HELD:
+		m_MouseButtonLeft = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED:
+		m_MouseButtonLeft = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_BUTTON_HELD_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_PRESSED:
+		m_MouseButtonLeft = MOUSE_BUTTON_HELD;
+		m_SimulatedMouseButtonLeft = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_HELD:
+		m_MouseButtonLeft = MOUSE_BUTTON_HELD;
+		break;
+
+	case SIMULATED_MOUSE_UNSIMULATED:
+	default:break;
+	}
+
+	switch (m_SimulatedMouseButtonMiddle)
+	{
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED:
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD:
+		m_MouseButtonMiddle = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED:
+		m_MouseButtonMiddle = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED:
+		m_MouseButtonMiddle = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_HELD:
+		m_MouseButtonMiddle = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED:
+		m_MouseButtonMiddle = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_BUTTON_HELD_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_PRESSED:
+		m_MouseButtonMiddle = MOUSE_BUTTON_HELD;
+		m_SimulatedMouseButtonMiddle = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_HELD:
+		m_MouseButtonMiddle = MOUSE_BUTTON_HELD;
+		break;
+
+	case SIMULATED_MOUSE_UNSIMULATED:
+	default:break;
+	}
+
+	switch (m_SimulatedMouseButtonRight)
+	{
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_PRESSED:
+	case SIMULATED_MOUSE_BUTTON_UNPRESSED_HELD:
+		m_MouseButtonRight = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_UNPRESSED:
+		m_MouseButtonRight = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_PRESSED:
+		m_MouseButtonRight = MOUSE_BUTTON_UNPRESSED;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_PRESSED_HELD:
+		m_MouseButtonRight = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_UNPRESSED:
+		m_MouseButtonRight = MOUSE_BUTTON_PRESSED;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_BUTTON_HELD_PRESSED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_PRESSED:
+		m_MouseButtonRight = MOUSE_BUTTON_HELD;
+		m_SimulatedMouseButtonRight = SIMULATED_MOUSE_UNSIMULATED;
+		break;
+
+	case SIMULATED_MOUSE_BUTTON_HELD_HELD:
+		m_MouseButtonRight = MOUSE_BUTTON_HELD;
+		break;
+
+	case SIMULATED_MOUSE_UNSIMULATED:
+	default:break;
+	}
 }
 
 //  Instance to be utilized by anyone including this header

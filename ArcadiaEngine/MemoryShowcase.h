@@ -12,13 +12,15 @@ public:
 	void Update() override;
 
 private:
-	void UpdateMemoryListBox() const;
+	void UpdateMemoryListBox();
 
 	GUIListBox* m_MemoryDataListBox;
+	unsigned int m_MemoryPoolDisplayCount;
 };
 
 inline MemoryShowcaseDialogue::MemoryShowcaseDialogue() :
-	m_MemoryDataListBox(nullptr)
+	m_MemoryDataListBox(nullptr),
+	m_MemoryPoolDisplayCount(0)
 {
 	//  Create the label that acts as an explanation of the current showcase UI
 	auto introductionLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "This is a basic showcase of the Memory Manager system.", 10, 10, 300, 32);
@@ -45,23 +47,22 @@ inline void MemoryShowcaseDialogue::Update()
 	GUIObjectNode::Update();
 }
 
-inline void MemoryShowcaseDialogue::UpdateMemoryListBox() const
+inline void MemoryShowcaseDialogue::UpdateMemoryListBox()
 {
 	if (m_MemoryDataListBox == nullptr) return;
 
 #if MEMORY_MANAGER_ACTIVE
-	static unsigned int memoryPoolCount = 0;
 	auto currentMemoryPoolCount = memoryManager.GetMemoryPoolCount();
 
 	//  Make sure we add to the amount of Labels until we have enough to show all of the current memory pools
-	while (memoryPoolCount < currentMemoryPoolCount)
+	while (m_MemoryPoolDisplayCount < currentMemoryPoolCount)
 	{
 		auto newLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "", 10, 4, 300, 22);
 		m_MemoryDataListBox->AddItem(newLabel);
-		memoryPoolCount++;
+		m_MemoryPoolDisplayCount++;
 	}
 
-	for (unsigned int i = 0; i < memoryPoolCount; ++i)
+	for (unsigned int i = 0; i < m_MemoryPoolDisplayCount; ++i)
 	{
 		m_MemoryDataListBox->SetSelectedIndex(i);
 		auto label = static_cast<GUILabel*>(m_MemoryDataListBox->GetSelectedItem());

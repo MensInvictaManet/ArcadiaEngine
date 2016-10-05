@@ -11,17 +11,9 @@
 
 GUIObjectNode* currentDialogue;
 
-void CreateTestData()
+void AddDebugConsoleCommands()
 {
-	//  Load some basic fonts
-	fontManager.SetFontFolder("Assets/Fonts/");
-	fontManager.LoadFont("Arial");
-	fontManager.LoadFont("Arial-12-White");
-
-	//  Set the font on the Debug Console
-	debugConsole->SetFont(fontManager.GetFont("Arial-12-White"));
-
-	//  Create Debug Console command functionality
+	//  MOVE_MOUSE_OVER: Automatically moves the mouse to a UI object click position
 	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool
 	{
 		std::string args[3];
@@ -47,27 +39,61 @@ void CreateTestData()
 			break;
 
 		case 2: //  A float for time was provided
-			{
-				auto time = float(atof(args[1].c_str()));
-				inputManager.SetMousePositionTarget(mouseX, mouseY, time);
-				break;
-			}
+		{
+			auto time = float(atof(args[1].c_str()));
+			inputManager.SetMousePositionTarget(mouseX, mouseY, time);
 			break;
+		}
+		break;
 
 		case 3: //  Two ints for speed were provided
-			{
-				auto speedX = atoi(args[1].c_str());
-				auto speedY = atoi(args[2].c_str());
-				inputManager.SetMousePositionTarget(mouseX, mouseY, speedX, speedY);
-				break;
-			}
+		{
+			auto speedX = atoi(args[1].c_str());
+			auto speedY = atoi(args[2].c_str());
+			inputManager.SetMousePositionTarget(mouseX, mouseY, speedX, speedY);
 			break;
+		}
+		break;
 
 		default: break;
 		}
 
 		return objectFound;
 	});
+
+	//  CLICK_MOUSE_LEFT: Simulates a left click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_LEFT", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonLeft(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+
+	//  CLICK_MOUSE_MIDDLE: Simulates a middle click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_MIDDLE", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonMiddle(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+
+	//  CLICK_MOUSE_LEFT: Simulates a Right click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_RIGHT", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonRight(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+}
+
+void CreateTestData()
+{
+	//  Load some basic fonts
+	fontManager.SetFontFolder("Assets/Fonts/");
+	fontManager.LoadFont("Arial");
+	fontManager.LoadFont("Arial-12-White");
+
+	//  Set the font on the Debug Console
+	debugConsole->SetFont(fontManager.GetFont("Arial-12-White"));
+
+	AddDebugConsoleCommands();
 
 	//  Create the first test dialogue and add it to the scene
 	currentDialogue = new TopDownExample;
@@ -98,6 +124,8 @@ void CreateTestData()
 	showcaseGoButton->SetText("Go");
 	showcaseGoButton->SetLeftClickCallback([=](GUIObjectNode*)
 	{
+		debugConsole->SetVisible(false);
+
 		switch (showcaseDropdown->GetSelectedIndex())
 		{
 		case 0: //  GUI Manager Showcase

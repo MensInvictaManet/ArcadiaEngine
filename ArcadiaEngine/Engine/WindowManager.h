@@ -3,8 +3,6 @@
 #include "SDL2/SDL.h"
 #undef main
 
-#include "SDL2/SDL_opengl.h"
-
 #include "MemoryManager.h"
 
 #include <unordered_map>

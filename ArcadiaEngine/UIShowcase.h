@@ -68,6 +68,14 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 		callbackLabel->SetText("This text appears and disappears with a callback.");
 		callbackLabel->SetVisible(!callbackLabel->GetVisible());
 	});
+	button1->SetMiddleClickCallback([=](GUIObjectNode*)
+	{
+		listbox1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Button clicked (middle)", 10, 6, 300, 22));
+
+		if (checkbox1->GetChecked()) return;
+		callbackLabel->SetText("Middle click callbacks also exist (and right!).");
+		callbackLabel->SetVisible(!callbackLabel->GetVisible());
+	});
 	button1->SetRightClickCallback([=](GUIObjectNode*)
 	{
 		listbox1->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Button clicked (right)", 10, 6, 300, 22));
