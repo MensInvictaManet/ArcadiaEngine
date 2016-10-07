@@ -14,11 +14,13 @@ public:
 	enum Justifications { JUSTIFY_LEFT = 0, JUSTIFY_RIGHT, JUSTIFY_CENTER, JUSTIFICATION_COUNT };
 	typedef std::function<void(GUIObjectNode*)> GUIListBoxCallback;
 
-	static GUIListBox* CreateListBox(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUIListBox* CreateListBox(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0, int entryHeight = 100, int spaceBetweenEntries = 0);
 	static GUIListBox* CreateTemplatedListBox(const char* listboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0, int dirButtonsX = 0, int contentY = 0, int upButtonW = 0, int upButtonH = 0, int DownButtonW = 0, int downButtonH = 0, int barColumnW = 0, int entryHeight = 0, int spaceBetweenEntries = 0);
 
 	explicit GUIListBox(bool templated);
 	~GUIListBox();
+
+	void SetHeight(int height) override { GUIObjectNode::SetHeight(height); ItemDisplayCount = height / (EntryHeight + SpaceBetweenEntries); }
 
 	void SetItemClickCallback(const GUIListBoxCallback& callback) { m_ItemClickCallback = callback; }
 	void Input(int xOffset = 0, int yOffset = 0) override;
@@ -84,7 +86,7 @@ private:
 	void UpdateMover(int index = -1);
 };
 
-inline GUIListBox* GUIListBox::CreateListBox(const char* imageFile, int x, int y, int w, int h)
+inline GUIListBox* GUIListBox::CreateListBox(const char* imageFile, int x, int y, int w, int h, int entryHeight, int spaceBetweenEntries)
 {
 	MANAGE_MEMORY_NEW("MenuUI_Listbox", sizeof(GUIListBox));
 	auto newListbox = new GUIListBox(false);
@@ -93,6 +95,10 @@ inline GUIListBox* GUIListBox::CreateListBox(const char* imageFile, int x, int y
 	newListbox->SetY(y);
 	newListbox->SetWidth(w);
 	newListbox->SetHeight(h);
+
+	newListbox->EntryHeight = entryHeight;
+	newListbox->SpaceBetweenEntries = spaceBetweenEntries;
+	newListbox->ItemDisplayCount = h / (entryHeight + spaceBetweenEntries);
 	return newListbox;
 }
 
@@ -279,37 +285,39 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 	auto y = m_Y + yOffset;
 
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && m_Width > 0 && m_Height > 0)
 	{
-
-		//  Render the background object, templated or single-textured
-		if (m_Templated)
+		if ((m_TextureID != 0) || m_Templated)
 		{
-			TextureTopLeftCorner->RenderTexture(x, y, TextureTopLeftCorner->getWidth(), TextureTopLeftCorner->getHeight());
-			TextureTopRightCorner->RenderTexture(x + m_Width - TextureTopRightCorner->getWidth(), y, TextureTopRightCorner->getWidth(), TextureTopRightCorner->getHeight());
-			TextureBottomLeftCorner->RenderTexture(x, y + m_Height - TextureBottomLeftCorner->getHeight(), TextureBottomLeftCorner->getWidth(), TextureBottomLeftCorner->getHeight());
-			TextureBottomRightCorner->RenderTexture(x + m_Width - TextureBottomRightCorner->getWidth(), y + m_Height - TextureBottomRightCorner->getHeight(), TextureBottomRightCorner->getWidth(), TextureBottomLeftCorner->getHeight());
-			TextureLeftSide->RenderTexture(x, y + TextureTopLeftCorner->getHeight(), TextureLeftSide->getWidth(), m_Height - TextureTopLeftCorner->getHeight() - TextureBottomLeftCorner->getHeight());
-			TextureRightSide->RenderTexture(x + m_Width - TextureRightSide->getWidth(), y + TextureTopRightCorner->getHeight(), TextureRightSide->getWidth(), m_Height - TextureTopRightCorner->getHeight() - TextureBottomRightCorner->getHeight());
-			TextureTopSide->RenderTexture(x + TextureTopLeftCorner->getWidth(), y, m_Width - TextureBottomLeftCorner->getWidth() - TextureBottomRightCorner->getWidth(), TextureTopSide->getHeight());
-			TextureBottomSide->RenderTexture(x + TextureBottomLeftCorner->getWidth(), y + m_Height - TextureBottomSide->getHeight(), m_Width - TextureBottomLeftCorner->getWidth() - TextureBottomRightCorner->getWidth(), TextureBottomSide->getHeight());
-			TextureMiddle->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight(), m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth(), m_Height - TextureTopSide->getHeight() - TextureBottomSide->getHeight());
-		}
-		else
-		{
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, m_TextureID);
+			//  Render the background object, templated or single-textured
+			if (m_Templated)
+			{
+				TextureTopLeftCorner->RenderTexture(x, y, TextureTopLeftCorner->getWidth(), TextureTopLeftCorner->getHeight());
+				TextureTopRightCorner->RenderTexture(x + m_Width - TextureTopRightCorner->getWidth(), y, TextureTopRightCorner->getWidth(), TextureTopRightCorner->getHeight());
+				TextureBottomLeftCorner->RenderTexture(x, y + m_Height - TextureBottomLeftCorner->getHeight(), TextureBottomLeftCorner->getWidth(), TextureBottomLeftCorner->getHeight());
+				TextureBottomRightCorner->RenderTexture(x + m_Width - TextureBottomRightCorner->getWidth(), y + m_Height - TextureBottomRightCorner->getHeight(), TextureBottomRightCorner->getWidth(), TextureBottomLeftCorner->getHeight());
+				TextureLeftSide->RenderTexture(x, y + TextureTopLeftCorner->getHeight(), TextureLeftSide->getWidth(), m_Height - TextureTopLeftCorner->getHeight() - TextureBottomLeftCorner->getHeight());
+				TextureRightSide->RenderTexture(x + m_Width - TextureRightSide->getWidth(), y + TextureTopRightCorner->getHeight(), TextureRightSide->getWidth(), m_Height - TextureTopRightCorner->getHeight() - TextureBottomRightCorner->getHeight());
+				TextureTopSide->RenderTexture(x + TextureTopLeftCorner->getWidth(), y, m_Width - TextureBottomLeftCorner->getWidth() - TextureBottomRightCorner->getWidth(), TextureTopSide->getHeight());
+				TextureBottomSide->RenderTexture(x + TextureBottomLeftCorner->getWidth(), y + m_Height - TextureBottomSide->getHeight(), m_Width - TextureBottomLeftCorner->getWidth() - TextureBottomRightCorner->getWidth(), TextureBottomSide->getHeight());
+				TextureMiddle->RenderTexture(x + TextureLeftSide->getWidth(), y + TextureTopSide->getHeight(), m_Width - TextureLeftSide->getWidth() - TextureRightSide->getWidth(), m_Height - TextureTopSide->getHeight() - TextureBottomSide->getHeight());
+			}
+			else
+			{
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
-			glEnd();
+				glBegin(GL_QUADS);
+					glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+					glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
+					glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
+					glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
+				glEnd();
+			}
 		}
 
 		//  Render the scroll buttons if needed
-		auto renderScrollButtons = (int(m_ItemList.size()) > ItemDisplayCount);
+		auto renderScrollButtons = (m_Templated && int(m_ItemList.size()) > ItemDisplayCount);
 		if (renderScrollButtons)
 		{
 			TextureUpButton->RenderTexture(x + DirectionalButtonsX, y + ContentY, UpButtonW, UpButtonH);
@@ -324,11 +332,6 @@ inline void GUIListBox::Render(int xOffset, int yOffset)
 		for (auto i = MovementIndex; i < int(m_ItemList.size()) && i < MovementIndex + ItemDisplayCount; ++i)
 		{
 			m_ItemList[i]->Render(x, y + ((EntryHeight + SpaceBetweenEntries) * (i - MovementIndex)));
-		}
-
-		for (auto i = 0; i < int(m_ItemList.size()) && i < ItemDisplayCount ; ++i)
-		{
-			//m_ItemList[i]->Render(x, y + i * (EntryHeight + SpaceBetweenEntries));
 		}
 
 		//  Render the selector if an item is selected

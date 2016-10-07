@@ -42,6 +42,7 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 
 	//  Create the listbox that shows actions taken in the UI
 	auto listbox1 = GUIListBox::CreateTemplatedListBox("Standard", 10, 170, 580, 240, 560, 4, 16, 16, 16, 16, 16, 22, 2);
+	listbox1->SetFlowToBottom(true);
 	container1->AddChild(listbox1);
 
 	//  Create the checkbox that allows us to disable the button's ability to alter the label

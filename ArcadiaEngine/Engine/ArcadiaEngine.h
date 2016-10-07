@@ -85,12 +85,14 @@ inline void AddDebugConsoleCommands()
 		{
 		case 1:
 			InputManager::SetMousePosition(mouseX, mouseY);
+			debugConsole->AddDebugConsoleLine("Mouse snapped to new position");
 			break;
 
 		case 2: //  A float for time was provided
 		{
 			auto time = float(atof(args[1].c_str()));
 			inputManager.SetMousePositionTarget(mouseX, mouseY, time);
+			debugConsole->AddDebugConsoleLine("Mouse moving to new position");
 			break;
 		}
 		break;
@@ -100,6 +102,7 @@ inline void AddDebugConsoleCommands()
 			auto speedX = float(atof(args[1].c_str()));
 			auto speedY = float(atof(args[2].c_str()));
 			inputManager.SetMousePositionTarget(mouseX, mouseY, speedX, speedY);
+			debugConsole->AddDebugConsoleLine("Mouse moving to new position");
 			break;
 		}
 		break;
@@ -113,6 +116,7 @@ inline void AddDebugConsoleCommands()
 	//  CLICK_MOUSE_LEFT: Simulates a left click
 	debugConsole->AddDebugCommand("CLICK_MOUSE_LEFT", [=](std::string& commandString) -> bool
 	{
+		debugConsole->AddDebugConsoleLine("Left mouse click simulated");
 		inputManager.SetSimulatedMouseButtonLeft(MOUSE_BUTTON_PRESSED);
 		return true;
 	});
@@ -120,6 +124,7 @@ inline void AddDebugConsoleCommands()
 	//  CLICK_MOUSE_MIDDLE: Simulates a middle click
 	debugConsole->AddDebugCommand("CLICK_MOUSE_MIDDLE", [=](std::string& commandString) -> bool
 	{
+		debugConsole->AddDebugConsoleLine("Middle mouse click simulated");
 		inputManager.SetSimulatedMouseButtonMiddle(MOUSE_BUTTON_PRESSED);
 		return true;
 	});
@@ -127,6 +132,7 @@ inline void AddDebugConsoleCommands()
 	//  CLICK_MOUSE_LEFT: Simulates a Right click
 	debugConsole->AddDebugCommand("CLICK_MOUSE_RIGHT", [=](std::string& commandString) -> bool
 	{
+		debugConsole->AddDebugConsoleLine("Right mouse click simulated");
 		inputManager.SetSimulatedMouseButtonRight(MOUSE_BUTTON_PRESSED);
 		return true;
 	});

@@ -38,7 +38,7 @@ public:
 	void SetX(int x) { m_X = x; }
 	void SetY(int y) { m_Y = y; }
 	void SetWidth(int width) { m_Width = width; }
-	void SetHeight(int height) { m_Height = height; }
+	virtual void SetHeight(int height) { m_Height = height; }
 	void SetTextureID(int textureID) { m_TextureID = textureID; }
 	void SetTextureAnimation(TextureAnimation* anim) { m_TextureAnimation = anim; }
 	void SetVisible(bool visible) { m_Visible = visible; }
