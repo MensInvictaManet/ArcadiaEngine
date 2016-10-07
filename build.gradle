@@ -1,0 +1,26 @@
+String VISUAL_STUDIO_DIR = System.getenv()["VISUAL_STUDIO_DIR"]
+String VISUAL_STUDIO_COM_PATH = '"' + VISUAL_STUDIO_DIR + "devenv.com" + '"'
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+task build(type:Exec)  {
+	description = "Compiles the Arcadia Engine client"
+	
+	commandLine "cmd","/c", '"' + VISUAL_STUDIO_COM_PATH + ' ArcadiaEngine.sln /Rebuild \"Release|x86\""'
+}
+
+task buildRelease(type:Exec)  {
+	description = "Compiles the Arcadia Engine client"
+	
+	commandLine "cmd","/c", '"' + VISUAL_STUDIO_COM_PATH + ' ArcadiaEngine.sln /Rebuild \"Release|x86\""'
+}
+
+task buildDebug(type:Exec)  {
+	description = "Compiles the Arcadia Engine client"
+	
+	commandLine "cmd","/c", '"' + VISUAL_STUDIO_COM_PATH + ' ArcadiaEngine.sln /Rebuild \"Debug|x86\""'
+}
