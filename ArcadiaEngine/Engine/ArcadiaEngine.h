@@ -60,6 +60,78 @@
 #define	SCREEN_WIDTH	1024
 #define	SCREEN_HEIGHT	768
 
+void AddDebugConsoleCommands()
+{
+	//  MOVE_MOUSE_OVER: Automatically moves the mouse to a UI object click position
+	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool
+	{
+		std::string args[3];
+		auto argCount = 0;
+
+		for (auto i = 0; i < 3; ++i)
+		{
+			if (commandString.empty()) break;
+			int firstSpace = commandString.find_first_of(' ');
+			if (firstSpace == -1) firstSpace = commandString.length();
+			args[i] = commandString.substr(0, firstSpace);
+			argCount = i + 1;
+			commandString = (firstSpace == commandString.length()) ? "" : commandString.substr(firstSpace + 1, commandString.length());
+		}
+
+		auto mouseX = 0;
+		auto mouseY = 0;
+		auto objectFound = guiManager.GetClickPosition(args[0], mouseX, mouseY);
+		switch (argCount)
+		{
+		case 1:
+			InputManager::SetMousePosition(mouseX, mouseY);
+			break;
+
+		case 2: //  A float for time was provided
+		{
+			auto time = float(atof(args[1].c_str()));
+			inputManager.SetMousePositionTarget(mouseX, mouseY, time);
+			break;
+		}
+		break;
+
+		case 3: //  Two ints for speed were provided
+		{
+			auto speedX = float(atof(args[1].c_str()));
+			auto speedY = float(atof(args[2].c_str()));
+			inputManager.SetMousePositionTarget(mouseX, mouseY, speedX, speedY);
+			break;
+		}
+		break;
+
+		default: break;
+		}
+
+		return objectFound;
+	});
+
+	//  CLICK_MOUSE_LEFT: Simulates a left click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_LEFT", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonLeft(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+
+	//  CLICK_MOUSE_MIDDLE: Simulates a middle click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_MIDDLE", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonMiddle(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+
+	//  CLICK_MOUSE_LEFT: Simulates a Right click
+	debugConsole->AddDebugCommand("CLICK_MOUSE_RIGHT", [=](std::string& commandString) -> bool
+	{
+		inputManager.SetSimulatedMouseButtonRight(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+}
+
 inline void ResizeWindow(void)
 {
 	glViewport(0, 0, GLsizei(SCREEN_WIDTH), GLsizei(SCREEN_WIDTH));
@@ -175,6 +247,7 @@ inline bool InitializeEngine()
 
 	//  Add the Debug Console to the GUI Manager
 	debugConsole->SetWindowDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
+	AddDebugConsoleCommands();
 
 	//  Initialize OpenGL
 	if (!InitializeOpenGL())
