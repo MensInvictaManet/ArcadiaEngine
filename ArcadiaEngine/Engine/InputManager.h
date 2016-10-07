@@ -33,8 +33,8 @@ public:
 	void GetInputForFrame();
 	void Update();
 
-	int GetMouseX() const { return m_MouseX; }
-	int GetMouseY() const { return m_MouseY; }
+	int GetMouseX() const { return m_WindowMouseX; }
+	int GetMouseY() const { return m_WindowMouseY; }
 	MouseButtonState GetMouseButtonLeft() const { return m_MouseButtonLeft; }
 	MouseButtonState GetMouseButtonMiddle() const { return m_MouseButtonMiddle; }
 	MouseButtonState GetMouseButtonRight() const { return m_MouseButtonRight; }
@@ -53,7 +53,7 @@ public:
 	void SetMouseButtonRight(bool setting) { if (setting != (m_MouseButtonRight != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonRight = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void AddKeyToString(int key);
 	void SetMousePositionTarget(int xPos, int yPos, float time);
-	void SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed);
+	void SetMousePositionTarget(int xPos, int yPos, float xSpeed, float ySpeed);
 	void SetSimulatedMouseButtonLeft(MouseButtonState simulatedState);
 	void SetSimulatedMouseButtonMiddle(MouseButtonState simulatedState);
 	void SetSimulatedMouseButtonRight(MouseButtonState simulatedState);
@@ -67,8 +67,10 @@ private:
 
 	void DetermineMouseClickStates();
 
-	int m_MouseX;
-	int m_MouseY;
+	int m_WindowMouseX;
+	int m_WindowMouseY;
+	float m_MouseX;
+	float m_MouseY;
 	MouseButtonState m_MouseButtonLeft;
 	MouseButtonState m_MouseButtonMiddle;
 	MouseButtonState m_MouseButtonRight;
@@ -78,8 +80,8 @@ private:
 	//  Automated mouse movement
 	int m_MouseTargetPositionX;
 	int m_MouseTargetPositionY;
-	int m_MouseTargetPositionSpeedX;
-	int m_MouseTargetPositionSpeedY;
+	float m_MouseTargetPositionSpeedX;
+	float m_MouseTargetPositionSpeedY;
 
 	//  Simulated mouse control
 	MouseButtonSimulation m_SimulatedMouseButtonLeft;
@@ -90,7 +92,8 @@ private:
 inline void InputManager::GetInputForFrame()
 {
 	m_KeyboardString = "";
-	SDL_GetMouseState(&m_MouseX, &m_MouseY);
+	
+	SDL_GetMouseState(&m_WindowMouseX, &m_WindowMouseY);
 
 	DetermineMouseClickStates();
 
@@ -103,32 +106,36 @@ inline void InputManager::GetInputForFrame()
 
 inline void InputManager::Update()
 {
-	if (m_MouseTargetPositionSpeedX == 0 && m_MouseTargetPositionSpeedY == 0) return;
-
 	auto mouseX = 0;
 	auto mouseY = 0;
 	GetMousePosition(mouseX, mouseY, false);
+	if (mouseX != int(m_MouseX)) m_MouseX = float(mouseX);
+	if (mouseY != int(m_MouseY)) m_MouseY = float(mouseY);
+
+	if (m_MouseTargetPositionSpeedX == 0.0f && m_MouseTargetPositionSpeedY == 0.0f) return;
 
 	auto left = 0;
 	auto top = 0;
 	windowManager.GetWindowTopLeft(left, top, -1);
 
-	if (mouseX == left + m_MouseTargetPositionX) m_MouseTargetPositionSpeedX = 0;
-	if (mouseY == top + m_MouseTargetPositionY) m_MouseTargetPositionSpeedY = 0;
+	if (mouseX == left + m_MouseTargetPositionX)	m_MouseTargetPositionSpeedX = 0.0f;
+	if (mouseY == top + m_MouseTargetPositionY)		m_MouseTargetPositionSpeedY = 0.0f;
 
 	if (m_MouseTargetPositionSpeedX != 0)
 	{
-		if (abs(left + m_MouseTargetPositionX - mouseX) <= std::max<int>(int(m_MouseTargetPositionSpeedX * frameSeconds), 1)) mouseX = left + m_MouseTargetPositionX;
-		else mouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedX * frameSeconds), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedX * frameSeconds), -1);
+		if (abs(left + m_MouseTargetPositionX - mouseX) <= (m_MouseTargetPositionSpeedX * frameSeconds)) m_MouseX = float(left + m_MouseTargetPositionX);
+		else m_MouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? (m_MouseTargetPositionSpeedX * frameSeconds) : (-m_MouseTargetPositionSpeedX * frameSeconds);
 	}
 
 	if (m_MouseTargetPositionSpeedY != 0)
 	{
-		if (abs(top + m_MouseTargetPositionY - mouseY) <= std::max<int>(int(m_MouseTargetPositionSpeedY * frameSeconds), 1)) mouseY = top + m_MouseTargetPositionY;
-		else mouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedY * frameSeconds), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedY * frameSeconds), -1);
+		if (abs(top + m_MouseTargetPositionY - mouseY) <= (m_MouseTargetPositionSpeedY * frameSeconds)) m_MouseY = float(top + m_MouseTargetPositionY);
+		else m_MouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? (m_MouseTargetPositionSpeedY * frameSeconds) : (-m_MouseTargetPositionSpeedY * frameSeconds);
 	}
 
 	//  Update the mouse position
+	mouseX = int(m_MouseX);
+	mouseY = int(m_MouseY);
 	SetMousePosition(mouseX, mouseY, false);
 }
 
@@ -197,13 +204,13 @@ inline void InputManager::SetMousePositionTarget(int xPos, int yPos, float time)
 	int mouseY;
 	GetMousePosition(mouseX, mouseY);
 
-	auto speedX = abs(int((xPos - mouseX) / time));
-	auto speedY = abs(int((yPos - mouseY) / time));
+	auto speedX = abs((xPos - mouseX) / time);
+	auto speedY = abs((yPos - mouseY) / time);
 
 	SetMousePositionTarget(xPos, yPos, speedX, speedY);
 }
 
-inline void InputManager::SetMousePositionTarget(int xPos, int yPos, int xSpeed, int ySpeed)
+inline void InputManager::SetMousePositionTarget(int xPos, int yPos, float xSpeed, float ySpeed)
 {
 	m_MouseTargetPositionX = xPos;
 	m_MouseTargetPositionY = yPos;
@@ -340,8 +347,10 @@ inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
 
 
 inline InputManager::InputManager() :
-	m_MouseX(0),
-	m_MouseY(0),
+	m_WindowMouseX(0),
+	m_WindowMouseY(0),
+	m_MouseX(0.0f),
+	m_MouseY(0.0f),
 	m_MouseButtonLeft(MOUSE_BUTTON_UNPRESSED),
 	m_MouseButtonMiddle(MOUSE_BUTTON_UNPRESSED),
 	m_MouseButtonRight(MOUSE_BUTTON_UNPRESSED),
@@ -349,7 +358,10 @@ inline InputManager::InputManager() :
 	m_MouseTargetPositionX(-1),
 	m_MouseTargetPositionY(-1),
 	m_MouseTargetPositionSpeedX(0),
-	m_MouseTargetPositionSpeedY(0)
+	m_MouseTargetPositionSpeedY(0),
+	m_SimulatedMouseButtonLeft(SIMULATED_MOUSE_UNSIMULATED),
+	m_SimulatedMouseButtonMiddle(SIMULATED_MOUSE_UNSIMULATED),
+	m_SimulatedMouseButtonRight(SIMULATED_MOUSE_UNSIMULATED)
 {
 	memset(m_KeyStates, 0, sizeof(m_KeyStates));
 }
