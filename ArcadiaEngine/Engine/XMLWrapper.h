@@ -15,7 +15,7 @@ public:
 
 	const RapidXML_Doc* LoadXMLFile( const char* filename )
 	{
-		RapidXML_File* newFile = nullptr;
+		RapidXML_File* newFile;
 		auto hash = md5( std::string( filename ) );
 		
 		XMLListType::const_iterator findIter = m_LoadedXMLList.find( hash );

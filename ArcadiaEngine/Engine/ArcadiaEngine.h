@@ -60,7 +60,7 @@
 #define	SCREEN_WIDTH	1024
 #define	SCREEN_HEIGHT	768
 
-void AddDebugConsoleCommands()
+inline void AddDebugConsoleCommands()
 {
 	//  MOVE_MOUSE_OVER: Automatically moves the mouse to a UI object click position
 	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool

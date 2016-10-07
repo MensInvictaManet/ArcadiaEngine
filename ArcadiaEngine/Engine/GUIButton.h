@@ -156,7 +156,7 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 	{
 		auto x = m_X + xOffset;
 		auto y = m_Y + yOffset;
-		float pressedSqueeze = 0.95f;
+		auto pressedSqueeze = 0.95f;
 
 		if (m_Templated)
 		{

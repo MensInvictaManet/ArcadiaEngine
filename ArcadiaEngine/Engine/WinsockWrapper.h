@@ -13,6 +13,8 @@
 class WinsockWrapper
 {
 public:
+	typedef unsigned long ulong;
+
 	static WinsockWrapper& GetInstance() { static WinsockWrapper INSTANCE; return INSTANCE; }
 	
 	//  Utilities
@@ -319,10 +321,11 @@ inline char* WinsockWrapper::GetMyHostName()
 
 inline bool WinsockWrapper::CompareIP(char* ipAddress, char* mask)
 {
-	char *cp = 0, *mp = 0;
+	char* cp = nullptr;
+	char* mp = nullptr;
 	while ((*ipAddress) && (*mask != '*')) {
 		if ((*mask != *ipAddress) && (*mask != '?')) {
-			return 0;
+			return false;
 		}
 		mask++;
 		ipAddress++;
@@ -330,7 +333,7 @@ inline bool WinsockWrapper::CompareIP(char* ipAddress, char* mask)
 	while (*ipAddress) {
 		if (*mask == '*') {
 			if (!*++mask) {
-				return 1;
+				return true;
 			}
 			mp = mask;
 			cp = ipAddress + 1;
@@ -347,7 +350,7 @@ inline bool WinsockWrapper::CompareIP(char* ipAddress, char* mask)
 	while (*mask == '*') {
 		mask++;
 	}
-	return !*mask;
+	return (!*mask);
 }
 
 inline void WinsockWrapper::SocketStart()
@@ -600,14 +603,14 @@ inline bool WinsockWrapper::EncryptBuffer(char* pass, int bufferID)
 	char KeyBox[257];
 	auto keylen = std::min<int>(int(strlen(pass)), 256);
 	if (keylen <= 0) return false;
-	unsigned long i, j, t, x;
+	ulong i, j, t, x;
 	char temp;
-	i = j = t = 0;
+	j = t = 0;
 	for (i = 0; i < 256; i++)
-		KeyBox[i] = (char)i;
+		KeyBox[i] = char(i);
 	for (i = 0; i < 256; i++)
 	{
-		j = (j + (unsigned long)KeyBox[i] + pass[i % keylen]) % 256;
+		j = (j + ulong(KeyBox[i]) + pass[i % keylen]) % 256;
 		temp = KeyBox[i];
 		KeyBox[i] = KeyBox[j];
 		KeyBox[j] = temp;
@@ -616,11 +619,11 @@ inline bool WinsockWrapper::EncryptBuffer(char* pass, int bufferID)
 	for (x = 0; x < inplen; x++)
 	{
 		i = (i + 1U) % 256;
-		j = (j + (unsigned long)KeyBox[i]) % 256;
+		j = (j + ulong(KeyBox[i])) % 256;
 		temp = KeyBox[i];
 		KeyBox[i] = KeyBox[j];
 		KeyBox[j] = temp;
-		t = ((unsigned long)KeyBox[i] + (unsigned long)KeyBox[j]) % 256;
+		t = (ulong(KeyBox[i]) + ulong(KeyBox[j])) % 256;
 		inp[x] = (inp[x] ^ KeyBox[t]);
 	}
 

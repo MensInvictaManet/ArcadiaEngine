@@ -90,8 +90,8 @@ inline GUIEditBox::GUIEditBox(bool templated) :
 	m_Selected(false),
 	m_Font(nullptr),
 	m_Text(""),
-	m_Templated(templated),
-	m_LastBackspaceTime(0)
+	m_LastBackspaceTime(0),
+	m_Templated(templated)
 {
 	TextureTopLeftCorner[0] = TextureTopLeftCorner[1] = nullptr;
 	TextureTopRightCorner[0] = TextureTopRightCorner[1] = nullptr;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SDL2/SDL_opengl.h"
-
 #include "TextureManager.h"
 #include "XMLWrapper.h"
 
@@ -71,10 +69,6 @@ inline Font::~Font()
 
 inline void Font::Shutdown(void)
 {
-	if (m_Texture != nullptr)
-	{
-		//textureManager.UnloadTexture(m_Texture);
-	}
 }
 
 
@@ -83,15 +77,15 @@ inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bo
 	if (m_Texture == nullptr) return;
 
 	//  Determine the X offset
-	unsigned int x_offset = x;
-	if (x_centered) x_offset -= (unsigned int)((GetTextWidth(text) / 2.0f) * x_scale);
+	UINT x_offset = x;
+	if (x_centered) x_offset -= UINT((GetTextWidth(text) / 2.0f) * x_scale);
 
 	//  Determine the Y offset
-	unsigned int y_offset = y;
-	if (y_centered) y_offset -= (unsigned int)(((m_MaxHeight / 2.0f)) * y_scale);
+	UINT y_offset = y;
+	if (y_centered) y_offset -= UINT(((m_MaxHeight / 2.0f)) * y_scale);
 
 	//  Render each character in a line while updating the X offset
-	for (unsigned int i = 0; i < strlen(text); ++i)
+	for (size_t i = 0; i < strlen(text); ++i)
 	{
 		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], m_Y[text[i] - 32], int(m_Width[text[i] - 32] * x_scale), int(m_Height[text[i] - 32] * y_scale));
 		x_offset += int(m_Width[text[i] - 32] * x_scale);
@@ -109,7 +103,7 @@ inline unsigned int Font::GetTextWidth(const char* text) const
 
 inline unsigned int Font::GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces) const
 {
-	unsigned int character_count;
+	UINT character_count;
 	std::string new_string("");
 	for (character_count = 0; character_count < strlen(text); ++character_count)
 	{
@@ -124,7 +118,7 @@ inline unsigned int Font::GetCharacterCountBeforePassingWidth(const char* text, 
 		auto new_return_value = new_string.find_last_of(" ");
 		if ((new_return_value != std::string::npos) && (new_return_value + 1 < new_string.size()))
 		{
-			character_count = (unsigned int)(new_return_value + 1);
+			character_count = UINT(new_return_value + 1);
 		}
 	}
 	return character_count;

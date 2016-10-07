@@ -29,33 +29,6 @@ public:
 			FreeTexture();
 		}
 
-		//  TODO: SetColor (set color value and use it when rendering), Render
-		/*
-				//Set color modulation
-				void setColor(Uint8 red, Uint8 green, Uint8 blue)
-				{
-					//Modulate texture
-					SDL_SetTextureColorMod(mTexture, red, green, blue);
-				}
-
-				//Renders texture at given point
-				void render(int x, int y, SDL_Rect* clip = NULL)
-				{
-					//Set rendering space and render to screen
-					SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-					//Set clip rendering dimensions
-					if (clip != NULL)
-					{
-						renderQuad.w = clip->w;
-						renderQuad.h = clip->h;
-					}
-
-					//Render to screen
-					SDL_RenderCopy(g_Renderer, mTexture, clip, &renderQuad);
-				}
-		 */
-
 		void RenderTexture(int x, int y, int width = -1, int height = -1) const
 		{
 			if (m_TextureID == 0) return;
@@ -147,8 +120,7 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 	auto iter = m_TextureListByFile.find(textureFile);
 	if (iter != m_TextureListByFile.end()) return (*iter).second;
 
-	//  TODO: Load the texture, create a ManagedTexture, return the Texture ID
-	SDL_Texture* sdlTexture = nullptr;
+	SDL_Texture* sdlTexture;
 
 	//  Load the surface from the given file
 	auto sdlSurface = IMG_Load(textureFile);
@@ -162,7 +134,7 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 	SDL_SetColorKey(sdlSurface, SDL_TRUE, SDL_MapRGB(sdlSurface->format, 0, 0xFF, 0xFF));
 
 	//  Create texture from surface pixels
-	auto renderer = WindowManager::GetInstance().GetRenderer(0);  //  TODO: Find out if this is correct?
+	auto renderer = WindowManager::GetInstance().GetRenderer(-1);
 	sdlTexture = SDL_CreateTextureFromSurface(renderer, sdlSurface);
 	if (sdlTexture == nullptr)
 	{

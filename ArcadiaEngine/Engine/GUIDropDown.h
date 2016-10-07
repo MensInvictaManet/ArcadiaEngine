@@ -109,8 +109,11 @@ inline GUIDropDown::GUIDropDown(bool templated) :
 	m_ItemSelectCallback(nullptr),
 	m_Clicked(false),
 	SelectedIndex(0),
+	DropDownX(0),
+	DropDownY(0),
+	DropDownW(0),
+	DropDownH(0),
 	m_Templated(templated),
-	ExpandedHeight(0),
 	TextureTopLeftCorner(nullptr),
 	TextureTopRightCorner(nullptr),
 	TextureBottomLeftCorner(nullptr),
@@ -122,10 +125,7 @@ inline GUIDropDown::GUIDropDown(bool templated) :
 	TextureMiddle(nullptr),
 	TextureDropDown(nullptr),
 	TextureSelector(nullptr),
-	DropDownX(0),
-	DropDownY(0),
-	DropDownW(0),
-	DropDownH(0)
+	ExpandedHeight(0)
 {
 }
 

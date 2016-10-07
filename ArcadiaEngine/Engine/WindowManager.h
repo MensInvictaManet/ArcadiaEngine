@@ -78,9 +78,6 @@ inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 	//If an event was detected for this window
 	if (e.type == SDL_WINDOWEVENT && e.window.windowID == m_WindowID)
 	{
-		//Caption update flag
-		auto updateCaption = false;
-
 		switch (e.window.event)
 		{
 			//Window appeared
@@ -108,25 +105,21 @@ inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 			//Mouse enter
 		case SDL_WINDOWEVENT_ENTER:
 			m_MouseFocus = true;
-			updateCaption = true;
 			break;
 
 			//Mouse exit
 		case SDL_WINDOWEVENT_LEAVE:
 			m_MouseFocus = false;
-			updateCaption = true;
 			break;
 
 			//Keyboard focus gained
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 			m_KeyboardFocus = true;
-			updateCaption = true;
 			break;
 
 			//Keyboard focus lost
 		case SDL_WINDOWEVENT_FOCUS_LOST:
 			m_KeyboardFocus = false;
-			updateCaption = true;
 			break;
 
 			//Window minimized
@@ -153,14 +146,6 @@ inline void WindowManager::WindowLink::HandleEvent(SDL_Event& e)
 		default:
 			break;
 		}
-
-		////Update window caption with new data
-		//if (updateCaption)
-		//{
-		//	std::stringstream caption;
-		//	caption << "Arcadia Engine - ID: " << m_WindowID << " MouseFocus:" << ((m_MouseFocus) ? "On" : "Off") << " KeyboardFocus:" << ((m_KeyboardFocus) ? "On" : "Off");
-		//	SDL_SetWindowTitle(m_Window, caption.str().c_str());
-		//}
 	}
 }
 
@@ -203,7 +188,6 @@ inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w
 		printf("A new WindowLink could not be allocated!\n");
 		SDL_GL_DeleteContext(newContext);
 		SDL_DestroyWindow(newWindow);
-		newRenderer = nullptr;
 		return -1;
 	}
 
@@ -241,16 +225,9 @@ inline void WindowManager::Render()
 {
 	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter)
 	{
-		if (!(*iter).second->m_Minimized)
-		{
-			//  Clear the screen
-			//SDL_SetRenderDrawColor((*iter).second->m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-			//SDL_RenderClear((*iter).second->m_Renderer);
-
-			//  Update the screen
-			//SDL_RenderPresent((*iter).second->m_Renderer);
-			SDL_GL_SwapWindow((*iter).second->m_Window); // TODO: Only do this to the current window?
-		}
+		if ((*iter).second->m_Minimized) continue;
+		
+		SDL_GL_SwapWindow((*iter).second->m_Window);
 	}
 }
 
@@ -268,7 +245,7 @@ inline void WindowManager::Shutdown()
 
 inline bool WindowManager::GetWindowTopLeft(int& xPos, int& yPos, const int index)
 {
-	SDL_Window* window = nullptr;
+	SDL_Window* window;
 	if (index == -1) window = m_WindowList[m_CurrentWindow]->m_Window;
 	else
 	{

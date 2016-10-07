@@ -35,8 +35,6 @@ documentation and/or software.
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
 
-#include <cstring>
-#include <iostream>
 #include <cstdio>
 
 // Constants for MD5Transform routine.
@@ -70,15 +68,16 @@ documentation and/or software.
 class MD5
 {
 public:
+	typedef const unsigned char* pcuchar;
+	typedef const char* pcchar;
 	typedef unsigned int size_type; // must be 32bit
 
 	MD5();
-	MD5(const std::string& text);
-	void update(const unsigned char *buf, size_type length);
-	void update(const char *buf, size_type length);
+	explicit MD5(const std::string& text);
+	void update(pcuchar buf, size_type length);
+	void update(pcchar buf, size_type length);
 	MD5& finalize();
 	std::string hexdigest() const;
-	friend std::ostream& operator<<(std::ostream&, MD5 md5);
 
 private:
 	void init();
@@ -153,7 +152,7 @@ inline void MD5::II(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4
 //////////////////////////////////////////////
 
 // default ctor, just initailize
-MD5::MD5()
+inline MD5::MD5()
 {
 	init();
 }
@@ -161,16 +160,16 @@ MD5::MD5()
 //////////////////////////////////////////////
 
 // nifty shortcut ctor, compute MD5 for string and finalize it right away
-MD5::MD5(const std::string &text)
+inline MD5::MD5(const std::string &text)
 {
 	init();
-	update(text.c_str(), (unsigned int)(text.length()));
+	update(text.c_str(), UINT(text.length()));
 	finalize();
 }
 
 //////////////////////////////
 
-void MD5::init()
+inline void MD5::init()
 {
 	finalized = false;
 
@@ -187,18 +186,18 @@ void MD5::init()
 //////////////////////////////
 
 // decodes input (unsigned char) into output (uint4). Assumes len is a multiple of 4.
-void MD5::decode(uint4 output[], const uint1 input[], size_type len)
+inline void MD5::decode(uint4 output[], const uint1 input[], size_type len)
 {
 	for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
-		output[i] = ((uint4)input[j]) | (((uint4)input[j + 1]) << 8) |
-		(((uint4)input[j + 2]) << 16) | (((uint4)input[j + 3]) << 24);
+		output[i] = (uint4(input[j])) | ((uint4(input[j + 1])) << 8) |
+		((uint4(input[j + 2])) << 16) | ((uint4(input[j + 3])) << 24);
 }
 
 //////////////////////////////
 
 // encodes input (uint4) into output (unsigned char). Assumes len is
 // a multiple of 4.
-void MD5::encode(uint1 output[], const uint4 input[], size_type len)
+inline void MD5::encode(uint1 output[], const uint4 input[], size_type len)
 {
 	for (size_type i = 0, j = 0; j < len; i++, j += 4) {
 		output[j] = input[i] & 0xff;
@@ -211,7 +210,7 @@ void MD5::encode(uint1 output[], const uint4 input[], size_type len)
 //////////////////////////////
 
 // apply MD5 algo on a block
-void MD5::transform(const uint1 block[blocksize])
+inline void MD5::transform(const uint1 block[blocksize])
 {
 	uint4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
 	decode(x, block, blocksize);
@@ -301,10 +300,10 @@ void MD5::transform(const uint1 block[blocksize])
 
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block
-void MD5::update(const unsigned char input[], size_type length)
+inline void MD5::update(pcuchar input, size_type length)
 {
 	// compute number of bytes mod 64
-	size_type index = count[0] / 8 % blocksize;
+	auto index = count[0] / 8 % blocksize;
 
 	// Update number of bits
 	if ((count[0] += (length << 3)) < (length << 3))
@@ -312,7 +311,7 @@ void MD5::update(const unsigned char input[], size_type length)
 	count[1] += (length >> 29);
 
 	// number of bytes we need to fill in buffer
-	size_type firstpart = 64 - index;
+	auto firstpart = 64 - index;
 
 	size_type i;
 
@@ -339,16 +338,16 @@ void MD5::update(const unsigned char input[], size_type length)
 //////////////////////////////
 
 // for convenience provide a verson with signed char
-void MD5::update(const char input[], size_type length)
+inline void MD5::update(pcchar input, size_type length)
 {
-	update((const unsigned char*)input, length);
+	update(pcuchar(input), length);
 }
 
 //////////////////////////////
 
 // MD5 finalization. Ends an MD5 message-digest operation, writing the
 // the message digest and zeroizing the context.
-MD5& MD5::finalize()
+inline MD5& MD5::finalize()
 {
 	static unsigned char padding[64] = {
 		0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -362,8 +361,8 @@ MD5& MD5::finalize()
 		encode(bits, count, 8);
 
 		// pad out to 56 mod 64.
-		size_type index = count[0] / 8 % 64;
-		size_type padLen = (index < 56) ? (56 - index) : (120 - index);
+		auto index = count[0] / 8 % 64;
+		auto padLen = (index < 56) ? (56 - index) : (120 - index);
 		update(padding, padLen);
 
 		// Append length (before padding)
@@ -385,14 +384,12 @@ MD5& MD5::finalize()
 //////////////////////////////
 
 // return hex representation of digest as string
-std::string MD5::hexdigest() const
+inline std::string MD5::hexdigest() const
 {
-	if (!finalized)
-		return "";
+	if (!finalized) return "";
 
 	char buf[33];
-	for (int i = 0; i<16; i++)
-		sprintf_s(buf + i * 2, 3, "%02x", digest[i]);
+	for (auto i = 0; i < 16; i++) sprintf_s(buf + i * 2, 3, "%02x", digest[i]);
 	buf[32] = 0;
 
 	return std::string(buf);
@@ -400,9 +397,9 @@ std::string MD5::hexdigest() const
 
 //////////////////////////////
 
-std::string md5(const std::string str)
+inline std::string md5(const std::string str)
 {
-	MD5 md5 = MD5(str);
+	auto md5 = MD5(str);
 
 	return md5.hexdigest();
 }

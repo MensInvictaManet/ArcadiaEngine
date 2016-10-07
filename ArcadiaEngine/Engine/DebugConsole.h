@@ -62,7 +62,7 @@ inline DebugConsole::~DebugConsole()
 inline void DebugConsole::EnterCommand(std::string& commandString)
 {
 	auto soleCommand = false;
-	int firstSpace = commandString.find_first_of(' ');
+	auto firstSpace = commandString.find_first_of(' ');
 	if (firstSpace == -1) { soleCommand = true; firstSpace = commandString.length(); }
 	auto command = commandString.substr(0, firstSpace);
 

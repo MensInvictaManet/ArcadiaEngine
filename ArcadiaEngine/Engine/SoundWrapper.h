@@ -21,10 +21,10 @@ public:
 	bool unloadMusicFile(int identifier);
 	void Shutdown();
 
-	inline bool GetMusicPlaying() const { return (Mix_PlayingMusic() != 0); }
-	inline bool GetMusicPaused() const { return (Mix_PausedMusic() != 0); }
+	static bool GetMusicPlaying() { return (Mix_PlayingMusic() != 0); }
+	static bool GetMusicPaused() { return (Mix_PausedMusic() != 0); }
 
-	inline void ResumeMusic() const { Mix_ResumeMusic(); }
+	static void ResumeMusic() { Mix_ResumeMusic(); }
 
 private:
 	SoundWrapper() {}
