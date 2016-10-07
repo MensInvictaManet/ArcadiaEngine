@@ -50,6 +50,7 @@ inline DebugConsole::DebugConsole() :
 	m_Text(""),
 	m_LastBackspaceTime(0)
 {
+	SetZOrder(-9999);
 	SetVisible(false);
 }
 

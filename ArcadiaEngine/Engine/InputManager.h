@@ -116,18 +116,16 @@ inline void InputManager::Update()
 	if (mouseX == left + m_MouseTargetPositionX) m_MouseTargetPositionSpeedX = 0;
 	if (mouseY == top + m_MouseTargetPositionY) m_MouseTargetPositionSpeedY = 0;
 
-	auto frameSecondsMaxed = std::min<float>(frameSeconds, 0.1f);
-
 	if (m_MouseTargetPositionSpeedX != 0)
 	{
-		if (abs(left + m_MouseTargetPositionX - mouseX) <= std::max<int>(int(m_MouseTargetPositionSpeedX * frameSecondsMaxed), 1)) mouseX = left + m_MouseTargetPositionX;
-		else mouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedX * frameSecondsMaxed), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedX * frameSecondsMaxed), -1);
+		if (abs(left + m_MouseTargetPositionX - mouseX) <= std::max<int>(int(m_MouseTargetPositionSpeedX * frameSeconds), 1)) mouseX = left + m_MouseTargetPositionX;
+		else mouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedX * frameSeconds), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedX * frameSeconds), -1);
 	}
 
 	if (m_MouseTargetPositionSpeedY != 0)
 	{
-		if (abs(top + m_MouseTargetPositionY - mouseY) <= std::max<int>(int(m_MouseTargetPositionSpeedY * frameSecondsMaxed), 1)) mouseY = top + m_MouseTargetPositionY;
-		else mouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedY * frameSecondsMaxed), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedY * frameSecondsMaxed), -1);
+		if (abs(top + m_MouseTargetPositionY - mouseY) <= std::max<int>(int(m_MouseTargetPositionSpeedY * frameSeconds), 1)) mouseY = top + m_MouseTargetPositionY;
+		else mouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? std::max<int>(int(m_MouseTargetPositionSpeedY * frameSeconds), 1) : std::min<int>(int(-m_MouseTargetPositionSpeedY * frameSeconds), -1);
 	}
 
 	//  Update the mouse position

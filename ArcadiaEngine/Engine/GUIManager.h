@@ -8,19 +8,19 @@ class GUIManager
 public:
 	static GUIManager& GetInstance() { static GUIManager INSTANCE; return INSTANCE; }
 
-	GUIObjectNode* GetBaseNode() { return m_BaseNode; }
+	GUIObjectNode* GetBaseNode() const { return m_BaseNode; }
 	std::stack<GUIObjectNode*>& GetDestroyList() { return m_NodesToDestroy; }
-	void AddChild(GUIObjectNode* node) { if (m_BaseNode != nullptr) m_BaseNode->AddChild(node); }
+	void AddChild(GUIObjectNode* node) const { if (m_BaseNode != nullptr) m_BaseNode->AddChild(node); }
 
 	void DestroyNode(GUIObjectNode* nodeToDestroy);
-	void Input();
-	void Update();
-	void Render();
-	void Render3D();
+	void Input() const;
+	void Update() const;
+	void Render() const;
+	void Render3D() const;
 	void EndStep();
 	void Shutdown();
 
-	bool GetClickPosition(std::string& objectName, int& xPos, int& yPos);
+	bool GetClickPosition(std::string& objectName, int& xPos, int& yPos) const;
 
 private:
 	GUIManager();
@@ -37,22 +37,22 @@ inline void GUIManager::DestroyNode(GUIObjectNode* nodeToDestroy)
 	nodeToDestroy->SetToDestroy(m_NodesToDestroy);
 }
 
-inline void GUIManager::Input()
+inline void GUIManager::Input() const
 {
 	m_BaseNode->Input();
 }
 
-inline void GUIManager::Update()
+inline void GUIManager::Update() const
 {
 	m_BaseNode->Update();
 }
 
-inline void GUIManager::Render()
+inline void GUIManager::Render() const
 {
 	m_BaseNode->Render();
 }
 
-inline void GUIManager::Render3D()
+inline void GUIManager::Render3D() const
 {
 	m_BaseNode->Render3D();
 }
@@ -85,7 +85,7 @@ inline void GUIManager::Shutdown()
 	EndStep();
 }
 
-inline bool GUIManager::GetClickPosition(std::string& objectName, int& xPos, int& yPos)
+inline bool GUIManager::GetClickPosition(std::string& objectName, int& xPos, int& yPos) const
 {
 	return m_BaseNode->GetClickPosition(objectName, xPos, yPos);
 }

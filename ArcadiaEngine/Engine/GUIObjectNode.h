@@ -5,15 +5,15 @@
 #include "TextureAnimation.h"
 #include "Color.h"
 
-#include <deque>
+#include <vector>
 #include <assert.h>
 #include <stack>
 
 class GUIObjectNode
 {
 protected:
-	std::deque<GUIObjectNode*> m_Children;
-	std::deque<GUIObjectNode*> m_NewChildren;
+	std::vector<GUIObjectNode*> m_Children;
+	std::vector<GUIObjectNode*> m_NewChildren;
 
 public:
 	static GUIObjectNode* CreateObjectNode(const char* imageFile);
@@ -28,11 +28,13 @@ public:
 	virtual void Render3D();
 	virtual void SetToDestroy(std::stack<GUIObjectNode*>& destroyList);
 	virtual void Destroy();
+	virtual bool SortChild(GUIObjectNode* child);
 
 	bool GetClickPosition(const std::string& objectName, int& xPos, int& yPos);
 	int GetTrueX() const;
 	int GetTrueY() const;
 
+	void SetZOrder(int zOrder) { m_ZOrder = zOrder; if (m_Parent != nullptr) m_Parent->SortChild(this); }
 	void SetX(int x) { m_X = x; }
 	void SetY(int y) { m_Y = y; }
 	void SetWidth(int width) { m_Width = width; }
@@ -46,13 +48,14 @@ public:
 	void SetClickX(int clickX) { m_ClickX = clickX; }
 	void SetClickY(int clickY) { m_ClickY = clickY; }
 
+	int GetZOrder() const { return m_ZOrder; }
 	int GetX() const { return m_X; }
 	int GetY() const { return m_Y; }
 	int GetWidth() const { return m_Width; }
 	int GetHeight() const { return m_Height; }
 	int GetTextureID() const { return m_TextureID; }
 	TextureAnimation* GetTextureAnimation() const { return m_TextureAnimation; }
-	bool GetVisible() { return m_Visible; }
+	bool GetVisible() const { return m_Visible; }
 	GUIObjectNode* GetParent() { return m_Parent; }
 	const GUIObjectNode* GetParent() const { return m_Parent; }
 	float getColorR() const { return m_Color.colorValues[0]; }
@@ -61,6 +64,7 @@ public:
 	float getColorA() const { return m_Color.colorValues[3]; }
 
 	void AddChild(GUIObjectNode* child);
+	void AddChildSorted(GUIObjectNode* child);
 	void RemoveChild(GUIObjectNode* child);
 	
 	int m_ZOrder;
@@ -141,7 +145,7 @@ inline void GUIObjectNode::Update()
 
 	for (auto iter = m_NewChildren.begin(); iter != m_NewChildren.end(); ++iter)
 	{
-		m_Children.push_back((*iter));
+		AddChildSorted((*iter));
 		(*iter)->m_Created = true;
 	}
 	m_NewChildren.clear();
@@ -203,6 +207,17 @@ inline void GUIObjectNode::Destroy()
 	assert(m_Created);
 }
 
+inline bool GUIObjectNode::SortChild(GUIObjectNode* child)
+{
+	auto childIter = std::find(m_Children.begin(), m_Children.end(), child);
+	if (childIter == m_Children.end()) return false;
+	if (m_Children.size() <= 1) return true;
+
+	m_Children.erase(childIter);
+	AddChildSorted(child);
+	return true;
+}
+
 inline bool GUIObjectNode::GetClickPosition(const std::string& objectName, int& xPos, int& yPos)
 {
 	if (m_ObjectName.compare(objectName) == 0)
@@ -236,6 +251,21 @@ inline void GUIObjectNode::AddChild(GUIObjectNode* child)
 
 	m_NewChildren.push_back(child);
 	child->m_Parent = this;
+}
+
+inline void GUIObjectNode::AddChildSorted(GUIObjectNode* child)
+{
+	assert(!m_SetToDestroy);
+
+	for (size_t i = 0; i < m_Children.size(); ++i)
+	{
+		if (m_Children[i]->GetZOrder() >= child->GetZOrder()) continue;
+		
+		m_Children.insert(m_Children.begin() + i, child);
+		return;
+	}
+
+	m_Children.push_back(child);
 }
 
 inline void GUIObjectNode::RemoveChild(GUIObjectNode* child)

@@ -10,7 +10,7 @@ class TopDownCharacter
 public:
 	enum CharacterState { CHARSTATE_IDLE_UP, CHARSTATE_IDLE_DOWN, CHARSTATE_IDLE_LEFT, CHARSTATE_IDLE_RIGHT, CHARSTATE_WALK_UP, CHARSTATE_WALK_DOWN, CHARSTATE_WALK_LEFT, CHARSTATE_WALK_RIGHT, CHARSTATE_SWING_UP, CHARSTATE_SWING_DOWN, CHARSTATE_SWING_LEFT, CHARSTATE_SWING_RIGHT, CHARSTATE_COUNT };
 
-	TopDownCharacter(int x, int y) :
+	TopDownCharacter(float x, float y) :
 		m_X(x),
 		m_Y(y),
 		m_CurrentState(CHARSTATE_IDLE_DOWN)
@@ -20,8 +20,8 @@ public:
 
 	//  Accessors
 	CharacterState GetCurrentState() const { return m_CurrentState; }
-	int GetCharacterX() const { return m_X; }
-	int GetCharacterY() const { return m_Y; }
+	float GetCharacterX() const { return m_X; }
+	float GetCharacterY() const { return m_Y; }
 	int GetCharacterWidth() const { return m_StateAnimation[m_CurrentState]->GetCurrentFrame()->m_W; }
 	int GetCharacterHeight() const { return m_StateAnimation[m_CurrentState]->GetCurrentFrame()->m_H; }
 	bool IsCharacterSwinging() const { return (m_CurrentState == CHARSTATE_SWING_UP || m_CurrentState == CHARSTATE_SWING_DOWN || m_CurrentState == CHARSTATE_SWING_LEFT || m_CurrentState == CHARSTATE_SWING_RIGHT); }
@@ -29,8 +29,8 @@ public:
 	//  Modifiers
 	void LoadCharacterAnimation(CharacterState charState, const char* animationFile) { m_StateAnimation[charState] = TextureAnimation::CreateTextureAnimation(animationFile); }
 	void SetCharacterState(CharacterState newState) { if (m_CurrentState != newState) m_StateAnimation[newState]->ResetAnimation(); m_CurrentState = newState; }
-	void SetCharacterX(int x) { m_X = x; }
-	void SetCharacterY(int y) { m_Y = y; }
+	void SetCharacterX(float x) { m_X = x; }
+	void SetCharacterY(float y) { m_Y = y; }
 
 	void AddAnimationCallback(CharacterState charState, std::string callbackTrigger, TextureAnimation::TextureAnimationCallback callback)
 	{
@@ -66,12 +66,12 @@ public:
 	void Render(int xOffset, int yOffset) const
 	{
 		if (m_StateAnimation[m_CurrentState] == nullptr) return;
-		m_StateAnimation[m_CurrentState]->Render(xOffset + m_X, yOffset + m_Y);
+		m_StateAnimation[m_CurrentState]->Render(xOffset + int(m_X), yOffset + int(m_Y));
 	}
 
 private:
-	int m_X;
-	int m_Y;
+	float m_X;
+	float m_Y;
 	CharacterState m_CurrentState;
 	TextureAnimation* m_StateAnimation[CHARSTATE_COUNT];
 };
@@ -167,7 +167,7 @@ private:
 inline TopDownExample::TopDownExample()
 {
 	//  Load the player character
-	m_Characters[0] = new TopDownCharacter(512, 384);
+	m_Characters[0] = new TopDownCharacter(512.0f, 384.0f);
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/Sprites/LinkUpIdle.xml");
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/Sprites/LinkDownIdle.xml");
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/Sprites/LinkLeftIdle.xml");
@@ -179,38 +179,38 @@ inline TopDownExample::TopDownExample()
 
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/LinkUpSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 1); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 2); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 3); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 4); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 5); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 3); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/LinkDownSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 1); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 2); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 3); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 4); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 5); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 6); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 3); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 6); });
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/LinkLeftSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 1); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 2); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 3); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 4); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 5); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 6); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 3); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 6); });
 	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/Sprites/LinkRightSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 1); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 2); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 3); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 4); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 5); });
-	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), m_Characters[0]->GetCharacterX(), m_Characters[0]->GetCharacterY(), 6); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 3); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
+	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 6); });
 
 	//  Load the enemy character
-	m_Characters[1] = new TopDownCharacter(700, 384);
+	m_Characters[1] = new TopDownCharacter(700.0f, 384.0f);
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/Sprites/GuardUpIdle.xml");
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/Sprites/GuardDownIdle.xml");
 	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/Sprites/GuardLeftIdle.xml");
@@ -319,10 +319,10 @@ inline void TopDownExample::UpdateCharacter()
 {
 	auto x = m_Characters[0]->GetCharacterX();
 	auto y = m_Characters[0]->GetCharacterY();
-	if (m_Pressed[KEYPRESS_UP]) y -= int(frameSeconds * 110.0f);
-	if (m_Pressed[KEYPRESS_DOWN]) y += int(frameSeconds * 110.0f);
-	if (m_Pressed[KEYPRESS_LEFT]) x -= int(frameSeconds * 110.0f);
-	if (m_Pressed[KEYPRESS_RIGHT]) x += int(frameSeconds * 110.0f);
+	if (m_Pressed[KEYPRESS_UP]) y -= frameSeconds * 110.0f;
+	if (m_Pressed[KEYPRESS_DOWN]) y += frameSeconds * 110.0f;
+	if (m_Pressed[KEYPRESS_LEFT]) x -= frameSeconds * 110.0f;
+	if (m_Pressed[KEYPRESS_RIGHT]) x += frameSeconds * 110.0f;
 
 	m_Characters[0]->SetCharacterX(x);
 	m_Characters[0]->SetCharacterY(y);
