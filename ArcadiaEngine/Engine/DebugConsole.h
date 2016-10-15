@@ -15,8 +15,6 @@ private:
 	DebugConsole();
 	~DebugConsole();
 
-	void EnterCommand(std::string& commandString);
-
 public:
 	typedef std::function<bool(std::string)> DebugConsoleCallback;
 
@@ -31,6 +29,7 @@ public:
 	void SetFont(const Font* font) { m_Font = font; }
 	void AddDebugCommand(std::string command, DebugConsoleCallback callback) { m_DebugConsoleCommands[command] = callback; }
 
+	void EnterCommand(std::string& commandString);
 	void AddDebugConsoleLine(std::string newLine) const;
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
@@ -70,6 +69,15 @@ inline DebugConsole::~DebugConsole()
 {
 }
 
+inline void DebugConsole::SetWindowDimensions(int width, int height)
+{
+	m_WindowWidth = width;
+	m_WindowHeight = height;
+
+	m_DebugConsoleListBox->SetWidth(width);
+	m_DebugConsoleListBox->SetHeight(height / 2 - 24);
+}
+
 inline void DebugConsole::EnterCommand(std::string& commandString)
 {
 	auto soleCommand = false;
@@ -87,15 +95,6 @@ inline void DebugConsole::EnterCommand(std::string& commandString)
 	commandString = soleCommand ? "" : commandString.substr(firstSpace + 1, commandString.length());
 	/*auto returnVal = debugCommand->second(commandString);*/
 	debugCommand->second(commandString);
-}
-
-inline void DebugConsole::SetWindowDimensions(int width, int height)
-{
-	m_WindowWidth = width;
-	m_WindowHeight = height;
-
-	m_DebugConsoleListBox->SetWidth(width);
-	m_DebugConsoleListBox->SetHeight(height / 2 - 24);
 }
 
 inline void DebugConsole::AddDebugConsoleLine(std::string newLine) const

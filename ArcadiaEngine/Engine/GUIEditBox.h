@@ -83,6 +83,10 @@ inline GUIEditBox* GUIEditBox::CreateTemplatedEditBox(const char* editboxTemplat
 	newEditbox->SetY(y);
 	newEditbox->SetWidth(w);
 	newEditbox->SetHeight(h);
+
+	newEditbox->SetClickX(w / 2);
+	newEditbox->SetClickY(h / 2);
+
 	return newEditbox;
 }
 
@@ -119,6 +123,12 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 	auto x = inputManager.GetMouseX();
 	auto y = inputManager.GetMouseY();
 
+	if (leftButtonState == MOUSE_BUTTON_PRESSED && ((x > xOffset + m_X) && (x < xOffset + m_X + m_Width) && (y > yOffset + m_Y) && (y < yOffset + m_Y + m_Height)))
+	{
+		inputManager.TakeMouseButtonLeft();
+		m_Selected = true;
+	}
+
 	//  If selected, take keyboard text input
 	if (m_Selected)
 	{
@@ -128,12 +138,6 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 			m_LastBackspaceTime = gameSeconds;
 		}
 		else m_Text += inputManager.GetKeyboardString();
-	}
-
-	if (leftButtonState == MOUSE_BUTTON_PRESSED && ((x > xOffset + m_X) && (x < xOffset + m_X + m_Width) && (y > yOffset + m_Y) && (y < yOffset + m_Y + m_Height)))
-	{
-		inputManager.TakeMouseButtonLeft();
-		m_Selected = true;
 	}
 
 	//  Take base node input

@@ -51,6 +51,7 @@
 #include "WinsockWrapper.h"
 #include "MemoryManager.h"
 #include "DebugConsole.h"
+#include "AutoPlayManager.h"
 
 #if AUDIO_ENABLED
 #include "SoundWrapper.h"
@@ -134,6 +135,14 @@ inline void AddDebugConsoleCommands()
 	{
 		debugConsole->AddDebugConsoleLine("Right mouse click simulated");
 		inputManager.SetSimulatedMouseButtonRight(MOUSE_BUTTON_PRESSED);
+		return true;
+	});
+
+	//  ENTER_TEXT: Simulates a text input
+	debugConsole->AddDebugCommand("ENTER_TEXT", [=](std::string& commandString) -> bool
+	{
+		debugConsole->AddDebugConsoleLine("Text input simulated");
+		inputManager.AddTextInput(commandString);
 		return true;
 	});
 }
@@ -285,6 +294,7 @@ inline void ShutdownEngine()
 #endif
 
 	//  Shutdown the manager classes that need it
+	autoplayManager.Shutdown();
 	winsockWrapper.WinsockShutdown();
 	textureManager.Shutdown();
 	windowManager.Shutdown();
@@ -381,6 +391,9 @@ inline void PrimaryLoop()
 				break;
 			}
 		}
+
+		//  Pre-Update
+		autoplayManager.Update();
 
 		//  Input
 		guiManager.Input();

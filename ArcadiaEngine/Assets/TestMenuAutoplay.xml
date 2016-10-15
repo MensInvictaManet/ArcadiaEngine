@@ -1,0 +1,9 @@
+<AutoplayScript>
+	<DebugCommand text="MOVE_MOUSE_OVER DialogueGoButton 2.0" dependency="UIObjectExists DialogueGoButton"/>
+	<DebugCommand text="CLICK_MOUSE_LEFT" dependency="MouseAutoMove False"/>
+	<DebugCommand text="MOVE_MOUSE_OVER UIShowcaseEditbox 2.0" dependency="UIObjectExists UIShowcaseEditbox"/>
+	<DebugCommand text="CLICK_MOUSE_LEFT" dependency="MouseAutoMove False"/>
+	<DebugCommand text="ENTER_TEXT This is a test"/>
+	<DebugCommand text="MOVE_MOUSE_OVER UIShowcaseSubmitButton 0.8" dependency="UIObjectExists UIShowcaseSubmitButton"/>
+	<DebugCommand text="CLICK_MOUSE_LEFT" dependency="MouseAutoMove False"/>
+</AutoplayScript>

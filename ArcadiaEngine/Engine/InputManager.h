@@ -47,6 +47,7 @@ public:
 	char GetBackspace() const { return m_KeyStates[SDL_SCANCODE_BACKSPACE] != 0; }
 	char GetEnter() const { return m_KeyStates[SDL_SCANCODE_RETURN] != 0; }
 	const std::string& GetKeyboardString() const { return m_KeyboardString; }
+	bool GetIsMouseAutoMoving() const { return (m_MouseTargetPositionSpeedX != 0.0f || m_MouseTargetPositionSpeedY != 0.0f); }
 
 	void SetMouseButtonLeft(bool setting) { if (setting != (m_MouseButtonLeft != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonLeft = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
 	void SetMouseButtonMiddle(bool setting) { if (setting != (m_MouseButtonMiddle != MOUSE_BUTTON_UNPRESSED)) m_MouseButtonMiddle = (setting ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_UNPRESSED); }
@@ -60,6 +61,7 @@ public:
 
 	static void GetMousePosition(int& xPos, int& yPos, bool inWindow = true);
 	static void SetMousePosition(int xPos = 0, int yPos = 0, bool inWindow = true);
+	void AddTextInput(std::string& textInput);
 
 private:
 	InputManager();
@@ -343,6 +345,11 @@ inline void InputManager::SetMousePosition(int xPos, int yPos, bool inWindow)
 	}
 
 	SetCursorPos(rect.left + xPos, rect.top + yPos);
+}
+
+inline void InputManager::AddTextInput(std::string& textInput)
+{
+	m_KeyboardString += textInput;
 }
 
 

@@ -89,11 +89,13 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 
 	//  Create the edit box for submitting strings to the listbox
 	auto editbox1 = GUIEditBox::CreateTemplatedEditBox("Standard", 260, 58, 200, 24);
+	editbox1->SetObjectName("UIShowcaseEditbox");
 	editbox1->SetFont(fontManager.GetFont("Arial"));
 	container1->AddChild(editbox1);
 
 	//  Create the button that submits the contents of the edit box to the listbox
 	auto button2 = GUIButton::CreateTemplatedButton("Standard", 470, 50, 120, 40);
+	button2->SetObjectName("UIShowcaseSubmitButton");
 	button2->SetFont(fontManager.GetFont("Arial"));
 	button2->SetText("Submit");
 	button2->SetLeftClickCallback([=](GUIObjectNode*)

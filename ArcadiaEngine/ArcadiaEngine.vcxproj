@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\ArcadiaEngine.h" />
+    <ClInclude Include="Engine\AutoPlayManager.h" />
     <ClInclude Include="Engine\Color.h" />
     <ClInclude Include="Engine\DebugConsole.h" />
     <ClInclude Include="Engine\FontManager.h" />

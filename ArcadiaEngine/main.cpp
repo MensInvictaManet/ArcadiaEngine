@@ -80,6 +80,8 @@ void CreateTestData()
 		}
 	});
 	showcaseChoiceContainer->AddChild(showcaseGoButton);
+
+	autoplayManager.LoadAutoplayScript("Assets/TestMenuAutoplay.xml");
 }
 
 int main(int argc, char* args[])

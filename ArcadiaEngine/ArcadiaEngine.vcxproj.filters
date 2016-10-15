@@ -374,6 +374,9 @@
     <ClInclude Include="Engine\DebugConsole.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\AutoPlayManager.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">
