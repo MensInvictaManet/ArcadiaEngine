@@ -123,10 +123,17 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 	auto x = inputManager.GetMouseX();
 	auto y = inputManager.GetMouseY();
 
-	if (leftButtonState == MOUSE_BUTTON_PRESSED && ((x > xOffset + m_X) && (x < xOffset + m_X + m_Width) && (y > yOffset + m_Y) && (y < yOffset + m_Y + m_Height)))
+	if (leftButtonState == MOUSE_BUTTON_PRESSED || leftButtonState == MOUSE_BUTTON_PRESSED_TAKEN)
 	{
-		inputManager.TakeMouseButtonLeft();
-		m_Selected = true;
+		if ((x > xOffset + m_X) && (x < xOffset + m_X + m_Width) && (y > yOffset + m_Y) && (y < yOffset + m_Y + m_Height))
+		{
+			if (leftButtonState == MOUSE_BUTTON_PRESSED)
+			{
+				inputManager.TakeMouseButtonLeft();
+				m_Selected = true;
+			}
+		}
+		else m_Selected = false;
 	}
 
 	//  If selected, take keyboard text input
