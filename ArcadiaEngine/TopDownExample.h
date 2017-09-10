@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "Engine/GUIObjectNode.h"
 #include "Engine/TextureAnimation.h"
 #include "Engine/InputManager.h"
@@ -253,6 +255,18 @@ inline void TopDownExample::Render(int xOffset, int yOffset)
 	RenderCharacter(xOffset, yOffset);
 
 	GUIObjectNode::Render(xOffset, yOffset);
+
+	auto renderer = WindowManager::GetInstance().GetRenderer(-1);
+	SDL_Rect rect;
+	rect.x = int(m_Characters[0]->GetCharacterX());
+	rect.y = int(m_Characters[0]->GetCharacterY());
+	rect.w = m_Characters[0]->GetCharacterWidth();
+	rect.h = m_Characters[0]->GetCharacterHeight();
+	char* pixels = new char[m_Characters[0]->GetCharacterWidth() * m_Characters[0]->GetCharacterHeight()];
+	int readPixelSuccess = SDL_RenderReadPixels(renderer, &rect, SDL_PIXELFORMAT_ABGR8888, (void*)(pixels), 4);
+	std::cout << (unsigned char)(pixels[0]) << std::endl;
+
+	return;
 }
 
 inline void TopDownExample::TakeCharacterInput()
