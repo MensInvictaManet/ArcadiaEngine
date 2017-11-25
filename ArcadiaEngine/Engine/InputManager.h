@@ -509,3 +509,5 @@ inline void InputManager::DetermineMouseClickStates()
 
 //  Instance to be utilized by anyone including this header
 InputManager& inputManager = InputManager::GetInstance();
+
+#define KEY_PRESSED(key) inputManager.GetKeyPressed(key)

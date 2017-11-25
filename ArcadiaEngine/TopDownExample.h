@@ -271,11 +271,11 @@ inline void TopDownExample::Render(int xOffset, int yOffset)
 
 inline void TopDownExample::TakeCharacterInput()
 {
-	m_Pressed[KEYPRESS_UP] = inputManager.GetKeyPressed(SDL_SCANCODE_UP);
-	m_Pressed[KEYPRESS_DOWN] = inputManager.GetKeyPressed(SDL_SCANCODE_DOWN);
-	m_Pressed[KEYPRESS_LEFT] = inputManager.GetKeyPressed(SDL_SCANCODE_LEFT);
-	m_Pressed[KEYPRESS_RIGHT] = inputManager.GetKeyPressed(SDL_SCANCODE_RIGHT);
-	m_Pressed[KEYPRESS_CTRL] = inputManager.GetKeyPressed(SDL_SCANCODE_LCTRL) | inputManager.GetKeyPressed(SDL_SCANCODE_RCTRL);
+	m_Pressed[KEYPRESS_UP] = KEY_PRESSED(SDL_SCANCODE_UP);
+	m_Pressed[KEYPRESS_DOWN] = KEY_PRESSED(SDL_SCANCODE_DOWN);
+	m_Pressed[KEYPRESS_LEFT] = KEY_PRESSED(SDL_SCANCODE_LEFT);
+	m_Pressed[KEYPRESS_RIGHT] = KEY_PRESSED(SDL_SCANCODE_RIGHT);
+	m_Pressed[KEYPRESS_CTRL] = KEY_PRESSED(SDL_SCANCODE_LCTRL) | KEY_PRESSED(SDL_SCANCODE_RCTRL);
 
 	if (m_Pressed[KEYPRESS_UP] && m_Pressed[KEYPRESS_DOWN]) { m_Pressed[KEYPRESS_UP] = false; m_Pressed[KEYPRESS_DOWN] = false; }
 	if (m_Pressed[KEYPRESS_LEFT] && m_Pressed[KEYPRESS_RIGHT]) { m_Pressed[KEYPRESS_LEFT] = false; m_Pressed[KEYPRESS_RIGHT] = false; }

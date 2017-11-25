@@ -315,7 +315,7 @@ inline void RenderScreen()
 	//  Initiate the 3D Rendering Context
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 1.0, 200.0);
+	gluPerspective(45.0, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 1.0, 2000.0);
 
 	glDisable(GL_TEXTURE_2D);
 

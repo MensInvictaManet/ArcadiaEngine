@@ -7,6 +7,7 @@
 #include "Engine/InputManager.h"
 #include "Engine/TimeSlice.h"
 #include "Engine/OpenGLCamera.h"
+#include "Engine/BasicPrimativeCube.h"
 
 class World3DExample : public GUIObjectNode
 {
@@ -23,8 +24,9 @@ private:
 	void TakeCameraInput();
 
 	OpenGLCamera m_Camera;
+	BasicPrimativeCube m_CubeObject;
 
-	enum KeyPress { KEYPRESS_UP, KEYPRESS_DOWN, KEYPRESS_LEFT, KEYPRESS_RIGHT, KEYPRESS_CTRL, KEYPRESS_W, KEYPRESS_A, KEYPRESS_S, KEYPRESS_D, KEYPRESS_COUNT };
+	enum KeyPress { KEYPRESS_UP, KEYPRESS_DOWN, KEYPRESS_LEFT, KEYPRESS_RIGHT, KEYPRESS_CTRL, KEYPRESS_SPACE, KEYPRESS_W, KEYPRESS_A, KEYPRESS_S, KEYPRESS_D, KEYPRESS_COUNT };
 	bool m_Pressed[KEYPRESS_COUNT];
 };
 
@@ -60,70 +62,20 @@ inline void World3DExample::Render3D()
 {
 	m_Camera.ApplyCameraTransform();
 
-	//  Basic 3D cube in quads
-	auto cubeHalf = 10.0f;
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glBegin(GL_TRIANGLE_STRIP);
-		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, 1);
-		glVertex3f(1, 1, 1);
-		glVertex3f(0, 0, 1);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 1, 1);
-		glVertex3f(0, 1, 0);
-		glVertex3f(0, 1, 1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, 1);
-	glEnd();
-
-	//  Basic 3D cube in lines, to outline
-	glColor3f(0.0f, 0.0f, 0.0f);
-	glLineWidth(3);
-	glBegin(GL_LINE_STRIP);
-		glVertex3f(0, 1, 0);
-		glVertex3f(0, 0, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(0, 1, 1);
-		glVertex3f(1, 1, 1);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 0, 0);
-		glVertex3f(1, 0, 1);
-		glVertex3f(1, 1, 1);
-		glVertex3f(0, 1, 1);
-		glVertex3f(0, 0, 1);
-		glVertex3f(0, 0, 1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, 1);
-		glVertex3f(1, 0, 1);
-	glEnd();
+	m_CubeObject.Render(Vector3<float>(0, 0, 20));
 }
 
 inline void World3DExample::TakeCameraInput()
 {
-	m_Pressed[KEYPRESS_W] = inputManager.GetKeyPressed(SDL_SCANCODE_W);
-	m_Pressed[KEYPRESS_A] = inputManager.GetKeyPressed(SDL_SCANCODE_A);
-	m_Pressed[KEYPRESS_S] = inputManager.GetKeyPressed(SDL_SCANCODE_S);
-	m_Pressed[KEYPRESS_D] = inputManager.GetKeyPressed(SDL_SCANCODE_D);
-	m_Pressed[KEYPRESS_UP] = inputManager.GetKeyPressed(SDL_SCANCODE_UP);
-	m_Pressed[KEYPRESS_DOWN] = inputManager.GetKeyPressed(SDL_SCANCODE_DOWN);
-	m_Pressed[KEYPRESS_LEFT] = inputManager.GetKeyPressed(SDL_SCANCODE_LEFT);
-	m_Pressed[KEYPRESS_RIGHT] = inputManager.GetKeyPressed(SDL_SCANCODE_RIGHT);
+	if (KEY_PRESSED(SDL_SCANCODE_W))		m_Camera.MoveForward(frameSeconds * 110.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_S))		m_Camera.MoveForward(frameSeconds * -110.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_A))		m_Camera.MoveRight(frameSeconds * -110.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_D))		m_Camera.MoveRight(frameSeconds * 110.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_UP))		m_Camera.RotateLocalX(frameSeconds * -2.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_DOWN))		m_Camera.RotateLocalX(frameSeconds * 2.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_LEFT))		m_Camera.RotateWorld(frameSeconds * 3.0f, 0.0f, 1.0f, 0.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_RIGHT))	m_Camera.RotateWorld(frameSeconds * -3.0f, 0.0f, 1.0f, 0.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_LCTRL))	m_Camera.TranslateWorld(0.0f, frameSeconds * -60.0f, 0.0f);
+	if (KEY_PRESSED(SDL_SCANCODE_SPACE))	m_Camera.TranslateWorld(0.0f, frameSeconds *  60.0f, 0.0f);
 
-	if (m_Pressed[KEYPRESS_W])		m_Camera.MoveForward(frameSeconds * 110.0f);
-	if (m_Pressed[KEYPRESS_S])		m_Camera.MoveForward(frameSeconds * -110.0f);
-	if (m_Pressed[KEYPRESS_A])		m_Camera.MoveRight(frameSeconds * -110.0f);
-	if (m_Pressed[KEYPRESS_D])		m_Camera.MoveRight(frameSeconds * 110.0f);
-	if (m_Pressed[KEYPRESS_UP])		m_Camera.RotateWorld(frameSeconds * 3.0f, -1.0f, 0.0f, 0.0f);
-	if (m_Pressed[KEYPRESS_DOWN])	m_Camera.RotateWorld(frameSeconds * 3.0f,  1.0f, 0.0f, 0.0f);
-	if (m_Pressed[KEYPRESS_LEFT])	m_Camera.RotateLocalY(frameSeconds * 5.0f, true);
-	if (m_Pressed[KEYPRESS_RIGHT])	m_Camera.RotateLocalY(frameSeconds * -5.0f, true);
 }

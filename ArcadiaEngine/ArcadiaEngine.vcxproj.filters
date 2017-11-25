@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Dialogues">
       <UniqueIdentifier>{169ef12b-d279-4bb9-bce4-3c91cece0184}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Basic 3D Primatives">
+      <UniqueIdentifier>{26689577-9dca-4663-9340-10d72739268b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="Engine\OpenGLCamera.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BasicPrimativeCube.h">
+      <Filter>Header Files\Engine\Basic 3D Primatives</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
