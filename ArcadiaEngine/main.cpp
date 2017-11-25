@@ -4,6 +4,7 @@
 #include "SoundShowcase.h"
 #include "MemoryShowcase.h"
 #include "TopDownExample.h"
+#include "World3DExample.h"
 #include "Engine/GUIMoveable.h"
 #include "Engine/GUIDropDown.h"
 #include "Engine/GUILabel.h"
@@ -24,7 +25,7 @@ void CreateTestData()
 	AddDebugConsoleCommands();
 
 	//  Create the first test dialogue and add it to the scene
-	currentDialogue = new TopDownExample;
+	currentDialogue = new World3DExample;
 	guiManager.GetBaseNode()->AddChild(currentDialogue);
 
 	//  Create the container that holds the showcase choice drop-down and button
@@ -43,6 +44,7 @@ void CreateTestData()
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Sound Wrapper", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Memory Manager", 10, 4, 160, 20));
 	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "TopDown Example", 10, 4, 160, 20));
+	showcaseDropdown->AddItem(GUILabel::CreateLabel(fontManager.GetFont("Arial"), "3D World Example", 10, 4, 160, 20));
 	showcaseChoiceContainer->AddChild(showcaseDropdown);
 
 	//  Create the button that allows us to move to a new dialogue based on the drop-down setting
@@ -76,12 +78,17 @@ void CreateTestData()
 			currentDialogue = new TopDownExample;
 			guiManager.GetBaseNode()->AddChild(currentDialogue);
 			break;
+		case 4: //  3D World Example
+			currentDialogue->SetToDestroy(guiManager.GetDestroyList());
+			currentDialogue = new World3DExample;
+			guiManager.GetBaseNode()->AddChild(currentDialogue);
+			break;
 		default:break;
 		}
 	});
 	showcaseChoiceContainer->AddChild(showcaseGoButton);
 
-	autoplayManager.LoadAutoplayScript("Assets/TestMenuAutoplay.xml");
+	//autoplayManager.LoadAutoplayScript("Assets/TestMenuAutoplay.xml");
 }
 
 int main(int argc, char* args[])

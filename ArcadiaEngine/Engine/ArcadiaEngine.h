@@ -16,18 +16,6 @@
 #pragma comment(lib, "Engine/SDL2/SDL2.lib")
 #endif
 
-#if USING_SDL_IMAGE
-#include "./SDL2/SDL_image.h"
-#pragma comment(lib, "Engine/SDL2/SDL2_image.lib")
-#endif
-
-#if AUDIO_ENABLED
-#if USING_SDL_MIXER
-#include "./SDL2/SDL_mixer.h"
-#pragma comment(lib, "Engine/SDL2/SDL2_mixer.lib")
-#endif
-#endif
-
 #if USING_OPENGL
 #include "./SDL2/SDL_opengl.h"
 #pragma comment(lib, "opengl32.lib")
@@ -72,7 +60,7 @@ inline void AddDebugConsoleCommands()
 		for (auto i = 0; i < 3; ++i)
 		{
 			if (commandString.empty()) break;
-			int firstSpace = commandString.find_first_of(' ');
+			size_t firstSpace = commandString.find_first_of(' ');
 			if (firstSpace == -1) firstSpace = commandString.length();
 			args[i] = commandString.substr(0, firstSpace);
 			argCount = i + 1;

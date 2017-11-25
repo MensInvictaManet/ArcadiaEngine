@@ -25,7 +25,7 @@ inline UIShowcaseDialogue::UIShowcaseDialogue()
 	AddChild(introductionLabel);
 
 	//  Create the container that holds all of the main objects in the scene
-	auto container1 = GUIMoveable::CreateTemplatedMoveable("Standard", 10, 40, 600, 420, 0, 0, 400, 16);
+	auto container1 = GUIMoveable::CreateTemplatedMoveable("Standard", 10, 40, 600, 420, 0, 0, 600, 16);
 	AddChild(container1);
 
 	//  Create the label that acts as an explanation of the container / moveable

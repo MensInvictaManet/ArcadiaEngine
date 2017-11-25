@@ -377,6 +377,15 @@
     <ClInclude Include="Engine\AutoPlayManager.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="World3DExample.h">
+      <Filter>Header Files\Dialogues</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Vector3.h">
+      <Filter>Header Files\Engine\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\OpenGLCamera.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">
