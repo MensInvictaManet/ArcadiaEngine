@@ -392,6 +392,9 @@
     <ClInclude Include="Engine\BasicPrimativeCube.h">
       <Filter>Header Files\Engine\Basic 3D Primatives</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\BasicPrimativeIcohedron.h">
+      <Filter>Header Files\Engine\Basic 3D Primatives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">

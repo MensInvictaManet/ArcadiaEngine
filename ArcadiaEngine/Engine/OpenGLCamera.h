@@ -80,7 +80,7 @@ public:
 			X.x,		vUp.x,		Z.x,		0.0f,
 			X.y,		vUp.y,		Z.y,		0.0f,
 			X.z,		vUp.z,		Z.z,		0.0f,
-			0.0f,		0.0f,			0.0f,		1.0f
+			0.0f,		0.0f,		0.0f,		1.0f
 		};
 
 		// Camera Transform   

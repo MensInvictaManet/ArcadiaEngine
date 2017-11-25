@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BasicPrimativeCube.h" />
+    <ClInclude Include="Engine\BasicPrimativeIcohedron.h" />
     <ClInclude Include="Engine\OpenGLCamera.h" />
     <ClInclude Include="Engine\Vector3.h" />
     <ClInclude Include="World3DExample.h" />
