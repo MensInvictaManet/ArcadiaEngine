@@ -178,18 +178,18 @@ public:
 
 	void LayoutSurfacePoints()
 	{
-		m_PrimarySurfacePoints[0] = SI_Point(0.0f, m_HalfSize / 2.0f, -m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[1] = SI_Point(m_HalfSize / 2.0f, m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[2] = SI_Point(-m_HalfSize / 2.0f, m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[3] = SI_Point(0.0f, m_HalfSize / 2.0f, m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[4] = SI_Point(-m_HalfSize, 0.0f, m_HalfSize / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[5] = SI_Point(0.0f, -m_HalfSize / 2.0f, m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[6] = SI_Point(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[7] = SI_Point(m_HalfSize / 2.0f, -m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[8] = SI_Point(0.0f, -m_HalfSize / 2.0f, -m_HalfSize, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[9] = SI_Point(m_HalfSize, 0.0f, -m_HalfSize / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[10] = SI_Point(m_HalfSize, 0.0f, m_HalfSize / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		m_PrimarySurfacePoints[11] = SI_Point(-m_HalfSize, 0.0f, -m_HalfSize / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		m_PrimarySurfacePoints[0] = MakePoint(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
+		m_PrimarySurfacePoints[1] = MakePoint(m_HalfSize / 2.0f, m_HalfSize, 0.0f);
+		m_PrimarySurfacePoints[2] = MakePoint(-m_HalfSize / 2.0f, m_HalfSize, 0.0f);
+		m_PrimarySurfacePoints[3] = MakePoint(0.0f, m_HalfSize / 2.0f, m_HalfSize);
+		m_PrimarySurfacePoints[4] = MakePoint(-m_HalfSize, 0.0f, m_HalfSize / 2.0f);
+		m_PrimarySurfacePoints[5] = MakePoint(0.0f, -m_HalfSize / 2.0f, m_HalfSize);
+		m_PrimarySurfacePoints[6] = MakePoint(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
+		m_PrimarySurfacePoints[7] = MakePoint(m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
+		m_PrimarySurfacePoints[8] = MakePoint(0.0f, -m_HalfSize / 2.0f, -m_HalfSize);
+		m_PrimarySurfacePoints[9] = MakePoint(m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
+		m_PrimarySurfacePoints[10] = MakePoint(m_HalfSize, 0.0f, m_HalfSize / 2.0f);
+		m_PrimarySurfacePoints[11] = MakePoint(-m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
 	}
 
 	void DeterminePrimarySurfaces()

@@ -9,8 +9,26 @@
 struct SplittableCube
 {
 protected:
-	typedef Vector3<float> SC_Point;
+	typedef std::tuple<float, float, float, float, float, float, float, float> SC_Point;
 	typedef std::tuple<SC_Point, SC_Point, SC_Point, SC_Point> SC_Square;
+
+	static SC_Point MakePoint(float x, float y, float z) { return SC_Point(x, y, z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f); }
+	static SC_Point MakePoint(Vector3<float> v) { return SC_Point(v.x, v.y, v.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f); }
+	static SC_Point AddPoints(SC_Point& a, SC_Point& b) {
+		return SC_Point(std::get<0>(a) + std::get<0>(b), std::get<1>(a) + std::get<1>(b), std::get<2>(a) + std::get<2>(b), std::get<3>(a) + std::get<3>(b), std::get<4>(a) + std::get<4>(b), std::get<5>(a) + std::get<5>(b), std::get<6>(a) + std::get<6>(b), std::get<7>(a) + std::get<7>(b));
+	}
+	static SC_Point MultiplyPoint(SC_Point& p, float f) {
+		return SC_Point(std::get<0>(p) * f, std::get<1>(p) * f, std::get<2>(p) * f, std::get<3>(p) * f, std::get<4>(p) * f, std::get<5>(p) * f, std::get<6>(p) * f, std::get<7>(p) * f);
+	}
+
+	static SC_Point& NormalizePointDistance(SC_Point& p) {
+		Vector3<float> distance(std::get<0>(p), std::get<1>(p), std::get<2>(p));
+		distance.Normalize();
+		std::get<0>(p) = distance.x;
+		std::get<1>(p) = distance.y;
+		std::get<2>(p) = distance.z;
+		return p;
+	}
 
 	struct SC_SurfaceSquare
 	{
@@ -20,7 +38,7 @@ protected:
 		SC_SplitSquare* m_SplitSquares;
 
 		SC_SurfaceSquare() :
-			m_Square(Vector3<float>(0, 0, 0), Vector3<float>(0, 0, 0), Vector3<float>(0, 0, 0), Vector3<float>(0, 0, 0)),
+			m_Square(MakePoint(0, 0, 0), MakePoint(0, 0, 0), MakePoint(0, 0, 0), MakePoint(0, 0, 0)),
 			m_SplitSquares(nullptr)
 		{}
 
@@ -55,15 +73,15 @@ protected:
 			if (splitCount == 0) return;
 
 			//  If we arrive here, splitCount is greater than 0 and we have no Split Triangles. Create the triangles, and send the split ahead
-			auto point1 = std::get<0>(m_Square);
-			auto point2 = std::get<1>(m_Square);
-			auto point3 = std::get<2>(m_Square);
-			auto point4 = std::get<3>(m_Square);
-			auto midpoint12 = ((point1 + point2) / 2.0f).Normalize() * pointDistance;
-			auto midpoint23 = ((point2 + point3) / 2.0f).Normalize() * pointDistance;
-			auto midpoint34 = ((point3 + point4) / 2.0f).Normalize() * pointDistance;
-			auto midpoint41 = ((point4 + point1) / 2.0f).Normalize() * pointDistance;
-			auto midpoint = ((point1 + point2 + point3 + point4) / 4.0f).Normalize() * pointDistance;
+			SC_Point point1 = MakePoint(std::get<0>(std::get<0>(m_Square)), std::get<1>(std::get<0>(m_Square)), std::get<2>(std::get<0>(m_Square)));
+			SC_Point point2 = MakePoint(std::get<0>(std::get<1>(m_Square)), std::get<1>(std::get<1>(m_Square)), std::get<2>(std::get<1>(m_Square)));
+			SC_Point point3 = MakePoint(std::get<0>(std::get<2>(m_Square)), std::get<1>(std::get<2>(m_Square)), std::get<2>(std::get<2>(m_Square)));
+			SC_Point point4 = MakePoint(std::get<0>(std::get<3>(m_Square)), std::get<1>(std::get<3>(m_Square)), std::get<2>(std::get<3>(m_Square)));
+			auto midpoint12 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point1, point2), 0.5f)), pointDistance);
+			auto midpoint23 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point2, point3), 0.5f)), pointDistance);
+			auto midpoint34 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point3, point4), 0.5f)), pointDistance);
+			auto midpoint41 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point4, point1), 0.5f)), pointDistance);
+			auto midpoint = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(AddPoints(AddPoints(point1, point2), point3), point4), (1.0f / 4.0f))), pointDistance);
 			m_SplitSquares = new SC_SplitSquare(SC_Square(point1, midpoint12, midpoint, midpoint41), SC_Square(point2, midpoint23, midpoint, midpoint12), SC_Square(point3, midpoint34, midpoint, midpoint23), SC_Square(point4, midpoint41, midpoint, midpoint34));
 			std::get<0>(*m_SplitSquares).Split(splitCount - 1, pointDistance);
 			std::get<1>(*m_SplitSquares).Split(splitCount - 1, pointDistance);
@@ -162,14 +180,14 @@ public:
 
 	void LayoutSurfacePoints()
 	{
-		m_PrimarySurfacePoints[0] = SC_Point(-m_HalfSize, -m_HalfSize, -m_HalfSize);
-		m_PrimarySurfacePoints[1] = SC_Point(m_HalfSize, -m_HalfSize, -m_HalfSize);
-		m_PrimarySurfacePoints[2] = SC_Point(m_HalfSize, m_HalfSize, -m_HalfSize); 
-		m_PrimarySurfacePoints[3] = SC_Point(-m_HalfSize, m_HalfSize, -m_HalfSize);
-		m_PrimarySurfacePoints[4] = SC_Point(-m_HalfSize, -m_HalfSize, m_HalfSize);
-		m_PrimarySurfacePoints[5] = SC_Point(m_HalfSize, -m_HalfSize, m_HalfSize);
-		m_PrimarySurfacePoints[6] = SC_Point(m_HalfSize, m_HalfSize, m_HalfSize);
-		m_PrimarySurfacePoints[7] = SC_Point(-m_HalfSize, m_HalfSize, m_HalfSize);
+		m_PrimarySurfacePoints[0] = MakePoint(-m_HalfSize, -m_HalfSize, -m_HalfSize);
+		m_PrimarySurfacePoints[1] = MakePoint(m_HalfSize, -m_HalfSize, -m_HalfSize);
+		m_PrimarySurfacePoints[2] = MakePoint(m_HalfSize, m_HalfSize, -m_HalfSize);
+		m_PrimarySurfacePoints[3] = MakePoint(-m_HalfSize, m_HalfSize, -m_HalfSize);
+		m_PrimarySurfacePoints[4] = MakePoint(-m_HalfSize, -m_HalfSize, m_HalfSize);
+		m_PrimarySurfacePoints[5] = MakePoint(m_HalfSize, -m_HalfSize, m_HalfSize);
+		m_PrimarySurfacePoints[6] = MakePoint(m_HalfSize, m_HalfSize, m_HalfSize);
+		m_PrimarySurfacePoints[7] = MakePoint(-m_HalfSize, m_HalfSize, m_HalfSize);
 	}
 
 	void DeterminePrimarySurfaces()
@@ -222,10 +240,10 @@ public:
 
 		if (surfaceSquare.m_SplitSquares == nullptr)
 		{
-			vertexArray[memoryIndex + 0] = std::get<0>(surfaceSquare.m_Square).x;	vertexArray[memoryIndex +  1] = std::get<0>(surfaceSquare.m_Square).y;	vertexArray[memoryIndex +  2] = std::get<0>(surfaceSquare.m_Square).z;
-			vertexArray[memoryIndex + 3] = std::get<1>(surfaceSquare.m_Square).x;	vertexArray[memoryIndex +  4] = std::get<1>(surfaceSquare.m_Square).y;	vertexArray[memoryIndex +  5] = std::get<1>(surfaceSquare.m_Square).z;
-			vertexArray[memoryIndex + 6] = std::get<2>(surfaceSquare.m_Square).x;	vertexArray[memoryIndex +  7] = std::get<2>(surfaceSquare.m_Square).y;	vertexArray[memoryIndex +  8] = std::get<2>(surfaceSquare.m_Square).z;
-			vertexArray[memoryIndex + 9] = std::get<3>(surfaceSquare.m_Square).x;	vertexArray[memoryIndex + 10] = std::get<3>(surfaceSquare.m_Square).y;	vertexArray[memoryIndex + 11] = std::get<3>(surfaceSquare.m_Square).z;
+			vertexArray[memoryIndex + 0] = std::get<0>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  1] = std::get<1>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  2] = std::get<2>(std::get<0>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 3] = std::get<0>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  4] = std::get<1>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  5] = std::get<2>(std::get<1>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 6] = std::get<0>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  7] = std::get<1>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  8] = std::get<2>(std::get<2>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 9] = std::get<0>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 10] = std::get<1>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 11] = std::get<2>(std::get<3>(surfaceSquare.m_Square));
 		}
 		else
 		{
@@ -275,10 +293,10 @@ public:
 			return;
 		}
 
-		glVertex3f(std::get<0>(square->m_Square).x, std::get<0>(square->m_Square).y, std::get<0>(square->m_Square).z);
-		glVertex3f(std::get<1>(square->m_Square).x, std::get<1>(square->m_Square).y, std::get<1>(square->m_Square).z);
-		glVertex3f(std::get<2>(square->m_Square).x, std::get<2>(square->m_Square).y, std::get<2>(square->m_Square).z);
-		glVertex3f(std::get<3>(square->m_Square).x, std::get<3>(square->m_Square).y, std::get<3>(square->m_Square).z);
+		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
 	}
 
 	void SurfaceSquareDrawCalls_Lines(SC_SurfaceSquare* square)
@@ -292,13 +310,13 @@ public:
 			return;
 		}
 
-		glVertex3f(std::get<0>(square->m_Square).x, std::get<0>(square->m_Square).y, std::get<0>(square->m_Square).z);
-		glVertex3f(std::get<1>(square->m_Square).x, std::get<1>(square->m_Square).y, std::get<1>(square->m_Square).z);
-		glVertex3f(std::get<1>(square->m_Square).x, std::get<1>(square->m_Square).y, std::get<1>(square->m_Square).z);
-		glVertex3f(std::get<2>(square->m_Square).x, std::get<2>(square->m_Square).y, std::get<2>(square->m_Square).z);
-		glVertex3f(std::get<2>(square->m_Square).x, std::get<2>(square->m_Square).y, std::get<2>(square->m_Square).z);
-		glVertex3f(std::get<3>(square->m_Square).x, std::get<3>(square->m_Square).y, std::get<3>(square->m_Square).z);
-		glVertex3f(std::get<3>(square->m_Square).x, std::get<3>(square->m_Square).y, std::get<3>(square->m_Square).z);
-		glVertex3f(std::get<0>(square->m_Square).x, std::get<0>(square->m_Square).y, std::get<0>(square->m_Square).z);
+		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
+		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
 	}
 };
