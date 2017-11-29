@@ -116,8 +116,9 @@ private:
 	SC_SurfaceSquare m_Surfaces[SURFACE_COUNT];
 
 	unsigned int m_PointCount;
-	GLuint vaoID;
-	GLuint vboID;
+	unsigned int m_LinePointCount;
+	GLuint m_VAO[2];
+	GLuint m_VBO[2];
 
 public:
 	SplittableCube(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) :
@@ -211,16 +212,16 @@ public:
 		float* vertices = new float[m_PointCount * 3];
 		memset(vertices, 0, sizeof(float) * m_PointCount * 3);
 
-		// Using each primary surface, add ever vertex that exists in our shape
-		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForSurface(m_Surfaces[i], vertices, (m_PointCount * 3 / SURFACE_COUNT), i * (m_PointCount * 3 / SURFACE_COUNT));
+		// Using each primary surface, add all geometry vertices
+		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForGeometry(m_Surfaces[i], vertices, (m_PointCount * 3 / SURFACE_COUNT), i * (m_PointCount * 3 / SURFACE_COUNT));
 
-		//  Generate the OpenGL vertex array, and bind it
-		glGenVertexArrays(1, &vaoID);
-		glBindVertexArray(vaoID);
+		//  Generate and Bind the geometry vertex array
+		glGenVertexArrays(1, &m_VAO[0]);
+		glBindVertexArray(m_VAO[0]);
 
-		//  Generate the OpenGL vertex buffer, and bind it
-		glGenBuffers(1, &vboID);
-		glBindBuffer(GL_ARRAY_BUFFER, vboID);
+		//  Generate the OpenGL vertex buffer for geometry, and bind it
+		glGenBuffers(1, &m_VBO[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
 
 		//  Set the vertex buffer data information and the vertex attribute pointer within
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_PointCount * 3, vertices, GL_STATIC_DRAW);
@@ -230,9 +231,33 @@ public:
 		glBindVertexArray(0);
 
 		delete[] vertices;
+
+		m_LinePointCount = m_PointCount * 2;
+		vertices = new float[m_LinePointCount * 3];
+		memset(vertices, 0, sizeof(float) * m_LinePointCount * 3);
+
+		// Using each primary surface, add all line vertices
+		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForLines(m_Surfaces[i], vertices, (m_LinePointCount * 3 / SURFACE_COUNT), i * (m_LinePointCount * 3 / SURFACE_COUNT));
+
+		//  Generate and Bind the line vertex array
+		glGenVertexArrays(1, &m_VAO[1]);
+		glBindVertexArray(m_VAO[1]);
+
+		//  Generate the OpenGL vertex buffer for geometry, and bind it
+		glGenBuffers(1, &m_VBO[1]);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[1]);
+
+		//  Set the vertex buffer data information and the vertex attribute pointer within
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_LinePointCount * 3, vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glEnableVertexAttribArray(0);
+		glBindVertexArray(0);
+
+		delete[] vertices;
 	}
 
-	void AddVerticesForSurface(SC_SurfaceSquare& surfaceSquare, float* vertexArray, unsigned int memoryBlock, unsigned int memoryIndex)
+	void AddVerticesForGeometry(SC_SurfaceSquare& surfaceSquare, float* vertexArray, unsigned int memoryBlock, unsigned int memoryIndex)
 	{
 		//  vertexArray is size [m_PointCount * 3] because each point has three floats (x, y, z)
 		//  memoryBlock is how many values we should be writing
@@ -248,10 +273,37 @@ public:
 		else
 		{
 			auto newMemoryBlock = memoryBlock / 4;
-			AddVerticesForSurface(std::get<0>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 0);
-			AddVerticesForSurface(std::get<1>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 1);
-			AddVerticesForSurface(std::get<2>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 2);
-			AddVerticesForSurface(std::get<3>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 3);
+			AddVerticesForGeometry(std::get<0>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 0);
+			AddVerticesForGeometry(std::get<1>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 1);
+			AddVerticesForGeometry(std::get<2>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 2);
+			AddVerticesForGeometry(std::get<3>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 3);
+		}
+	}
+
+	void AddVerticesForLines(SC_SurfaceSquare& surfaceSquare, float* vertexArray, unsigned int memoryBlock, unsigned int memoryIndex)
+	{
+		//  vertexArray is size [m_LinePointCount * 3] because each point has three floats (x, y, z)
+		//  memoryBlock is how many values we should be writing
+		//  memoryIndex is where we begin to write, based on which surface we are
+
+		if (surfaceSquare.m_SplitSquares == nullptr)
+		{
+			vertexArray[memoryIndex +  0] = std::get<0>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  1] = std::get<1>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  2] = std::get<2>(std::get<0>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  3] = std::get<0>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  4] = std::get<1>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  5] = std::get<2>(std::get<1>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  6] = std::get<0>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  7] = std::get<1>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  8] = std::get<2>(std::get<1>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  9] = std::get<0>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 10] = std::get<1>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 11] = std::get<2>(std::get<2>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 12] = std::get<0>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 13] = std::get<1>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 14] = std::get<2>(std::get<2>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 15] = std::get<0>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 16] = std::get<1>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 17] = std::get<2>(std::get<3>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 18] = std::get<0>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 19] = std::get<1>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 20] = std::get<2>(std::get<3>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 21] = std::get<0>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 22] = std::get<1>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 23] = std::get<2>(std::get<0>(surfaceSquare.m_Square));
+		}
+		else
+		{
+			auto newMemoryBlock = memoryBlock / 4;
+			AddVerticesForLines(std::get<0>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 0);
+			AddVerticesForLines(std::get<1>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 1);
+			AddVerticesForLines(std::get<2>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 2);
+			AddVerticesForLines(std::get<3>(*surfaceSquare.m_SplitSquares), vertexArray, newMemoryBlock, memoryIndex + newMemoryBlock * 3);
 		}
 	}
 
@@ -265,58 +317,20 @@ public:
 			//  Draw the geometry (set into the video card using VAO and VBO
 			glColor3f(m_SurfaceColor.x, m_SurfaceColor.y, m_SurfaceColor.z);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glBindVertexArray(vaoID);
+			glEnableVertexAttribArray(0);
+			glBindVertexArray(m_VAO[0]);
 			glDrawArrays(GL_QUADS, 0, m_PointCount);
 			glBindVertexArray(0);
 
-			//  Basic 3D cube in lines, to outline
 			if (m_ShowLines)
 			{
-				glColor3f(m_LineColor.x, m_LineColor.y, m_LineColor.z);
+				glColor4f(m_LineColor.x, m_LineColor.y, m_LineColor.z, 0.2f);
 				glLineWidth(2);
-				glBegin(GL_LINES);
-				for (int i = 0; i < SURFACE_COUNT; ++i)
-					SurfaceSquareDrawCalls_Lines(&m_Surfaces[i]);
-				glEnd();
+				glEnableVertexAttribArray(0);
+				glBindVertexArray(m_VAO[1]);
+				glDrawArrays(GL_LINES, 0, m_LinePointCount);
+				glBindVertexArray(0);
 			}
 		glPopMatrix();
-	}
-
-	void SurfaceSquareDrawCalls_Squares(SC_SurfaceSquare* square)
-	{
-		if (square->m_SplitSquares != nullptr)
-		{
-			SurfaceSquareDrawCalls_Squares(&(std::get<0>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Squares(&(std::get<1>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Squares(&(std::get<2>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Squares(&(std::get<3>(*square->m_SplitSquares)));
-			return;
-		}
-
-		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
-	}
-
-	void SurfaceSquareDrawCalls_Lines(SC_SurfaceSquare* square)
-	{
-		if (square->m_SplitSquares != nullptr)
-		{
-			SurfaceSquareDrawCalls_Lines(&(std::get<0>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Lines(&(std::get<1>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Lines(&(std::get<2>(*square->m_SplitSquares)));
-			SurfaceSquareDrawCalls_Lines(&(std::get<3>(*square->m_SplitSquares)));
-			return;
-		}
-
-		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<1>(square->m_Square)), std::get<1>(std::get<1>(square->m_Square)), std::get<2>(std::get<1>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<2>(square->m_Square)), std::get<1>(std::get<2>(square->m_Square)), std::get<2>(std::get<2>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<3>(square->m_Square)), std::get<1>(std::get<3>(square->m_Square)), std::get<2>(std::get<3>(square->m_Square)));
-		glVertex3f(std::get<0>(std::get<0>(square->m_Square)), std::get<1>(std::get<0>(square->m_Square)), std::get<2>(std::get<0>(square->m_Square)));
 	}
 };
