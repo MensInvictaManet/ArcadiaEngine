@@ -401,6 +401,9 @@
     <ClInclude Include="Engine\SplittableCube.h">
       <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\ShapeSplitPoints.h">
+      <Filter>Header Files\Engine\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\SDL2\SDL_config.h.cmake">

@@ -69,8 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,6 +124,7 @@
     <ClInclude Include="Engine\BasicPrimativeCube.h" />
     <ClInclude Include="Engine\BasicPrimativeIcohedron.h" />
     <ClInclude Include="Engine\OpenGLCamera.h" />
+    <ClInclude Include="Engine\ShapeSplitPoints.h" />
     <ClInclude Include="Engine\SplittableCube.h" />
     <ClInclude Include="Engine\SplittableIcohedron.h" />
     <ClInclude Include="Engine\Vector3.h" />

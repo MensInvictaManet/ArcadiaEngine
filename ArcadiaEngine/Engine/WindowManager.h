@@ -170,6 +170,15 @@ inline int WindowManager::CreateNewWindow(const char* title, int x, int y, int w
 		return -1;
 	}
 
+	GLenum glew = glewInit();
+	if (glew != GLEW_OK)
+	{
+		char errorString[200];
+		sprintf_s(errorString, "%s", glewGetErrorString(glew));
+		fprintf(stderr, "Error: GLEW init failed");
+		return false;
+	}
+
 	//  Create the Renderer
 	auto newRenderer = SDL_CreateRenderer(newWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (newRenderer == nullptr)

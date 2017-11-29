@@ -6,6 +6,7 @@
 #define USING_SDL			true
 #define USING_SDL_IMAGE		true
 #define USING_SDL_MIXER		true
+#define USING_GLEW			true
 #define	USING_OPENGL		true
 #define	USING_GLU			true
 
@@ -14,6 +15,11 @@
 #include "./SDL2/SDL_syswm.h"
 #undef main
 #pragma comment(lib, "Engine/SDL2/SDL2.lib")
+#endif
+
+#if USING_GLEW
+#include <GL/glew.h>
+#pragma comment(lib, "glew32.lib")
 #endif
 
 #if USING_OPENGL

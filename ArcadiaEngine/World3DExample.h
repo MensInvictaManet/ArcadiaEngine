@@ -83,13 +83,13 @@ inline void World3DExample::Render3D()
 	m_SplitIco1.Render(Vector3<float>(20, 0, 100));
 	m_SplitIco2.Render(Vector3<float>(20, 0, 120));
 	m_SplitIco3.Render(Vector3<float>(20, 0, 140));
-	//m_SplitIco4.Render(Vector3<float>(20, 0, 160));
+	m_SplitIco4.Render(Vector3<float>(20, 0, 160));
 
 	m_UnsplitCube.Render(Vector3<float>(-20, 0, 80));
 	m_SplitCube1.Render(Vector3<float>(-20, 0, 100));
 	m_SplitCube2.Render(Vector3<float>(-20, 0, 120));
 	m_SplitCube3.Render(Vector3<float>(-20, 0, 140));
-	//m_SplitCube4.Render(Vector3<float>(-20, 0, 160));
+	m_SplitCube4.Render(Vector3<float>(-20, 0, 160));
 }
 
 inline void World3DExample::TakeCameraInput()
