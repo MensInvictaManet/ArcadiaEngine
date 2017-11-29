@@ -5,6 +5,15 @@
 
 struct BasicPrimativeCube
 {
+private:
+	float m_HalfWidth;
+	float m_HalfHeight;
+	float m_HalfDepth;
+	bool m_ShowLines;
+	Vector3<float> m_LineColor;
+	Vector3<float> m_SurfaceColor;
+
+public:
 	BasicPrimativeCube(float width = 10.0f, float height = 10.0f, float depth = 10.0f, bool showLines = true) :
 		m_HalfWidth(width / 2.0f),
 		m_HalfHeight(height / 2.0f),
@@ -96,12 +105,4 @@ struct BasicPrimativeCube
 			glVertex3f(x +  m_HalfWidth, y + -m_HalfHeight, z +  m_HalfDepth);
 		glEnd();
 	}
-
-private:
-	float m_HalfWidth;
-	float m_HalfHeight;
-	float m_HalfDepth;
-	bool m_ShowLines;
-	Vector3<float> m_LineColor;
-	Vector3<float> m_SurfaceColor;
 };

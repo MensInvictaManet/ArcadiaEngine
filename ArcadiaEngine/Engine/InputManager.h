@@ -125,14 +125,14 @@ inline void InputManager::Update()
 
 	if (m_MouseTargetPositionSpeedX != 0)
 	{
-		if (abs(left + m_MouseTargetPositionX - mouseX) <= (m_MouseTargetPositionSpeedX * frameSeconds)) m_MouseX = float(left + m_MouseTargetPositionX);
-		else m_MouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? (m_MouseTargetPositionSpeedX * frameSeconds) : (-m_MouseTargetPositionSpeedX * frameSeconds);
+		if (abs(left + m_MouseTargetPositionX - mouseX) <= (m_MouseTargetPositionSpeedX * frameSecondsF)) m_MouseX = float(left + m_MouseTargetPositionX);
+		else m_MouseX += ((left + m_MouseTargetPositionX - mouseX) > 0) ? (m_MouseTargetPositionSpeedX * frameSecondsF) : (-m_MouseTargetPositionSpeedX * frameSecondsF);
 	}
 
 	if (m_MouseTargetPositionSpeedY != 0)
 	{
-		if (abs(top + m_MouseTargetPositionY - mouseY) <= (m_MouseTargetPositionSpeedY * frameSeconds)) m_MouseY = float(top + m_MouseTargetPositionY);
-		else m_MouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? (m_MouseTargetPositionSpeedY * frameSeconds) : (-m_MouseTargetPositionSpeedY * frameSeconds);
+		if (abs(top + m_MouseTargetPositionY - mouseY) <= (m_MouseTargetPositionSpeedY * frameSecondsF)) m_MouseY = float(top + m_MouseTargetPositionY);
+		else m_MouseY += ((top + m_MouseTargetPositionY - mouseY) > 0) ? (m_MouseTargetPositionSpeedY * frameSecondsF) : (-m_MouseTargetPositionSpeedY * frameSecondsF);
 	}
 
 	//  Update the mouse position

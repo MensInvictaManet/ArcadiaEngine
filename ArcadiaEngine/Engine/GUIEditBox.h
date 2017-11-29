@@ -139,10 +139,10 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 	//  If selected, take keyboard text input
 	if (m_Selected)
 	{
-		if (inputManager.GetBackspace() && !m_Text.empty() && (gameSeconds - m_LastBackspaceTime >= TIME_BETWEEN_BACKSPACES))
+		if (inputManager.GetBackspace() && !m_Text.empty() && (gameSecondsF - m_LastBackspaceTime >= TIME_BETWEEN_BACKSPACES))
 		{
 			m_Text.erase(--m_Text.end());
-			m_LastBackspaceTime = gameSeconds;
+			m_LastBackspaceTime = gameSecondsF;
 		}
 		else m_Text += inputManager.GetKeyboardString();
 	}

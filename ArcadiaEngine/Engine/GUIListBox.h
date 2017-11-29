@@ -242,7 +242,7 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 	}
 
 	//  If we're clicking to the right of where the directional buttons start horizontally...
-	if ((gameSeconds - m_LastClickTime > LIST_BOX_SCROLL_DELAY) && mx > x + DirectionalButtonsX)
+	if ((gameSecondsF - m_LastClickTime > LIST_BOX_SCROLL_DELAY) && mx > x + DirectionalButtonsX)
 	{
 		//  If we're clicking the up button, move the movement index up one if possible
 		if ((mx < x + DirectionalButtonsX + UpButtonW) && (my > y + ContentY) && (my < y + ContentY + UpButtonH))
@@ -250,7 +250,7 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 			inputManager.TakeMouseButtonLeft();
 			if (MovementIndex > 0) MovementIndex -= 1;
 			UpdateMover();
-			m_LastClickTime = gameSeconds;
+			m_LastClickTime = gameSecondsF;
 			return;
 		}
 
@@ -260,7 +260,7 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 			inputManager.TakeMouseButtonLeft();
 			if (MovementIndex < int(m_ItemList.size() - ItemDisplayCount)) MovementIndex += 1;
 			UpdateMover();
-			m_LastClickTime = gameSeconds;
+			m_LastClickTime = gameSecondsF;
 			return;
 		}
 	}

@@ -116,10 +116,10 @@ inline void DebugConsole::Input(int xOffset, int yOffset)
 
 	if (m_SetToDestroy || !m_Visible) return;
 
-	if (inputManager.GetBackspace() && !m_Text.empty() && (gameSeconds - m_LastBackspaceTime >= TIME_BETWEEN_BACKSPACES))
+	if (inputManager.GetBackspace() && !m_Text.empty() && (gameSecondsF - m_LastBackspaceTime >= TIME_BETWEEN_BACKSPACES))
 	{
 		m_Text.erase(--m_Text.end());
-		m_LastBackspaceTime = gameSeconds;
+		m_LastBackspaceTime = gameSecondsF;
 	}
 	else if (inputManager.GetEnter() && !m_Text.empty())
 	{

@@ -124,6 +124,8 @@
     <ClInclude Include="Engine\BasicPrimativeCube.h" />
     <ClInclude Include="Engine\BasicPrimativeIcohedron.h" />
     <ClInclude Include="Engine\OpenGLCamera.h" />
+    <ClInclude Include="Engine\SplittableCube.h" />
+    <ClInclude Include="Engine\SplittableIcohedron.h" />
     <ClInclude Include="Engine\Vector3.h" />
     <ClInclude Include="World3DExample.h" />
     <ClInclude Include="Engine\ArcadiaEngine.h" />

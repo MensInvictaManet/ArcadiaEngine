@@ -2,13 +2,30 @@
 
 #include <algorithm>
 
-Uint32 gameTicksUint = 0;
-Uint32 frameTicksUint = 0;
-float gameSeconds = 0.0f;
-float frameSeconds = 0.0f;
+static Uint32 gameTicksUint = 0;
+static Uint32 frameTicksUint = 0;
+static double gameSeconds = 0.0;
+static float gameSecondsF = 0.0f;
+static double frameSeconds = 0.0;
+static float frameSecondsF = 0.0f;
+static unsigned int averageFPS = 0;
 
-#define TICKS_TO_SECONDS(ticks) float(ticks) / 1000.0f
-#define SECONDS_TO_TICKS(seconds) Uint32(seconds * 1000.0f)
+#define TICKS_TO_SECONDS(ticks) double(ticks) / 1000.0
+#define SECONDS_TO_TICKS(seconds) Uint32(seconds * 1000.0)
+
+inline void DetermineAverageFPS(double newFrameSeconds)
+{
+	static unsigned int frameIndex = 0;
+	static double lastGameSeconds = 0.0;
+
+	++frameIndex;
+	if (gameSeconds > lastGameSeconds + 1.0)
+	{
+		averageFPS = (unsigned int)(double(frameIndex) / (gameSeconds - lastGameSeconds));
+		frameIndex = 0;
+		lastGameSeconds = gameSeconds;
+	}
+}
 
 inline void DetermineTimeSlice()
 {
@@ -18,6 +35,10 @@ inline void DetermineTimeSlice()
 	gameTicksUint = SDL_GetTicks();
 	gameSeconds = TICKS_TO_SECONDS(gameTicksUint);
 	frameTicksUint = std::min<Uint32>(gameTicksUint - lastGameTicksUint, 1000);
-	frameSeconds = TICKS_TO_SECONDS(frameTicksUint);
+	frameSeconds = float(TICKS_TO_SECONDS(frameTicksUint));
 	lastGameTicksUint = gameTicksUint;
+
+	DetermineAverageFPS(frameSeconds);
+	frameSecondsF = float(frameSeconds);
+	gameSecondsF = float(gameSeconds);
 }

@@ -333,10 +333,10 @@ inline void TopDownExample::UpdateCharacter()
 {
 	auto x = m_Characters[0]->GetCharacterX();
 	auto y = m_Characters[0]->GetCharacterY();
-	if (m_Pressed[KEYPRESS_UP]) y -= frameSeconds * 110.0f;
-	if (m_Pressed[KEYPRESS_DOWN]) y += frameSeconds * 110.0f;
-	if (m_Pressed[KEYPRESS_LEFT]) x -= frameSeconds * 110.0f;
-	if (m_Pressed[KEYPRESS_RIGHT]) x += frameSeconds * 110.0f;
+	if (m_Pressed[KEYPRESS_UP]) y -= frameSecondsF * 110.0f;
+	if (m_Pressed[KEYPRESS_DOWN]) y += frameSecondsF * 110.0f;
+	if (m_Pressed[KEYPRESS_LEFT]) x -= frameSecondsF * 110.0f;
+	if (m_Pressed[KEYPRESS_RIGHT]) x += frameSecondsF * 110.0f;
 
 	m_Characters[0]->SetCharacterX(x);
 	m_Characters[0]->SetCharacterY(y);

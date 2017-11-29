@@ -31,7 +31,7 @@
     <Filter Include="Header Files\Dialogues">
       <UniqueIdentifier>{169ef12b-d279-4bb9-bce4-3c91cece0184}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Basic 3D Primatives">
+    <Filter Include="Header Files\Engine\3D Base Objects">
       <UniqueIdentifier>{26689577-9dca-4663-9340-10d72739268b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -390,10 +390,16 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\BasicPrimativeCube.h">
-      <Filter>Header Files\Engine\Basic 3D Primatives</Filter>
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
     <ClInclude Include="Engine\BasicPrimativeIcohedron.h">
-      <Filter>Header Files\Engine\Basic 3D Primatives</Filter>
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SplittableIcohedron.h">
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SplittableCube.h">
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
