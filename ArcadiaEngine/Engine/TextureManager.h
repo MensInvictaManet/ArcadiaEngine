@@ -1,11 +1,10 @@
 #pragma once
 
-#include "SDL2/SDL.h"
-
-#include "SDL2/SDL_image.h"
-
-#include "SDL2/SDL_opengl.h"
-
+#include <SDL.h>
+#include <SDL_opengl.h>
+#if USING_SDL_IMAGE
+#include <SDL_image.h>
+#endif
 #include <unordered_map>
 
 #include "WindowManager.h"
@@ -39,10 +38,10 @@ public:
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + width, y);
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + width, y + height);
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + height);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(x + width, y);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(x + width, y + height);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + height);
 			glEnd();
 		}
 
@@ -56,14 +55,14 @@ public:
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-				glTexCoord2f(float(sub_x) / (float(m_Width)), (float(sub_y) / float(m_Height)));
-				glVertex3i(x, y, 0);
-				glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y) / float(m_Height)));
-				glVertex3i(x + sub_w, y, 0);
-				glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
-				glVertex3i(x + sub_w, y + sub_h, 0);
-				glTexCoord2f((float(sub_x) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
-				glVertex3i(x, y + sub_h, 0);
+			glTexCoord2f(float(sub_x) / (float(m_Width)), (float(sub_y) / float(m_Height)));
+			glVertex3i(x, y, 0);
+			glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y) / float(m_Height)));
+			glVertex3i(x + sub_w, y, 0);
+			glTexCoord2f((float(sub_x + sub_w) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
+			glVertex3i(x + sub_w, y + sub_h, 0);
+			glTexCoord2f((float(sub_x) / float(m_Width)), (float(sub_y + sub_h) / float(m_Height)));
+			glVertex3i(x, y + sub_h, 0);
 			glEnd();
 		}
 
@@ -117,6 +116,7 @@ inline GLuint TextureManager::LoadTextureGetID(const char* textureFile)
 
 inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* textureFile)
 {
+#if USING_SDL_IMAGE
 	auto iter = m_TextureListByFile.find(textureFile);
 	if (iter != m_TextureListByFile.end()) return (*iter).second;
 
@@ -175,6 +175,9 @@ inline TextureManager::ManagedTexture* TextureManager::LoadTexture(const char* t
 	m_TextureListByFile[std::string(textureFile)] = managedTexture;
 
 	return managedTexture;
+#else
+	return nullptr;
+#endif
 }
 
 inline GLuint TextureManager::GetTextureID(const int index)
@@ -207,7 +210,7 @@ inline void TextureManager::Shutdown()
 
 inline TextureManager::TextureManager()
 {
-	
+
 }
 
 inline TextureManager::~TextureManager()

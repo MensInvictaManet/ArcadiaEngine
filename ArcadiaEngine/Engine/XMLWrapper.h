@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RapidXML/rapidxml_utils.hpp"
-#include "SimpleMD5.h"
+#include <rapidxml_utils.hpp>
 #include <unordered_map>
+#include "SimpleMD5.h"
 
 typedef rapidxml::file<>				RapidXML_File;
 typedef rapidxml::xml_document<>		RapidXML_Doc;

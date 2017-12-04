@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SDL2\SDL_opengl.h"
-#include "Vector3.h"
+#include <SDL_opengl.h>
 #include <tuple>
 #include <algorithm>
+#include "Vector3.h"
 #include "ShapeSplitPoints.h"
 
 struct SplittableIcohedron
@@ -115,6 +115,7 @@ private:
 
 	unsigned int m_PointCount;
 	unsigned int m_LinePointCount;
+	unsigned int m_SurfaceCount;
 	GLuint m_VAO[2];
 	GLuint m_VBO[2];
 
@@ -177,6 +178,10 @@ public:
 		m_SurfaceColor = surfaceColor;
 	}
 
+	inline float getRotation() {
+		return (gameSecondsF - m_RotationStartTime) * m_RotationSpeed;
+	}
+
 	void LayoutSurfacePoints()
 	{
 		m_PrimarySurfacePoints[0] = MakePoint(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
@@ -225,7 +230,8 @@ public:
 		//float* vertices = new float[pointCount * 3];
 
 		//  Set up a vertex array large enough to hold every point of every surface, even duplicates
-		m_PointCount = (m_SplitCount > 0) ? (GetShapeSurfacesAfterSplit(SURFACE_POINTS, SURFACE_COUNT, SURFACE_SPLIT_COUNT, SURFACE_EDGES, m_SplitCount) * SURFACE_EDGES) : (SURFACE_COUNT * SURFACE_EDGES);
+		m_SurfaceCount = (m_SplitCount > 0) ? GetShapeSurfacesAfterSplit(SURFACE_POINTS, SURFACE_COUNT, SURFACE_SPLIT_COUNT, SURFACE_EDGES, m_SplitCount) : SURFACE_COUNT;
+		m_PointCount = m_SurfaceCount * SURFACE_EDGES;
 		float* vertices = new float[m_PointCount * 3];
 		memset(vertices, 0, sizeof(float) * m_PointCount * 3);
 
@@ -236,12 +242,11 @@ public:
 		glGenVertexArrays(1, &m_VAO[0]);
 		glBindVertexArray(m_VAO[0]);
 
-		//  Generate the OpenGL vertex buffer for geometry, and bind it
+		//  Generate the OpenGL vertex buffer for geometry, bind it, and set the vertex buffer data information 
 		glGenBuffers(1, &m_VBO[0]);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
-
-		//  Set the vertex buffer data information and the vertex attribute pointer within
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_PointCount * 3, vertices, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(0);
@@ -321,16 +326,17 @@ public:
 		}
 	}
 
-	void Render(Vector3<float>& position)
+	void Render(Vector3<float>& position, GLuint shaderProgram = 0)
 	{
 		glPushMatrix();
 			//  Move to the given position and rotate the object based on it's rotation speed and rotation start time
 			glTranslatef(position.x, position.y, position.z);
-			glRotatef((gameSecondsF - m_RotationStartTime) * m_RotationSpeed, 0.0f, 1.0f, 0.0f);
+			glRotatef(getRotation(), 0.0f, 1.0f, 0.0f);
 
 			//  Draw the geometry (set into the video card using VAO and VBO
 			glColor3f(m_SurfaceColor.x, m_SurfaceColor.y, m_SurfaceColor.z);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 			glEnableVertexAttribArray(0);
 			glBindVertexArray(m_VAO[0]);
 			glDrawArrays(GL_TRIANGLES, 0, m_PointCount);
@@ -340,10 +346,9 @@ public:
 			{
 				glColor4f(m_LineColor.x, m_LineColor.y, m_LineColor.z, 0.2f);
 				glLineWidth(2);
-				glEnableVertexAttribArray(0);
-				glBindVertexArray(m_VAO[1]);
+				glBindBuffer(GL_ARRAY_BUFFER, m_VBO[1]);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 				glDrawArrays(GL_LINES, 0, m_LinePointCount);
-				glBindVertexArray(0);
 			}
 		glPopMatrix();
 	}

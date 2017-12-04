@@ -1,7 +1,8 @@
 #pragma once
 
-#include "SDL2/SDL.h"
+#include <SDL.h>
 
+#include "TimeSlice.h"
 #include "WindowManager.h"
 
 enum MouseButtonSimulation

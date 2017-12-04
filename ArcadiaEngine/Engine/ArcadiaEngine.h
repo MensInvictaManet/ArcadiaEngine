@@ -10,11 +10,15 @@
 #define	USING_OPENGL		true
 #define	USING_GLU			true
 
+//  NOTE: Feel free to change screen size values to your liking
+#define SCREEN_SIZE_W		1024.0f
+#define SCREEN_SIZE_H		768.0f
+
 #if USING_SDL
-#include "./SDL2/SDL.h"
-#include "./SDL2/SDL_syswm.h"
+#include <SDL.h>
+#include <SDL_syswm.h>
 #undef main
-#pragma comment(lib, "Engine/SDL2/SDL2.lib")
+#pragma comment(lib, "SDL2.lib")
 #endif
 
 #if USING_GLEW
@@ -23,7 +27,7 @@
 #endif
 
 #if USING_OPENGL
-#include "./SDL2/SDL_opengl.h"
+#include <SDL_opengl.h>
 #pragma comment(lib, "opengl32.lib")
 #endif
 
@@ -32,9 +36,21 @@
 #pragma comment(lib, "glu32.lib")
 #endif
 
+#if USING_SDL_IMAGE
+#include <SDL_image.h>
+#pragma comment(lib, "SDL2_image.lib")
+#endif
+
+#if USING_SDL_MIXER
+#include <SDL_mixer.h>
+#pragma comment(lib, "SDL2_mixer.lib")
+#endif
+
 #if CONSOLE_DISABLED
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
+
+#include <iostream>
 
 #include "WindowManager.h"
 #include "TextureManager.h"
@@ -147,7 +163,7 @@ inline void ResizeWindow(void)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_WIDTH), 0.1f, 100.0f);
+	gluPerspective(45.0f, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_WIDTH), 0.0f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -162,9 +178,14 @@ inline bool InitializeSDL()
 		return false;
 	}
 
-	//  Set SDL to use OpenGL 2.1
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	//  Set SDL to use OpenGL 3.1
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	SDL_GL_SetSwapInterval(0);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	//  Set the OpenGL attributes for multisampling
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -176,6 +197,7 @@ inline bool InitializeSDL()
 		printf("Warning: Linear texture filtering not enabled!");
 	}
 
+#if USING_SDL_IMAGE
 	//  Initialize PNG loading
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags))
@@ -183,6 +205,7 @@ inline bool InitializeSDL()
 		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 		return false;
 	}
+#endif
 
 	//  Enable text input
 	SDL_StartTextInput();
@@ -265,6 +288,15 @@ inline bool InitializeEngine()
 		return false;
 	}
 
+	// If there are any OpenGL errors, throw an exception now
+	auto error = glGetError();
+	while (error != GL_NO_ERROR)
+	{
+		std::cout << "Error initializing OpenGL! " << gluErrorString(error) << "\n";
+		throw std::runtime_error("OpenGL error");
+		error = glGetError();
+	}
+
 #if AUDIO_ENABLED
 #if USING_SDL_MIXER
 	//Initialize SDL_mixer 
@@ -276,33 +308,24 @@ inline bool InitializeEngine()
 #endif
 #endif
 
+	// print out some info about the graphics drivers
+	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+
+	// make sure OpenGL version 3.2 API is available
+	if (!GL_VERSION_3_2)
+		throw std::runtime_error("OpenGL 3.2 API is not available.");
+
 	return true;
 }
 
 inline void ShutdownEngine()
 {
-
-	//  Quit all SDL sub-systems
-#if USING_SDL_IMAGE
-	IMG_Quit();
-#endif
-
-	//  Shutdown the manager classes that need it
-	autoplayManager.Shutdown();
-	winsockWrapper.WinsockShutdown();
-	textureManager.Shutdown();
+	//  Shut down the manager classes that need it
 	windowManager.Shutdown();
-	xmlWrapper.Shutdown();
 	guiManager.Shutdown();
-
-#if AUDIO_ENABLED
-#if USING_SDL_MIXER
-	soundWrapper.Shutdown();
-	Mix_CloseAudio();
-#endif
-#endif
-
-	memoryManager.Shutdown();
 
 #if USING_SDL
 	//  Disable text input
@@ -343,21 +366,18 @@ inline void RenderScreen()
 
 inline void PrimaryLoop()
 {
-	//  The event handler
-	SDL_Event e;
-
-	//  Main loop flag
-	auto quit = false;
-
 	//  While application is running
+	auto quit = false;
 	while (!quit)
 	{
 		DetermineTimeSlice();
 
 		//  Get the current state of mouse and keyboard input
 		inputManager.GetInputForFrame();
+		if (inputManager.GetKeyPressed(SDL_SCANCODE_ESCAPE)) quit = true;
 
 		//  Handle events on queue
+		SDL_Event e;
 		while (SDL_PollEvent(&e) != 0)
 		{
 			switch (e.type)

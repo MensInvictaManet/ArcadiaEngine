@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL2/SDL.h"
+#include <SDL.h>
 #undef main
 
 #include "MemoryManager.h"
@@ -236,7 +236,7 @@ inline void WindowManager::Render()
 	for (auto iter = m_WindowList.begin(); iter != m_WindowList.end(); ++iter)
 	{
 		if ((*iter).second->m_Minimized) continue;
-		
+
 		SDL_GL_SwapWindow((*iter).second->m_Window);
 	}
 }

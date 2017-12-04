@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SDL2\SDL_opengl.h"
-#include "Vector3.h"
+#include <SDL_opengl.h>
 #include <tuple>
 #include <algorithm>
+#include "Vector3.h"
 #include "ShapeSplitPoints.h"
 
 struct SplittableCube
@@ -179,6 +179,10 @@ public:
 		m_SurfaceColor = surfaceColor;
 	}
 
+	inline float getRotation() {
+		return (gameSecondsF - m_RotationStartTime) * m_RotationSpeed;
+	}
+
 	void LayoutSurfacePoints()
 	{
 		m_PrimarySurfacePoints[0] = MakePoint(-m_HalfSize, -m_HalfSize, -m_HalfSize);
@@ -307,12 +311,12 @@ public:
 		}
 	}
 
-	void Render(Vector3<float>& position)
+	void Render(Vector3<float>& position, GLuint shaderProgram = 0)
 	{
 		glPushMatrix();
 			//  Move to the given position and rotate the object based on it's rotation speed and rotation start time
 			glTranslatef(position.x, position.y, position.z);
-			glRotatef((gameSecondsF - m_RotationStartTime) * m_RotationSpeed, 0.0f, 1.0f, 0.0f);
+			glRotatef(getRotation(), 0.0f, 1.0f, 0.0f);
 
 			//  Draw the geometry (set into the video card using VAO and VBO
 			glColor3f(m_SurfaceColor.x, m_SurfaceColor.y, m_SurfaceColor.z);
