@@ -1,3 +1,7 @@
 SDL2 2.0.7
-OpenGL 4.4
+SDL2_Mixer 2.0.2
+SDL2_Image
+rapidxml 1.13
+GLM 0.9.8.5
 GLEW 2.1.0
+OpenGL 3.1 or higher
