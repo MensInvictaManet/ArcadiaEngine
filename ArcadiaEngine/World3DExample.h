@@ -48,7 +48,10 @@ private:
 	GLuint shaderTestV;
 	GLuint shaderTestF;
 
-	tdogl::Program* gProgram = NULL;
+	tdogl::Program* gProgram = nullptr;
+
+	GLuint m_D6Texture = 0;
+	GLuint m_D20Texture = 0;
 
 	void LoadShaders() {
 		std::vector<tdogl::Shader> shaders;
@@ -60,25 +63,28 @@ private:
 
 inline World3DExample::World3DExample()
 {
-	m_BasicIco.SetValues(10.0f, true, 50.0f);
-	m_UnsplitIco.SetValues(10.0f, 0, true, 50.0f);
-	m_SplitIco1.SetValues(10.0f, 1, true, 50.0f);
-	m_SplitIco2.SetValues(10.0f, 3, true, 50.0f);
-	m_SplitIco3.SetValues(10.0f, 5, true, 50.0f);
-	m_SplitIco4.SetValues(10.0f, 6, true, 50.0f);
+	LoadShaders();
 
-	m_BasicCube.SetValues(10.0f, 10.0f, 10.0f, true, 50.0f);
-	m_UnsplitCube.SetValues(10.0f, 0, true, 50.0f);
-	m_SplitCube1.SetValues(10.0f, 1, true, 50.0f);
-	m_SplitCube2.SetValues(10.0f, 3, true, 50.0f);
-	m_SplitCube3.SetValues(10.0f, 5, true, 50.0f);
-	m_SplitCube4.SetValues(10.0f, 6, true, 50.0f);
+	m_BasicIco.SetValues(10.0f, false, 50.0f, gProgram);
+	m_UnsplitIco.SetValues(10.0f, 0, true, 50.0f, gProgram);
+	m_SplitIco1.SetValues( 10.0f, 1, true, 50.0f, gProgram);
+	m_SplitIco2.SetValues( 10.0f, 3, true, 50.0f, gProgram);
+	m_SplitIco3.SetValues( 10.0f, 5, true, 50.0f, gProgram);
+	m_SplitIco4.SetValues( 10.0f, 6, true, 50.0f, gProgram);
+
+	m_BasicCube.SetValues(10.0f, 10.0f, 10.0f, false, 50.0f, gProgram);
+	m_UnsplitCube.SetValues(10.0f, 0, false, 50.0f, gProgram);
+	m_SplitCube1.SetValues( 10.0f, 1, false, 50.0f, gProgram);
+	m_SplitCube2.SetValues( 10.0f, 3, false, 50.0f, gProgram);
+	m_SplitCube3.SetValues( 10.0f, 5, false, 50.0f, gProgram);
+	m_SplitCube4.SetValues( 10.0f, 6, false, 50.0f, gProgram);
 
 	//  Create the current fps label
 	m_CurrentFPSLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Current FPS: Unknown", 10, 748, 260, 22);
 	AddChild(m_CurrentFPSLabel);
 
-	LoadShaders();
+	m_D6Texture = textureManager.LoadTextureGetID("Assets/3D Base Textures/D6Dice.png");
+	m_D20Texture = textureManager.LoadTextureGetID("Assets/3D Base Textures/D20Dice.png");
 
 	// setup GLM Camera
 	gCamera.setPosition(glm::vec3(0, 0, 4));
@@ -109,45 +115,23 @@ inline void World3DExample::Render3D()
 {
 	gCamera.ApplyTransform();
 
-	bool shader = false;
-	if (KEY_PRESSED(SDL_SCANCODE_V)) shader = true;
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_D6Texture);
+	m_BasicCube.Render(Vector3<float>(-20, 0, -80), gCamera);
+	m_UnsplitCube.Render(Vector3<float>(-20, 0, -100), gCamera);
+	m_SplitCube1.Render(Vector3<float>(-20, 0, -120), gCamera);
+	m_SplitCube2.Render(Vector3<float>(-20, 0, -140), gCamera);
+	m_SplitCube3.Render(Vector3<float>(-20, 0, -160), gCamera);
+	m_SplitCube4.Render(Vector3<float>(-20, 0, -180), gCamera);
 
-	if (shader == true)
-	{
-		gProgram->use();
-		gProgram->setUniform("camera", gCamera.matrix());
-	}
-
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -80)), glm::radians(m_BasicCube.getRotation()), glm::vec3(0, 1, 0)));
-	m_BasicCube.Render(Vector3<float>(-20, 0, -80));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -100)), glm::radians(m_UnsplitCube.getRotation()), glm::vec3(0, 1, 0)));
-	m_UnsplitCube.Render(Vector3<float>(-20, 0, -100));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -120)), glm::radians(m_SplitCube1.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitCube1.Render(Vector3<float>(-20, 0, -120));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -140)), glm::radians(m_SplitCube2.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitCube2.Render(Vector3<float>(-20, 0, -140));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -160)), glm::radians(m_SplitCube3.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitCube3.Render(Vector3<float>(-20, 0, -160));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(-20, 0, -180)), glm::radians(m_SplitCube4.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitCube4.Render(Vector3<float>(-20, 0, -180));
-
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -80)), glm::radians(m_BasicIco.getRotation()), glm::vec3(0, 1, 0)));
-	m_BasicIco.Render(Vector3<float>(20, 0, -80));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -100)), glm::radians(m_UnsplitIco.getRotation()), glm::vec3(0, 1, 0)));
-	m_UnsplitIco.Render(Vector3<float>(20, 0, -100));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -120)), glm::radians(m_SplitIco1.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitIco1.Render(Vector3<float>(20, 0, -120));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -140)), glm::radians(m_SplitIco2.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitIco2.Render(Vector3<float>(20, 0, -140));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -160)), glm::radians(m_SplitIco3.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitIco3.Render(Vector3<float>(20, 0, -160));
-	if (shader == true) gProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(20, 0, -180)), glm::radians(m_SplitIco4.getRotation()), glm::vec3(0, 1, 0)));
-	m_SplitIco4.Render(Vector3<float>(20, 0, -180));
-
-	if (shader == true)
-	{
-		gProgram->stopUsing();
-	}
+	glBindTexture(GL_TEXTURE_2D, m_D20Texture);
+	m_BasicIco.Render(Vector3<float>(20, 0, -80), gCamera);
+	m_UnsplitIco.Render(Vector3<float>(20, 0, -100), gCamera);
+	m_SplitIco1.Render(Vector3<float>(20, 0, -120), gCamera);
+	m_SplitIco2.Render(Vector3<float>(20, 0, -140), gCamera);
+	m_SplitIco3.Render(Vector3<float>(20, 0, -160), gCamera);
+	m_SplitIco4.Render(Vector3<float>(20, 0, -180), gCamera);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 inline void World3DExample::TakeCameraInput()

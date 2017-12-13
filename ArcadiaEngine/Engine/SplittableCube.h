@@ -5,20 +5,21 @@
 #include <algorithm>
 #include "Vector3.h"
 #include "ShapeSplitPoints.h"
+#include "Engine/GLMCamera.h"
 
 struct SplittableCube
 {
 protected:
-	typedef std::tuple<float, float, float, float, float, float, float, float> SC_Point;
+	typedef std::tuple<float, float, float, float, float> SC_Point;
 	typedef std::tuple<SC_Point, SC_Point, SC_Point, SC_Point> SC_Square;
 
-	static SC_Point MakePoint(float x, float y, float z) { return SC_Point(x, y, z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f); }
-	static SC_Point MakePoint(Vector3<float> v) { return SC_Point(v.x, v.y, v.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f); }
+	static SC_Point MakePoint(float x, float y, float z, float tx = 0.0f, float ty = 0.0f) { return SC_Point(x, y, z, tx, ty); }
 	static SC_Point AddPoints(SC_Point& a, SC_Point& b) {
-		return SC_Point(std::get<0>(a) + std::get<0>(b), std::get<1>(a) + std::get<1>(b), std::get<2>(a) + std::get<2>(b), std::get<3>(a) + std::get<3>(b), std::get<4>(a) + std::get<4>(b), std::get<5>(a) + std::get<5>(b), std::get<6>(a) + std::get<6>(b), std::get<7>(a) + std::get<7>(b));
+		return SC_Point(std::get<0>(a) + std::get<0>(b), std::get<1>(a) + std::get<1>(b), std::get<2>(a) + std::get<2>(b), std::get<3>(a) + std::get<3>(b), std::get<4>(a) + std::get<4>(b));
 	}
-	static SC_Point MultiplyPoint(SC_Point& p, float f) {
-		return SC_Point(std::get<0>(p) * f, std::get<1>(p) * f, std::get<2>(p) * f, std::get<3>(p) * f, std::get<4>(p) * f, std::get<5>(p) * f, std::get<6>(p) * f, std::get<7>(p) * f);
+	static SC_Point MultiplyPoint(SC_Point& p, float f, bool posOnly = false) {
+		if (posOnly) return SC_Point(std::get<0>(p) * f, std::get<1>(p) * f, std::get<2>(p) * f, std::get<3>(p), std::get<4>(p));
+		return SC_Point(std::get<0>(p) * f, std::get<1>(p) * f, std::get<2>(p) * f, std::get<3>(p) * f, std::get<4>(p) * f);
 	}
 
 	static SC_Point& NormalizePointDistance(SC_Point& p) {
@@ -73,15 +74,15 @@ protected:
 			if (splitCount == 0) return;
 
 			//  If we arrive here, splitCount is greater than 0 and we have no Split Triangles. Create the triangles, and send the split ahead
-			SC_Point point1 = MakePoint(std::get<0>(std::get<0>(m_Square)), std::get<1>(std::get<0>(m_Square)), std::get<2>(std::get<0>(m_Square)));
-			SC_Point point2 = MakePoint(std::get<0>(std::get<1>(m_Square)), std::get<1>(std::get<1>(m_Square)), std::get<2>(std::get<1>(m_Square)));
-			SC_Point point3 = MakePoint(std::get<0>(std::get<2>(m_Square)), std::get<1>(std::get<2>(m_Square)), std::get<2>(std::get<2>(m_Square)));
-			SC_Point point4 = MakePoint(std::get<0>(std::get<3>(m_Square)), std::get<1>(std::get<3>(m_Square)), std::get<2>(std::get<3>(m_Square)));
-			auto midpoint12 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point1, point2), 0.5f)), pointDistance);
-			auto midpoint23 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point2, point3), 0.5f)), pointDistance);
-			auto midpoint34 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point3, point4), 0.5f)), pointDistance);
-			auto midpoint41 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point4, point1), 0.5f)), pointDistance);
-			auto midpoint = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(AddPoints(AddPoints(point1, point2), point3), point4), (1.0f / 4.0f))), pointDistance);
+			SC_Point point1 = MakePoint(std::get<0>(std::get<0>(m_Square)), std::get<1>(std::get<0>(m_Square)), std::get<2>(std::get<0>(m_Square)), std::get<3>(std::get<0>(m_Square)), std::get<4>(std::get<0>(m_Square)));
+			SC_Point point2 = MakePoint(std::get<0>(std::get<1>(m_Square)), std::get<1>(std::get<1>(m_Square)), std::get<2>(std::get<1>(m_Square)), std::get<3>(std::get<1>(m_Square)), std::get<4>(std::get<1>(m_Square)));
+			SC_Point point3 = MakePoint(std::get<0>(std::get<2>(m_Square)), std::get<1>(std::get<2>(m_Square)), std::get<2>(std::get<2>(m_Square)), std::get<3>(std::get<2>(m_Square)), std::get<4>(std::get<2>(m_Square)));
+			SC_Point point4 = MakePoint(std::get<0>(std::get<3>(m_Square)), std::get<1>(std::get<3>(m_Square)), std::get<2>(std::get<3>(m_Square)), std::get<3>(std::get<3>(m_Square)), std::get<4>(std::get<3>(m_Square)));
+			auto midpoint12 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point1, point2), 0.5f)), pointDistance, true);
+			auto midpoint23 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point2, point3), 0.5f)), pointDistance, true);
+			auto midpoint34 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point3, point4), 0.5f)), pointDistance, true);
+			auto midpoint41 = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(point4, point1), 0.5f)), pointDistance, true);
+			auto midpoint = MultiplyPoint(NormalizePointDistance(MultiplyPoint(AddPoints(AddPoints(AddPoints(point1, point2), point3), point4), (1.0f / 4.0f))), pointDistance, true);
 			m_SplitSquares = new SC_SplitSquare(SC_Square(point1, midpoint12, midpoint, midpoint41), SC_Square(point2, midpoint23, midpoint, midpoint12), SC_Square(point3, midpoint34, midpoint, midpoint23), SC_Square(point4, midpoint41, midpoint, midpoint34));
 			std::get<0>(*m_SplitSquares).Split(splitCount - 1, pointDistance);
 			std::get<1>(*m_SplitSquares).Split(splitCount - 1, pointDistance);
@@ -105,12 +106,13 @@ private:
 	const static int SURFACE_SPLIT_COUNT = 4;
 	float m_HalfSize;
 	float m_PointDistance;
-	int m_SplitCount;
-	bool m_ShowLines;
+	int m_SplitCount = 0;
+	bool m_ShowLines = true;
 	float m_RotationSpeed = 0.0f;
 	float m_RotationStartTime = 0.0f;
 	Vector3<float> m_LineColor;
 	Vector3<float> m_SurfaceColor;
+	tdogl::Program* m_ShaderProgram = nullptr;
 
 	SC_Point m_PrimarySurfacePoints[SURFACE_POINTS];
 	SC_SurfaceSquare m_Surfaces[SURFACE_COUNT];
@@ -137,7 +139,7 @@ public:
 		SetupVAO();
 	}
 
-	inline void SetValues(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) {
+	inline void SetValues(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f, tdogl::Program* shaderProgram = nullptr) {
 		SetSize(size);
 
 		LayoutSurfacePoints();
@@ -146,6 +148,8 @@ public:
 		SetSplitCount(splitCount);
 		SetShowLines(showLines);
 		SetRotationSpeed(rotationSpeed);
+
+		SetShaderProgram(shaderProgram);
 
 		SetupVAO();
 	}
@@ -183,6 +187,10 @@ public:
 		return (gameSecondsF - m_RotationStartTime) * m_RotationSpeed;
 	}
 
+	inline void SetShaderProgram(tdogl::Program* program) {
+		m_ShaderProgram = program;
+	}
+
 	void LayoutSurfacePoints()
 	{
 		m_PrimarySurfacePoints[0] = MakePoint(-m_HalfSize, -m_HalfSize, -m_HalfSize);
@@ -197,12 +205,44 @@ public:
 
 	void DeterminePrimarySurfaces()
 	{
-		m_Surfaces[0] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[0], m_PrimarySurfacePoints[1], m_PrimarySurfacePoints[2], m_PrimarySurfacePoints[3]), nullptr);
-		m_Surfaces[1] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[1], m_PrimarySurfacePoints[5], m_PrimarySurfacePoints[6], m_PrimarySurfacePoints[2]), nullptr);
-		m_Surfaces[2] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[5], m_PrimarySurfacePoints[4], m_PrimarySurfacePoints[7], m_PrimarySurfacePoints[6]), nullptr);
-		m_Surfaces[3] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[4], m_PrimarySurfacePoints[0], m_PrimarySurfacePoints[3], m_PrimarySurfacePoints[7]), nullptr);
-		m_Surfaces[4] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[3], m_PrimarySurfacePoints[2], m_PrimarySurfacePoints[6], m_PrimarySurfacePoints[7]), nullptr);
-		m_Surfaces[5] = MakeSurfaceSquare(MakeSquare(m_PrimarySurfacePoints[4], m_PrimarySurfacePoints[5], m_PrimarySurfacePoints[1], m_PrimarySurfacePoints[0]), nullptr);
+		//  Create the texture coordinates for each of the original points being laid out for the primary surfaces
+		auto point0_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.125f);
+		auto point0_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.125f);
+		auto point0_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.001f);
+		auto point0_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.001f);
+
+		auto point1_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.625f);
+		auto point1_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.625f);
+		auto point1_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.500f);
+		auto point1_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.500f);
+
+		auto point2_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.250f);
+		auto point2_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.250f);
+		auto point2_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.125f);
+		auto point2_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.125f);
+
+		auto point3_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.750f);
+		auto point3_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.750f);
+		auto point3_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.625f);
+		auto point3_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.625f);
+
+		auto point4_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.375f);
+		auto point4_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.375f);
+		auto point4_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.250f);
+		auto point4_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.250f);
+
+		auto point5_0 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.500f);
+		auto point5_1 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.500f);
+		auto point5_2 = MakePoint(0.0f, 0.0f, 0.0f, 1.000f, 0.375f);
+		auto point5_3 = MakePoint(0.0f, 0.0f, 0.0f, 0.000f, 0.375f);
+
+		//  Add the texture coordinates in, so that we can apply a texture if needed
+		m_Surfaces[0] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[0], point0_0), AddPoints(m_PrimarySurfacePoints[1], point0_1), AddPoints(m_PrimarySurfacePoints[2], point0_2), AddPoints(m_PrimarySurfacePoints[3], point0_3)), nullptr);
+		m_Surfaces[1] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[1], point1_0), AddPoints(m_PrimarySurfacePoints[5], point1_1), AddPoints(m_PrimarySurfacePoints[6], point1_2), AddPoints(m_PrimarySurfacePoints[2], point1_3)), nullptr);
+		m_Surfaces[2] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[5], point2_0), AddPoints(m_PrimarySurfacePoints[4], point2_1), AddPoints(m_PrimarySurfacePoints[7], point2_2), AddPoints(m_PrimarySurfacePoints[6], point2_3)), nullptr);
+		m_Surfaces[3] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[4], point3_0), AddPoints(m_PrimarySurfacePoints[0], point3_1), AddPoints(m_PrimarySurfacePoints[3], point3_2), AddPoints(m_PrimarySurfacePoints[7], point3_3)), nullptr);
+		m_Surfaces[4] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[3], point4_0), AddPoints(m_PrimarySurfacePoints[2], point4_1), AddPoints(m_PrimarySurfacePoints[6], point4_2), AddPoints(m_PrimarySurfacePoints[7], point4_3)), nullptr);
+		m_Surfaces[5] = MakeSurfaceSquare(MakeSquare(AddPoints(m_PrimarySurfacePoints[4], point5_0), AddPoints(m_PrimarySurfacePoints[5], point5_1), AddPoints(m_PrimarySurfacePoints[1], point5_2), AddPoints(m_PrimarySurfacePoints[0], point5_3)), nullptr);
 	}
 
 	void SetupVAO()
@@ -213,11 +253,11 @@ public:
 
 		//  Set up a vertex array large enough to hold every point of every surface, even duplicates
 		m_PointCount = (m_SplitCount > 0) ? (GetShapeSurfacesAfterSplit(SURFACE_POINTS, SURFACE_COUNT, SURFACE_SPLIT_COUNT, SURFACE_EDGES, m_SplitCount) * SURFACE_EDGES) : (SURFACE_COUNT * SURFACE_EDGES);
-		float* vertices = new float[m_PointCount * 3];
-		memset(vertices, 0, sizeof(float) * m_PointCount * 3);
+		float* vertices = new float[m_PointCount * 5];
+		memset(vertices, 0, sizeof(float) * m_PointCount * 5);
 
 		// Using each primary surface, add all geometry vertices
-		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForGeometry(m_Surfaces[i], vertices, (m_PointCount * 3 / SURFACE_COUNT), i * (m_PointCount * 3 / SURFACE_COUNT));
+		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForGeometry(m_Surfaces[i], vertices, (m_PointCount * 5 / SURFACE_COUNT), i * (m_PointCount * 5 / SURFACE_COUNT));
 
 		//  Generate and Bind the geometry vertex array
 		glGenVertexArrays(1, &m_VAO[0]);
@@ -228,10 +268,12 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
 
 		//  Set the vertex buffer data information and the vertex attribute pointer within
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_PointCount * 3, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 0, 0);
-
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_PointCount * 5, vertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), NULL);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(GLuint(1), 2, GL_FLOAT, GL_TRUE, 5 * sizeof(float), (const GLvoid*)(3 * sizeof(float)));
+
 		glBindVertexArray(0);
 
 		delete[] vertices;
@@ -253,7 +295,7 @@ public:
 
 		//  Set the vertex buffer data information and the vertex attribute pointer within
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_LinePointCount * 3, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
 		glEnableVertexAttribArray(0);
 		glBindVertexArray(0);
@@ -263,16 +305,20 @@ public:
 
 	void AddVerticesForGeometry(SC_SurfaceSquare& surfaceSquare, float* vertexArray, unsigned int memoryBlock, unsigned int memoryIndex)
 	{
-		//  vertexArray is size [m_PointCount * 3] because each point has three floats (x, y, z)
+		//  vertexArray is size [m_PointCount * 5] because each point has five floats (x, y, z, tx, ty)
 		//  memoryBlock is how many values we should be writing
 		//  memoryIndex is where we begin to write, based on which surface we are
 
 		if (surfaceSquare.m_SplitSquares == nullptr)
 		{
-			vertexArray[memoryIndex + 0] = std::get<0>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  1] = std::get<1>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  2] = std::get<2>(std::get<0>(surfaceSquare.m_Square));
-			vertexArray[memoryIndex + 3] = std::get<0>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  4] = std::get<1>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  5] = std::get<2>(std::get<1>(surfaceSquare.m_Square));
-			vertexArray[memoryIndex + 6] = std::get<0>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  7] = std::get<1>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  8] = std::get<2>(std::get<2>(surfaceSquare.m_Square));
-			vertexArray[memoryIndex + 9] = std::get<0>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 10] = std::get<1>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 11] = std::get<2>(std::get<3>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  0] = std::get<0>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  1] = std::get<1>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  2] = std::get<2>(std::get<0>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  3] = std::get<3>(std::get<0>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  4] = std::get<4>(std::get<0>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  5] = std::get<0>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  6] = std::get<1>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  7] = std::get<2>(std::get<1>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex +  8] = std::get<3>(std::get<1>(surfaceSquare.m_Square));	vertexArray[memoryIndex +  9] = std::get<4>(std::get<1>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 10] = std::get<0>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 11] = std::get<1>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 12] = std::get<2>(std::get<2>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 13] = std::get<3>(std::get<2>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 14] = std::get<4>(std::get<2>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 15] = std::get<0>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 16] = std::get<1>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 17] = std::get<2>(std::get<3>(surfaceSquare.m_Square));
+			vertexArray[memoryIndex + 18] = std::get<3>(std::get<3>(surfaceSquare.m_Square));	vertexArray[memoryIndex + 19] = std::get<4>(std::get<3>(surfaceSquare.m_Square));
 		}
 		else
 		{
@@ -311,27 +357,40 @@ public:
 		}
 	}
 
-	void Render(Vector3<float>& position, GLuint shaderProgram = 0)
+	void Render(Vector3<float>& position, Camera& camera)
 	{
 		glPushMatrix();
 			//  Move to the given position and rotate the object based on it's rotation speed and rotation start time
 			glTranslatef(position.x, position.y, position.z);
 			glRotatef(getRotation(), 0.0f, 1.0f, 0.0f);
 
-			//  Draw the geometry (set into the video card using VAO and VBO
+			//  Set the base color (in case we aren't overriding with a shader program)
 			glColor3f(m_SurfaceColor.x, m_SurfaceColor.y, m_SurfaceColor.z);
+
+			//  Set up and activate any currently set shader program
+			if (m_ShaderProgram != nullptr)
+			{
+				m_ShaderProgram->use();
+				m_ShaderProgram->setUniform("camera", camera.matrix());
+				m_ShaderProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(position.x, position.y, position.z)), glm::radians(getRotation()), glm::vec3(0, 1, 0)));
+				m_ShaderProgram->setUniform("tex", 0);
+			}
+
+			//  Draw the geometry (set into the video card using VAO and VBO)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glEnableVertexAttribArray(0);
 			glBindVertexArray(m_VAO[0]);
 			glDrawArrays(GL_QUADS, 0, m_PointCount);
 			glBindVertexArray(0);
 
+			if (m_ShaderProgram != nullptr) m_ShaderProgram->stopUsing();
+
+			// Show the lines directly, regardless of the shader
 			if (m_ShowLines)
 			{
 				glColor4f(m_LineColor.x, m_LineColor.y, m_LineColor.z, 0.2f);
 				glLineWidth(2);
-				glEnableVertexAttribArray(0);
-				glBindVertexArray(m_VAO[1]);
+				glBindBuffer(GL_ARRAY_BUFFER, m_VBO[1]);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 				glDrawArrays(GL_LINES, 0, m_LinePointCount);
 				glBindVertexArray(0);
 			}
