@@ -165,12 +165,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="Shaders\fragment-shader.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Shaders\vertex-shader.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
 </Project>

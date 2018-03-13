@@ -55,8 +55,8 @@ private:
 
 	void LoadShaders() {
 		std::vector<tdogl::Shader> shaders;
-		shaders.push_back(tdogl::Shader::shaderFromFile("Shaders/vertex-shader.txt", GL_VERTEX_SHADER));
-		shaders.push_back(tdogl::Shader::shaderFromFile("Shaders/fragment-shader.txt", GL_FRAGMENT_SHADER));
+		shaders.push_back(tdogl::Shader::shaderFromFile("Shaders/VertexShader_Basic.txt", GL_VERTEX_SHADER));
+		shaders.push_back(tdogl::Shader::shaderFromFile("Shaders/FragmentShader_Basic.txt", GL_FRAGMENT_SHADER));
 		gProgram = new tdogl::Program(shaders);
 	}
 };
