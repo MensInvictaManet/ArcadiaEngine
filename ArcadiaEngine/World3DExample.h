@@ -6,8 +6,8 @@
 #include "Engine/InputManager.h"
 #include "Engine/TimeSlice.h"
 #include "Engine/BasicPrimativeCube.h"
-#include "Engine/BasicPrimativeIcohedron.h"
-#include "Engine/SplittableIcohedron.h"
+#include "Engine/BasicPrimativeIcosahedron.h"
+#include "Engine/SplittableIcosahedron.h"
 #include "Engine/SplittableCube.h"
 
 #include "Engine/GLMCamera.h"
@@ -29,12 +29,12 @@ private:
 
 	Camera m_Camera;
 
-	BasicPrimativeIcohedron m_BasicIco;
-	SplittableIcohedron m_UnsplitIco;
-	SplittableIcohedron m_SplitIco1;
-	SplittableIcohedron m_SplitIco2;
-	SplittableIcohedron m_SplitIco3;
-	SplittableIcohedron m_SplitIco4;
+	BasicPrimativeIcosahedron m_BasicIco;
+	SplittableIcosahedron m_UnsplitIco;
+	SplittableIcosahedron m_SplitIco1;
+	SplittableIcosahedron m_SplitIco2;
+	SplittableIcosahedron m_SplitIco3;
+	SplittableIcosahedron m_SplitIco4;
 
 	BasicPrimativeCube m_BasicCube;
 	SplittableCube m_UnsplitCube;

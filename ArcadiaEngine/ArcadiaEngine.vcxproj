@@ -123,7 +123,7 @@
     <ClInclude Include="Engine\ArcadiaEngine.h" />
     <ClInclude Include="Engine\AutoPlayManager.h" />
     <ClInclude Include="Engine\BasicPrimativeCube.h" />
-    <ClInclude Include="Engine\BasicPrimativeIcohedron.h" />
+    <ClInclude Include="Engine\BasicPrimativeIcosahedron.h" />
     <ClInclude Include="Engine\Color.h" />
     <ClInclude Include="Engine\DebugConsole.h" />
     <ClInclude Include="Engine\FontManager.h" />
@@ -147,7 +147,7 @@
     <ClInclude Include="Engine\SocketBuffer.h" />
     <ClInclude Include="Engine\SoundWrapper.h" />
     <ClInclude Include="Engine\SplittableCube.h" />
-    <ClInclude Include="Engine\SplittableIcohedron.h" />
+    <ClInclude Include="Engine\SplittableIcosahedron.h" />
     <ClInclude Include="Engine\TextureAnimation.h" />
     <ClInclude Include="Engine\TextureManager.h" />
     <ClInclude Include="Engine\TimeSlice.h" />
@@ -164,6 +164,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shaders\FragmentShader_Basic.txt" />
+    <Text Include="Shaders\VertexShader_Basic.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -57,16 +57,10 @@
     <ClInclude Include="Engine\Shader.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\SplittableIcohedron.h">
-      <Filter>Header Files\Engine\3D Base Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\SplittableCube.h">
       <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
     <ClInclude Include="Engine\BasicPrimativeCube.h">
-      <Filter>Header Files\Engine\3D Base Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\BasicPrimativeIcohedron.h">
       <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GUIEditBox.h">
@@ -159,10 +153,24 @@
     <ClInclude Include="UIShowcase.h">
       <Filter>Header Files\Test Dialogues</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\BasicPrimativeIcosahedron.h">
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SplittableIcosahedron.h">
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shaders\FragmentShader_Basic.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Shaders\VertexShader_Basic.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
