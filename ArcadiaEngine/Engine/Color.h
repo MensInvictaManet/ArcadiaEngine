@@ -17,5 +17,9 @@ struct Color
 		colorValues[2] = b;
 		colorValues[3] = a;
 	}
-	float colorValues[4];
+
+	union {
+		struct { float R, G, B, A; };
+		float colorValues[4];
+	};
 };

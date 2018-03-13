@@ -3,7 +3,7 @@
 #include <SDL_opengl.h>
 #include "Vector3.h"
 
-struct BasicPrimativeIcohedron
+struct BasicPrimativeIcosahedron
 {
 private:
 	float m_HalfSize;
@@ -18,7 +18,7 @@ private:
 	GLuint m_VBO[2];
 
 public:
-	BasicPrimativeIcohedron(float size = 10.0f, bool showLines = true) :
+	BasicPrimativeIcosahedron(float size = 10.0f, bool showLines = true) :
 		m_HalfSize(size / 2.0f),
 		m_ShowLines(showLines),
 		m_LineColor(0.0f, 0.0f, 0.0f),
