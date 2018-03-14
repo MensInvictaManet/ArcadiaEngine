@@ -6,13 +6,11 @@ struct BasicPrimativeIcosahedron : public BasicRenderable3D
 {
 private:
 	float m_HalfSize;
-	bool m_ShowLines;
 	Color m_LineColor;
 
 public:
 	BasicPrimativeIcosahedron(float size = 10.0f, bool showLines = true) :
 		m_HalfSize(size / 2.0f),
-		m_ShowLines(showLines),
 		m_LineColor(0.0f, 0.0f, 0.0f, 0.2f)
 	{}
 
@@ -31,23 +29,13 @@ public:
 		m_HalfSize = size / 2.0f;
 	}
 
-	inline void SetShowLines(bool showLines) {
-		m_ShowLines = showLines;
-	}
-
 	inline void SetLineColor(Color& lineColor) {
 		m_LineColor = lineColor;
 	}
 
 	void SetupVAO()
 	{
-		const unsigned int floatsPerVertex = 5;
-		const unsigned int verticesPerShape = 3;
-		const unsigned int shapesPerObject = 20;
-		const unsigned int floatsForPosition = 3;
-		const unsigned int floatsForTextureMap = 2;
-
-		float vertices[floatsPerVertex * verticesPerShape * shapesPerObject] =
+		float vertices[5 * 3 * 20] =
 		{
 			-m_HalfSize / 2.0f, m_HalfSize, 0.0f,	0.0000000f, 1.0000000f,
 			m_HalfSize / 2.0f, m_HalfSize, 0.0f,	0.0458984f, 1.0000000f,
@@ -130,7 +118,8 @@ public:
 			0.0f, -m_HalfSize / 2.0f, -m_HalfSize,	0.8955078f, 0.0000000f,
 		};
 
-		BasicRenderable3D::SetupVAO(vertices, floatsPerVertex, verticesPerShape, shapesPerObject, floatsForPosition, floatsForTextureMap, GL_TRIANGLES);
+		//  Set up the Geometry VAO in the Basic Renderable 3D subclass
+		BasicRenderable3D::SetupGeometryVAO(vertices, 5, 3, 20, 3, 2, GL_TRIANGLES);
 	}
 
 	void Render(Vector3<float>& position, Camera& camera)
@@ -140,7 +129,7 @@ public:
 			BasicRenderable3D::RenderGeometry(position, camera);
 
 			// Show the lines directly, regardless of the shader
-			if (m_ShowLines)
+			if (BasicRenderable3D::GetShowLines())
 			{
 				glColor4f(m_LineColor.R, m_LineColor.G, m_LineColor.B, m_LineColor.A);
 				glBegin(GL_LINE_STRIP);

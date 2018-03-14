@@ -105,7 +105,6 @@ private:
 	float m_HalfSize;
 	float m_PointDistance;
 	int m_SplitCount;
-	bool m_ShowLines;
 	Color m_LineColor;
 
 	SI_Point m_PrimarySurfacePoints[SURFACE_POINTS];
@@ -113,9 +112,6 @@ private:
 
 	unsigned int m_PointCount;
 	unsigned int m_LinePointCount;
-
-	GLuint m_LineVAO;
-	GLuint m_LineVBO;
 
 public:
 	SplittableIcosahedron(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) :
@@ -159,10 +155,6 @@ public:
 			for (int i = 0; i < SURFACE_COUNT; ++i)
 				m_Surfaces[i].Split(splitCount, m_PointDistance);
 		m_SplitCount = splitCount;
-	}
-
-	inline void SetShowLines(bool showLines) {
-		m_ShowLines = showLines;
 	}
 
 	inline void SetLineColor(Color& lineColor) {
@@ -309,7 +301,10 @@ public:
 		const unsigned int floatsForPosition = 3;
 		const unsigned int floatsForTextureMap = 2;
 
-		BasicRenderable3D::SetupVAO(vertices, floatsPerVertex, verticesPerShape, shapesPerObject, floatsForPosition, floatsForTextureMap, GL_TRIANGLES);
+		BasicRenderable3D::SetupGeometryVAO(vertices, floatsPerVertex, verticesPerShape, shapesPerObject, floatsForPosition, floatsForTextureMap, GL_TRIANGLES);
+
+		//  Set up the Geometry VAO in the Basic Renderable 3D subclass
+		//BasicRenderable3D::SetupGeometryVAO(vertices, 5, 3, m_PointCount / SURFACE_EDGES, 3, 2, GL_TRIANGLES);
 
 		delete[] vertices;
 
@@ -320,20 +315,8 @@ public:
 		// Using each primary surface, add all line vertices
 		for (int i = 0; i < SURFACE_COUNT; ++i) AddVerticesForLines(m_Surfaces[i], vertices, (m_LinePointCount * 3 / SURFACE_COUNT), i * (m_LinePointCount * 3 / SURFACE_COUNT));
 
-		//  Generate and Bind the line vertex array
-		glGenVertexArrays(1, &m_LineVAO);
-		glBindVertexArray(m_LineVAO);
-
-		//  Generate the OpenGL vertex buffer for geometry, and bind it
-		glGenBuffers(1, &m_LineVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, m_LineVBO);
-
-		//  Set the vertex buffer data information and the vertex attribute pointer within
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_LinePointCount * 3, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glEnableVertexAttribArray(0);
-		glBindVertexArray(0);
+		//  Set up the Lines VAO in the Basic Renderable 3D subclass
+		BasicRenderable3D::SetupLinesVAO(vertices, 3, m_PointCount, 3);
 
 		delete[] vertices;
 	}
@@ -394,15 +377,8 @@ public:
 			//  Render the object at the position relative to the camera
 			BasicRenderable3D::RenderGeometry(position, camera);
 
-			if (m_ShowLines)
-			{
-				glColor4f(m_LineColor.R, m_LineColor.G, m_LineColor.B, m_LineColor.A);
-				glLineWidth(2);
-				glBindBuffer(GL_ARRAY_BUFFER, m_LineVBO);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-				glDrawArrays(GL_LINES, 0, m_LinePointCount);
-				glBindVertexArray(0);
-			}
+			//  Render the lines at the position relative to the camera
+			BasicRenderable3D::RenderLines(position, camera);
 		glPopMatrix();
 	}
 };
