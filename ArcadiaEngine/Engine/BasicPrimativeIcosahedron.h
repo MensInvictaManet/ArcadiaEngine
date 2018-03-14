@@ -6,31 +6,25 @@ struct BasicPrimativeIcosahedron : public BasicRenderable3D
 {
 private:
 	float m_HalfSize;
-	Color m_LineColor;
 
 public:
 	BasicPrimativeIcosahedron(float size = 10.0f, bool showLines = true) :
-		m_HalfSize(size / 2.0f),
-		m_LineColor(0.0f, 0.0f, 0.0f, 0.2f)
+		m_HalfSize(size / 2.0f)
 	{}
 
-	inline void SetValues(float size = 10.0f, bool showLines = true, float rotationSpeed = 0.0f, tdogl::Program* shaderProgram = nullptr) {
+	inline void SetValues(float size = 10.0f, bool showLines = true, float rotationSpeed = 0.0f, GLuint textureID = 0, tdogl::Program* shaderProgram = nullptr) {
 		SetSize(size);
 
-		SetShowLines(showLines);
-
+		BasicRenderable3D::SetTextureID(textureID);
 		BasicRenderable3D::SetRotationSpeed(rotationSpeed);
 		BasicRenderable3D::SetShaderProgram(shaderProgram);
+		BasicRenderable3D::SetShowLines(showLines);
 
 		SetupVAO();
 	}
 
 	inline void SetSize(float size) {
 		m_HalfSize = size / 2.0f;
-	}
-
-	inline void SetLineColor(Color& lineColor) {
-		m_LineColor = lineColor;
 	}
 
 	void SetupVAO()
@@ -120,6 +114,93 @@ public:
 
 		//  Set up the Geometry VAO in the Basic Renderable 3D subclass
 		BasicRenderable3D::SetupGeometryVAO(vertices, 5, 3, 20, 3, 2, GL_TRIANGLES);
+
+		float lineVertices[3 * 80] =
+		{
+		0.0f, m_HalfSize / 2.0f, -m_HalfSize,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		0.0f, m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, -m_HalfSize,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		0.0f, m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, m_HalfSize, 0.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		-m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, m_HalfSize / 2.0f, m_HalfSize,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, m_HalfSize,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		-m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		0.0f, -m_HalfSize / 2.0f, -m_HalfSize,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		m_HalfSize, 0.0f, -m_HalfSize / 2.0f,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		m_HalfSize / 2.0f, -m_HalfSize, 0.0f,
+		m_HalfSize, 0.0f, m_HalfSize / 2.0f
+		};
+
+		//  Set up the Lines VAO in the Basic Renderable 3D subclass
+		BasicRenderable3D::SetupLinesVAO(lineVertices, 3, 40, 3);
 	}
 
 	void Render(Vector3<float>& position, Camera& camera)
@@ -128,74 +209,8 @@ public:
 			//  Render the object at the position relative to the camera
 			BasicRenderable3D::RenderGeometry(position, camera);
 
-			// Show the lines directly, regardless of the shader
-			if (BasicRenderable3D::GetShowLines())
-			{
-				glColor4f(m_LineColor.R, m_LineColor.G, m_LineColor.B, m_LineColor.A);
-				glBegin(GL_LINE_STRIP);
-				// 20
-				glVertex3f(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
-				glVertex3f(m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				glVertex3f(-m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				glVertex3f(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
-				// 2
-				glVertex3f(-m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				glVertex3f(-m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				// 8
-				glVertex3f(0.0f, m_HalfSize / 2.0f, m_HalfSize);
-				glVertex3f(m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				// 14
-				glVertex3f(m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				glVertex3f(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
-				// 18
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, -m_HalfSize);
-				glVertex3f(-m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				// 5
-				glVertex3f(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, -m_HalfSize);
-				// 4
-				glVertex3f(m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				// 6
-				glVertex3f(m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				// 16
-				glVertex3f(m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(0.0f, m_HalfSize / 2.0f, m_HalfSize);
-				// 10
-				glVertex3f(-m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(-m_HalfSize / 2.0f, m_HalfSize, 0.0f);
-				// 12
-				glVertex3f(-m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(-m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				// 15
-				glVertex3f(-m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				// 7
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, m_HalfSize);
-				glVertex3f(-m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				// 17
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, m_HalfSize);
-				glVertex3f(0.0f, m_HalfSize / 2.0f, m_HalfSize);
-				// 3
-				glVertex3f(m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, m_HalfSize);
-				// 19
-				glVertex3f(m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, m_HalfSize);
-				// 1
-				glVertex3f(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				glVertex3f(m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				// 13
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, -m_HalfSize);
-				glVertex3f(-m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				glVertex3f(0.0f, -m_HalfSize / 2.0f, -m_HalfSize);
-				// 11
-				glVertex3f(m_HalfSize, 0.0f, -m_HalfSize / 2.0f);
-				glVertex3f(m_HalfSize / 2.0f, -m_HalfSize, 0.0f);
-				//  9
-				glVertex3f(m_HalfSize, 0.0f, m_HalfSize / 2.0f);
-				glEnd();
-			}
+			//  Render the lines at the position relative to the camera
+			BasicRenderable3D::RenderLines(position, camera);
 		glPopMatrix();
 	}
 };

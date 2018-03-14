@@ -106,7 +106,6 @@ private:
 	float m_HalfSize;
 	float m_PointDistance;
 	int m_SplitCount = 0;
-	Color m_LineColor;
 
 	SC_Point m_PrimarySurfacePoints[SURFACE_POINTS];
 	SC_SurfaceSquare m_Surfaces[SURFACE_COUNT];
@@ -118,8 +117,7 @@ private:
 	GLuint m_LineVBO;
 
 public:
-	SplittableCube(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) :
-		m_LineColor(0.0f, 0.0f, 0.0f, 0.2f)
+	SplittableCube(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f)
 	{
 		SetSize(size);
 
@@ -127,24 +125,25 @@ public:
 		DeterminePrimarySurfaces();
 
 		SetSplitCount(splitCount);
-		SetShowLines(showLines);
 
 		BasicRenderable3D::SetRotationSpeed(rotationSpeed);
+		BasicRenderable3D::SetShowLines(showLines);
 
 		SetupVAO();
 	}
 
-	inline void SetValues(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f, tdogl::Program* shaderProgram = nullptr) {
+	inline void SetValues(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f, GLuint textureID = 0, tdogl::Program* shaderProgram = nullptr) {
 		SetSize(size);
 
 		LayoutSurfacePoints();
 		DeterminePrimarySurfaces();
 
 		SetSplitCount(splitCount);
-		SetShowLines(showLines);
 
+		BasicRenderable3D::SetTextureID(textureID);
 		BasicRenderable3D::SetRotationSpeed(rotationSpeed);
 		BasicRenderable3D::SetShaderProgram(shaderProgram);
+		BasicRenderable3D::SetShowLines(showLines);
 
 		SetupVAO();
 	}
@@ -159,10 +158,6 @@ public:
 			for (int i = 0; i < SURFACE_COUNT; ++i)
 				m_Surfaces[i].Split(splitCount, m_PointDistance);
 		m_SplitCount = splitCount;
-	}
-
-	inline void SetLineColor(Color& lineColor) {
-		m_LineColor = lineColor;
 	}
 
 	void LayoutSurfacePoints()

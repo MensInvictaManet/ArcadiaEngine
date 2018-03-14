@@ -16,18 +16,31 @@ private:
 	GLuint m_LinesVAO;
 	GLuint m_LinesVBO;
 
+	GLuint m_TextureID = 0;
 	tdogl::Program* m_ShaderProgram = nullptr;
 	float m_RotationSpeed = 0.0f;
 	float m_RotationStartTime = 0.0f;
 	bool m_ShowLines = false;
-	Color m_RenderColor;
+	Color m_GeometryColor;
+	Color m_LinesColor;
 	unsigned int m_RenderType = GL_TRIANGLES;
 
 	unsigned int m_GeometryVertexCount = 0;
 	unsigned int m_LinesVertexCount = 0;
 
 public:
-	BasicRenderable3D() : m_RenderColor(1.0f, 1.0f, 1.0f, 1.0f) {}
+	BasicRenderable3D() :
+		m_GeometryColor(1.0f, 1.0f, 1.0f, 1.0f),
+		m_LinesColor(1.0f, 1.0f, 1.0f, 1.0f)
+	{}
+
+	inline void SetTextureID(GLuint textureID) {
+		m_TextureID = textureID;
+	}
+
+	inline GLuint GetTextureID() {
+		return m_TextureID;
+	}
 
 	inline void SetShaderProgram(tdogl::Program* program) {
 		m_ShaderProgram = program;
@@ -50,8 +63,20 @@ public:
 		return m_ShowLines;
 	}
 
-	inline void SetRenderColor(const Color& renderColor) {
-		m_RenderColor = renderColor;
+	inline void SetGeometryColor(const Color& renderColor) {
+		m_GeometryColor = renderColor;
+	}
+
+	inline const Color& GetGeometryColor() {
+		return m_GeometryColor;
+	}
+
+	inline void SetLinesColor(const Color& renderColor) {
+		m_LinesColor = renderColor;
+	}
+
+	inline const Color& GetLinesColor() {
+		return m_LinesColor;
 	}
 
 	void SetupGeometryVAO(float* vertices, unsigned int floatsPerVertex, unsigned int verticesPerShape, unsigned int shapesPerObject, unsigned int floatsForPosition, unsigned int floatsForTextureMap, unsigned int renderType)
@@ -103,7 +128,7 @@ public:
 		if (m_GeometryVertexCount == 0) return;
 
 		//  Set the base color (in case we aren't overriding with a shader program)
-		glColor4f(m_RenderColor.R, m_RenderColor.G, m_RenderColor.B, m_RenderColor.A);
+		glColor4f(m_GeometryColor.R, m_GeometryColor.G, m_GeometryColor.B, m_GeometryColor.A);
 
 		//  Move to the given position and rotate the object based on it's rotation speed and rotation start time
 		glTranslatef(position.x, position.y, position.z);
@@ -116,13 +141,18 @@ public:
 			m_ShaderProgram->setUniform("camera", camera.matrix());
 			m_ShaderProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(position.x, position.y, position.z)), glm::radians(GetRotation()), glm::vec3(0, 1, 0)));
 			m_ShaderProgram->setUniform("tex", 0);
+			m_ShaderProgram->setUniform("overrideColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+			m_ShaderProgram->setUniform("colorOverride", false);
 		}
 
 		//  Draw the geometry (set into the video card using VAO and VBO
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, m_TextureID);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindVertexArray(m_GeometryVAO);
 		glDrawArrays(m_RenderType, 0, m_GeometryVertexCount);
 		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if (m_ShaderProgram != nullptr) m_ShaderProgram->stopUsing();
 	}
@@ -133,7 +163,7 @@ public:
 		if (m_LinesVertexCount == 0) return;
 
 		//  Set the base color (in case we aren't overriding with a shader program) and width
-		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+		glColor4f(m_LinesColor.R, m_LinesColor.G, m_LinesColor.B, m_LinesColor.A);
 		glLineWidth(2);
 
 		//  Move to the given position and rotate the object based on it's rotation speed and rotation start time
@@ -146,9 +176,13 @@ public:
 			m_ShaderProgram->use();
 			m_ShaderProgram->setUniform("camera", camera.matrix());
 			m_ShaderProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(position.x, position.y, position.z)), glm::radians(GetRotation()), glm::vec3(0, 1, 0)));
+			m_ShaderProgram->setUniform("tex", 0);
+			m_ShaderProgram->setUniform("overrideColor", glm::vec4(m_LinesColor.R, m_LinesColor.G, m_LinesColor.B, m_LinesColor.A));
+			m_ShaderProgram->setUniform("colorOverride", true);
 		}
 
 		//  Draw the lines (set into the video card using VAO and VBO
+		glDisable(GL_TEXTURE_2D);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindVertexArray(m_LinesVAO);
 		glDrawArrays(GL_LINES, 0, m_LinesVertexCount);

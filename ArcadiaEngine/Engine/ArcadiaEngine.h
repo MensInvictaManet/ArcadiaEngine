@@ -288,6 +288,9 @@ inline bool InitializeEngine()
 		return false;
 	}
 
+	//  Set the active texture setting
+	glActiveTexture(GL_TEXTURE0);
+
 	// If there are any OpenGL errors, throw an exception now
 	auto error = glGetError();
 	while (error != GL_NO_ERROR)
