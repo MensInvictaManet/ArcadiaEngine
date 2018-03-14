@@ -1,37 +1,29 @@
 #pragma once
 
-#include <SDL_opengl.h>
-#include "Vector3.h"
+#include "BasicRenderable3D.h"
 
-struct BasicPrimativeIcosahedron
+struct BasicPrimativeIcosahedron : public BasicRenderable3D
 {
 private:
 	float m_HalfSize;
 	bool m_ShowLines;
-	float m_RotationSpeed = 0.0f;
-	float m_RotationStartTime = 0.0f;
 	Vector3<float> m_LineColor;
-	Vector3<float> m_SurfaceColor;
-
-	tdogl::Program* m_ShaderProgram = nullptr;
-	GLuint m_VAO[2];
-	GLuint m_VBO[2];
 
 public:
 	BasicPrimativeIcosahedron(float size = 10.0f, bool showLines = true) :
 		m_HalfSize(size / 2.0f),
 		m_ShowLines(showLines),
-		m_LineColor(0.0f, 0.0f, 0.0f),
-		m_SurfaceColor(1.0f, 1.0f, 1.0f)
+		m_LineColor(0.0f, 0.0f, 0.0f)
 	{}
 
 	inline void SetValues(float size = 10.0f, bool showLines = true, float rotationSpeed = 0.0f, tdogl::Program* shaderProgram = nullptr) {
 		SetSize(size);
 
 		SetShowLines(showLines);
-		SetRotationSpeed(rotationSpeed);
 
-		SetShaderProgram(shaderProgram);
+		BasicRenderable3D::SetRotationSpeed(rotationSpeed);
+		BasicRenderable3D::SetShaderProgram(shaderProgram);
+
 		SetupVAO();
 	}
 
@@ -43,30 +35,19 @@ public:
 		m_ShowLines = showLines;
 	}
 
-	inline void SetRotationSpeed(const float rotationSpeed) {
-		m_RotationSpeed = rotationSpeed;
-		m_RotationStartTime = gameSecondsF;
-	}
-
 	inline void SetLineColor(Vector3<float>& lineColor) {
 		m_LineColor = lineColor;
 	}
 
-	inline void SetSurfaceColor(Vector3<float>& surfaceColor) {
-		m_SurfaceColor = surfaceColor;
-	}
-
-	inline float getRotation() {
-		return (gameSecondsF - m_RotationStartTime) * m_RotationSpeed;
-	}
-
-	inline void SetShaderProgram(tdogl::Program* program) {
-		m_ShaderProgram = program;
-	}
-
 	void SetupVAO()
 	{
-		float vertices[5 * 3 * 20] = 
+		const unsigned int floatsPerVertex = 5;
+		const unsigned int verticesPerShape = 3;
+		const unsigned int shapesPerObject = 20;
+		const unsigned int floatsForPosition = 3;
+		const unsigned int floatsForTextureMap = 2;
+
+		float vertices[floatsPerVertex * verticesPerShape * shapesPerObject] =
 		{
 			-m_HalfSize / 2.0f, m_HalfSize, 0.0f,	0.0000000f, 1.0000000f,
 			m_HalfSize / 2.0f, m_HalfSize, 0.0f,	0.0458984f, 1.0000000f,
@@ -149,50 +130,14 @@ public:
 			0.0f, -m_HalfSize / 2.0f, -m_HalfSize,	0.8955078f, 0.0000000f,
 		};
 
-		//  Generate and Bind the geometry vertex array
-		glGenVertexArrays(1, &m_VAO[0]);
-		glBindVertexArray(m_VAO[0]);
-
-		//  Generate the OpenGL vertex buffer for geometry, and bind it
-		glGenBuffers(1, &m_VBO[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
-
-		//  Set the vertex buffer data information and the vertex attribute pointer within
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 3 * 20, vertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(GLuint(0), 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), NULL);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(GLuint(1), 2, GL_FLOAT, GL_TRUE, 5 * sizeof(float), (const GLvoid*)(3 * sizeof(float)));
-
-		glBindVertexArray(0);
+		BasicRenderable3D::SetupVAO(vertices, floatsPerVertex, verticesPerShape, shapesPerObject, floatsForPosition, floatsForTextureMap, GL_TRIANGLES);
 	}
 
 	void Render(Vector3<float>& position, Camera& camera)
 	{
 		glPushMatrix();
-			//  Move to the given position
-			glTranslatef(position.x, position.y, position.z);
-			glRotatef(getRotation(), 0.0f, 1.0f, 0.0f);
-
-			//  Set the base color (in case we aren't overriding with a shader program)
-			glColor3f(m_SurfaceColor.x, m_SurfaceColor.y, m_SurfaceColor.z);
-
-			//  Set up and activate any currently set shader program
-			if (m_ShaderProgram != nullptr)
-			{
-				m_ShaderProgram->use();
-				m_ShaderProgram->setUniform("camera", camera.matrix());
-				m_ShaderProgram->setUniform("model", glm::rotate(glm::translate(glm::mat4(), glm::vec3(position.x, position.y, position.z)), glm::radians(getRotation()), glm::vec3(0, 1, 0)));
-				m_ShaderProgram->setUniform("tex", 0);
-			}
-
-			//  Draw the geometry (set into the video card using VAO and VBO
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glBindVertexArray(m_VAO[0]);
-			glDrawArrays(GL_TRIANGLES, 0, 3 * 20);
-			glBindVertexArray(0);
-
-			if (m_ShaderProgram != nullptr) m_ShaderProgram->stopUsing();
+			//  Render the object at the position relative to the camera
+			BasicRenderable3D::RenderGeometry(position, camera);
 
 			// Show the lines directly, regardless of the shader
 			if (m_ShowLines)

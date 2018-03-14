@@ -6,7 +6,7 @@
 #include "Vector3.h"
 #include "ShapeSplitPoints.h"
 
-struct SplittableIcohedron
+struct SplittableIcosahedron
 {
 protected:
 	typedef std::tuple<float, float, float, float, float> SI_Point;
@@ -121,7 +121,7 @@ private:
 	GLuint m_VBO[2];
 
 public:
-	SplittableIcohedron(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) :
+	SplittableIcosahedron(float size = 10.0f, int splitCount = 0, bool showLines = true, float rotationSpeed = 0.0f) :
 		m_LineColor(0.0f, 0.0f, 0.0f),
 		m_SurfaceColor(1.0f, 1.0f, 1.0f)
 	{

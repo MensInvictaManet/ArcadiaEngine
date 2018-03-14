@@ -2,15 +2,7 @@
 
 struct Color
 {
-	Color()
-	{
-		colorValues[0] = 1.0f;
-		colorValues[1] = 1.0f;
-		colorValues[2] = 1.0f;
-		colorValues[3] = 1.0f;
-	}
-
-	Color(float r, float g, float b, float a)
+	Color(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f)
 	{
 		colorValues[0] = r;
 		colorValues[1] = g;
