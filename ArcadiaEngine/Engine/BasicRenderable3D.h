@@ -6,12 +6,13 @@
 #include "Vector3.h"
 #include "TimeSlice.h"
 #include "Color.h"
+#include "GLMCamera.h"
 
 struct BasicRenderable3D
 {
 private:
-	GLuint m_VAO[2];
-	GLuint m_VBO[2];
+	GLuint m_GeometryVAO;
+	GLuint m_GeometryVBO;
 	tdogl::Program* m_ShaderProgram = nullptr;
 	float m_RotationSpeed = 0.0f;
 	float m_RotationStartTime = 0.0f;
@@ -46,12 +47,12 @@ public:
 		m_RenderType = renderType;
 
 		//  Generate and Bind the geometry vertex array
-		glGenVertexArrays(1, &m_VAO[0]);
-		glBindVertexArray(m_VAO[0]);
+		glGenVertexArrays(1, &m_GeometryVAO);
+		glBindVertexArray(m_GeometryVAO);
 
 		//  Generate the OpenGL vertex buffer for geometry, and bind it
-		glGenBuffers(1, &m_VBO[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
+		glGenBuffers(1, &m_GeometryVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_GeometryVBO);
 
 		//  Set the vertex buffer data information and the vertex attribute pointer within
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * floatsPerVertex * verticesPerShape * shapesPerObject, vertices, GL_STATIC_DRAW);
@@ -85,7 +86,7 @@ public:
 
 		//  Draw the geometry (set into the video card using VAO and VBO
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glBindVertexArray(m_VAO[0]);
+		glBindVertexArray(m_GeometryVAO);
 		glDrawArrays(m_RenderType, 0, m_VerticesTotal);
 		glBindVertexArray(0);
 

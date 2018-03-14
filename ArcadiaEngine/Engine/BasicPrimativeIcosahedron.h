@@ -7,13 +7,13 @@ struct BasicPrimativeIcosahedron : public BasicRenderable3D
 private:
 	float m_HalfSize;
 	bool m_ShowLines;
-	Vector3<float> m_LineColor;
+	Color m_LineColor;
 
 public:
 	BasicPrimativeIcosahedron(float size = 10.0f, bool showLines = true) :
 		m_HalfSize(size / 2.0f),
 		m_ShowLines(showLines),
-		m_LineColor(0.0f, 0.0f, 0.0f)
+		m_LineColor(0.0f, 0.0f, 0.0f, 0.2f)
 	{}
 
 	inline void SetValues(float size = 10.0f, bool showLines = true, float rotationSpeed = 0.0f, tdogl::Program* shaderProgram = nullptr) {
@@ -35,7 +35,7 @@ public:
 		m_ShowLines = showLines;
 	}
 
-	inline void SetLineColor(Vector3<float>& lineColor) {
+	inline void SetLineColor(Color& lineColor) {
 		m_LineColor = lineColor;
 	}
 
@@ -142,7 +142,7 @@ public:
 			// Show the lines directly, regardless of the shader
 			if (m_ShowLines)
 			{
-				glColor4f(m_LineColor.x, m_LineColor.y, m_LineColor.z, 0.2f);
+				glColor4f(m_LineColor.R, m_LineColor.G, m_LineColor.B, m_LineColor.A);
 				glBegin(GL_LINE_STRIP);
 				// 20
 				glVertex3f(0.0f, m_HalfSize / 2.0f, -m_HalfSize);
