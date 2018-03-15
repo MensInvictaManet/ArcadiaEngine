@@ -170,23 +170,23 @@ inline TopDownExample::TopDownExample()
 {
 	//  Load the player character
 	m_Characters[0] = new TopDownCharacter(512.0f, 384.0f);
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/Sprites/LinkUpIdle.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/Sprites/LinkDownIdle.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/Sprites/LinkLeftIdle.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_RIGHT, "Assets/Sprites/LinkRightIdle.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_UP, "Assets/Sprites/LinkUpWalk.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_DOWN, "Assets/Sprites/LinkDownWalk.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/Sprites/LinkLeftWalk.xml");
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/Sprites/LinkRightWalk.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/TopDownExample Sprites/LinkUpIdle.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/TopDownExample Sprites/LinkDownIdle.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/TopDownExample Sprites/LinkLeftIdle.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_RIGHT, "Assets/TopDownExample Sprites/LinkRightIdle.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_UP, "Assets/TopDownExample Sprites/LinkUpWalk.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_DOWN, "Assets/TopDownExample Sprites/LinkDownWalk.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/TopDownExample Sprites/LinkLeftWalk.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/TopDownExample Sprites/LinkRightWalk.xml");
 
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/LinkUpSwing.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/TopDownExample Sprites/LinkUpSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit3", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 3); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_UP, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/LinkDownSwing.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/TopDownExample Sprites/LinkDownSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
@@ -194,7 +194,7 @@ inline TopDownExample::TopDownExample()
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_DOWN, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 6); });
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/LinkLeftSwing.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/TopDownExample Sprites/LinkLeftSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
@@ -202,7 +202,7 @@ inline TopDownExample::TopDownExample()
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit4", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 4); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit5", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 5); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_LEFT, "SwingHit6", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 6); });
-	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/Sprites/LinkRightSwing.xml");
+	m_Characters[0]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/TopDownExample Sprites/LinkRightSwing.xml");
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Finished", [=](TextureAnimation*) { m_Characters[0]->FinishedSwing(); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit1", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 1); });
 	m_Characters[0]->AddAnimationCallback(TopDownCharacter::CHARSTATE_SWING_RIGHT, "SwingHit2", [=](TextureAnimation*) { SwingCheck(m_Characters[0]->GetCurrentState(), int(m_Characters[0]->GetCharacterX()), int(m_Characters[0]->GetCharacterY()), 2); });
@@ -213,18 +213,18 @@ inline TopDownExample::TopDownExample()
 
 	//  Load the enemy character
 	m_Characters[1] = new TopDownCharacter(700.0f, 384.0f);
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/Sprites/GuardUpIdle.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/Sprites/GuardDownIdle.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/Sprites/GuardLeftIdle.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_RIGHT, "Assets/Sprites/GuardRightIdle.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_UP, "Assets/Sprites/GuardUpWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_DOWN, "Assets/Sprites/GuardDownWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/Sprites/GuardLeftWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/Sprites/GuardRightWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/Sprites/GuardUpWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/Sprites/GuardDownWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/Sprites/GuardLeftWalk.xml");
-	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/Sprites/GuardRightWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_UP, "Assets/TopDownExample Sprites/GuardUpIdle.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_DOWN, "Assets/TopDownExample Sprites/GuardDownIdle.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_LEFT, "Assets/TopDownExample Sprites/GuardLeftIdle.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_IDLE_RIGHT, "Assets/TopDownExample Sprites/GuardRightIdle.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_UP, "Assets/TopDownExample Sprites/GuardUpWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_DOWN, "Assets/TopDownExample Sprites/GuardDownWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_LEFT, "Assets/TopDownExample Sprites/GuardLeftWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_WALK_RIGHT, "Assets/TopDownExample Sprites/GuardRightWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_UP, "Assets/TopDownExample Sprites/GuardUpWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_DOWN, "Assets/TopDownExample Sprites/GuardDownWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_LEFT, "Assets/TopDownExample Sprites/GuardLeftWalk.xml");
+	m_Characters[1]->LoadCharacterAnimation(TopDownCharacter::CHARSTATE_SWING_RIGHT, "Assets/TopDownExample Sprites/GuardRightWalk.xml");
 }
 
 inline TopDownExample::~TopDownExample()

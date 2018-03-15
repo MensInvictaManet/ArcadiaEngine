@@ -1,3 +1,3 @@
-<TextureAnimation length="1.0" file="Assets/Sprites/LTTP_Enemies.png">
+<TextureAnimation length="1.0" file="Assets/TopDownExample Sprites/LTTP_Enemies.png">
 	<Keyframe t="0.00" x="16" y="44" w="16" h="28" a="1" xOff="0" yOff="0"/>
 </TextureAnimation>

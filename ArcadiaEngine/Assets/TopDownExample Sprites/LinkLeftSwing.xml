@@ -1,4 +1,4 @@
-<TextureAnimation length="0.42" file="Assets/Sprites/Link.png">
+<TextureAnimation length="0.42" file="Assets/TopDownExample Sprites/Link.png">
 	<Keyframe t="0.00" x="519" y="177" w="16" h="23" a="1" xOff="001" yOff="0" callback="SwingHit1"/>
 	<Keyframe t="0.06" x="546" y="176" w="23" h="24" a="1" xOff="-05" yOff="0" callback="SwingHit2"/>
 	<Keyframe t="0.12" x="574" y="179" w="29" h="21" a="1" xOff="-10" yOff="1" callback="SwingHit3"/>
