@@ -37,11 +37,11 @@ inline SoundShowcaseDialogue::SoundShowcaseDialogue()
 	container->AddChild(soundExplanationLabel);
 
 	//  Load the music file and sound effects
-	backgroundMusicID = soundWrapper.loadMusicFile("Assets/BackgroundMusic.ogg", -1);
-	coin1SoundID = soundWrapper.loadSoundFile("Assets/CoinPickup1.ogg", -1);
-	coin2SoundID = soundWrapper.loadSoundFile("Assets/CoinPickup2.ogg", -1);
-	coin3SoundID = soundWrapper.loadSoundFile("Assets/CoinPickup1.wav", -1);
-	coin4SoundID = soundWrapper.loadSoundFile("Assets/CoinPickup2.wav", -1);
+	backgroundMusicID = soundWrapper.loadMusicFile("Assets/Audio/BackgroundMusic.ogg", -1);
+	coin1SoundID = soundWrapper.loadSoundFile("Assets/Audio/CoinPickup1.ogg", -1);
+	coin2SoundID = soundWrapper.loadSoundFile("Assets/Audio/CoinPickup2.ogg", -1);
+	coin3SoundID = soundWrapper.loadSoundFile("Assets/Audio/CoinPickup1.wav", -1);
+	coin4SoundID = soundWrapper.loadSoundFile("Assets/Audio/CoinPickup2.wav", -1);
 
 	//  Play the music file
 	soundWrapper.playMusicFile(backgroundMusicID);
