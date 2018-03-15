@@ -162,6 +162,9 @@
     <ClInclude Include="Engine\BasicRenderable3D.h">
       <Filter>Header Files\Engine\3D Base Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\BasicPrimativeQuad.h">
+      <Filter>Header Files\Engine\3D Base Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

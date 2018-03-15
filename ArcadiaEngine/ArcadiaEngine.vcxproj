@@ -124,6 +124,7 @@
     <ClInclude Include="Engine\AutoPlayManager.h" />
     <ClInclude Include="Engine\BasicPrimativeCube.h" />
     <ClInclude Include="Engine\BasicPrimativeIcosahedron.h" />
+    <ClInclude Include="Engine\BasicPrimativeQuad.h" />
     <ClInclude Include="Engine\BasicRenderable3D.h" />
     <ClInclude Include="Engine\Color.h" />
     <ClInclude Include="Engine\DebugConsole.h" />

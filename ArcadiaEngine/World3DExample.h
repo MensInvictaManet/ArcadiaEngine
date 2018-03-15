@@ -9,6 +9,7 @@
 #include "Engine/BasicPrimativeIcosahedron.h"
 #include "Engine/SplittableIcosahedron.h"
 #include "Engine/SplittableCube.h"
+#include "Engine/BasicPrimativeQuad.h"
 
 #include "Engine/GLMCamera.h"
 #include "Engine/Shader.h"
@@ -43,6 +44,9 @@ private:
 	SplittableCube m_SplitCube3;
 	SplittableCube m_SplitCube4;
 
+	BasicPrimativeQuad m_BasicQuad1;
+	BasicPrimativeQuad m_BasicQuad2;
+
 	GUILabel* m_CurrentFPSLabel;
 
 	GLuint shaderTestV;
@@ -52,6 +56,7 @@ private:
 
 	GLuint m_D6Texture = 0;
 	GLuint m_D20Texture = 0;
+	GLuint m_NoTexture = 0;
 
 	void LoadShaders() {
 		std::vector<tdogl::Shader> shaders;
@@ -67,6 +72,7 @@ inline World3DExample::World3DExample()
 
 	m_D6Texture = textureManager.LoadTextureGetID("Assets/3D Base Textures/D6Dice.png");
 	m_D20Texture = textureManager.LoadTextureGetID("Assets/3D Base Textures/D20Dice.png");
+	m_NoTexture = textureManager.LoadTextureGetID("Assets/3D Base Textures/NoTexture.png");
 
 	m_BasicIco.SetValues(10.0f, true, 50.0f, m_D20Texture, gProgram);
 	m_UnsplitIco.SetValues(10.0f, 0, false, 50.0f, m_D20Texture, gProgram);
@@ -81,6 +87,9 @@ inline World3DExample::World3DExample()
 	m_SplitCube2.SetValues( 10.0f, 3, true, 50.0f, m_D6Texture, gProgram);
 	m_SplitCube3.SetValues( 10.0f, 5, false, 50.0f, m_D6Texture, gProgram);
 	m_SplitCube4.SetValues( 10.0f, 6, false, 50.0f, m_D6Texture, gProgram);
+
+	m_BasicQuad1.SetValues(10.0f, 10.0f, true, 25.0f, m_NoTexture, gProgram);
+	m_BasicQuad2.SetValues(10.0f, 10.0f, false, 25.0f, m_NoTexture, gProgram);
 
 	//  Create the current fps label
 	m_CurrentFPSLabel = GUILabel::CreateLabel(fontManager.GetFont("Arial"), "Current FPS: Unknown", 10, 748, 260, 22);
@@ -128,6 +137,9 @@ inline void World3DExample::Render3D()
 	m_SplitIco2.Render(Vector3<float>(20, 0, -140), gCamera);
 	m_SplitIco3.Render(Vector3<float>(20, 0, -160), gCamera);
 	m_SplitIco4.Render(Vector3<float>(20, 0, -180), gCamera);
+
+	m_BasicQuad1.Render(Vector3<float>(60, 0, -80), gCamera);
+	m_BasicQuad2.Render(Vector3<float>(60, 0, -100), gCamera);
 }
 
 inline void World3DExample::TakeCameraInput()

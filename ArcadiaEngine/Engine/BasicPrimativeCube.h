@@ -10,9 +10,6 @@ private:
 	float m_HalfHeight;
 	float m_HalfDepth;
 
-	GLuint m_VAO[2];
-	GLuint m_VBO[2];
-
 public:
 	BasicPrimativeCube(float width = 10.0f, float height = 10.0f, float depth = 10.0f, bool showLines = true)
 	{
