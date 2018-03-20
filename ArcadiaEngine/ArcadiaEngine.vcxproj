@@ -70,12 +70,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\rapidxml-1.13;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\lib\Release\Win32;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2-2.0.8\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_mixer-2.0.2\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_image-2.0.3\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glew-2.1.0\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glm-0.9.8.5;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\rapidxml-1.13;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2-2.0.8\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_mixer-2.0.2\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_image-2.0.3\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\rapidxml-1.13;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\Dependencies\SDL2-2.0.8\include;.\Dependencies\SDL2_mixer-2.0.2\include;.\Dependencies\SDL2_image-2.0.3\include;.\Dependencies\rapidxml-1.13;.\Dependencies\glm;.\Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\Dependencies\SDL2-2.0.8\lib\x86;.\Dependencies\SDL2_mixer-2.0.2\lib\x86;.\Dependencies\SDL2_image\lib\x86;.\Dependencies\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2-2.0.8\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_mixer-2.0.2\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_image-2.0.3\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glew-2.1.0\include;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glm-0.9.8.5;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\rapidxml-1.13;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2-2.0.8\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_mixer-2.0.2\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_image-2.0.3\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
