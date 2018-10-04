@@ -1,6 +1,6 @@
-SDL2 2.0.7
+SDL2 2.0.8
 SDL2_Mixer 2.0.2
-SDL2_Image
+SDL2_Image 2.0.3
 rapidxml 1.13
 GLM 0.9.8.5
 GLEW 2.1.0
