@@ -77,6 +77,10 @@
     <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\rapidxml-1.13;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glm;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\rapidxml-1.13;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\include;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Drew\Documents\Visual Studio 2017\Libraries\glew-2.1.0\lib\Release\Win32;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2-2.0.7\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_image\lib\x86;C:\Users\Drew\Documents\Visual Studio 2017\Libraries\SDL2_mixer-2.0.2\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

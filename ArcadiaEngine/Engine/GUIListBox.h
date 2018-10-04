@@ -353,9 +353,15 @@ inline void GUIListBox::UpdateMover(int indexOverride)
 	auto mover_size_percent = float(ItemDisplayCount) / float(m_ItemList.size());
 	MoverHeight = static_cast<unsigned int>((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_size_percent);
 
+	//  Determine how much we move up and down when mouse movement warrants a change
+	//  NOTE: Even though MoverYDelta is confirmed, we do the calculations twice because rounding the MoverYDelta can lead to a rounding error on MoverY position determination
 	auto mover_position_percent_delta = float(1) / float(m_ItemList.size());
-	MoverYDelta = static_cast<unsigned int>((float(m_Height - ContentY - DownButtonH) - (ContentY + UpButtonH)) * mover_position_percent_delta);
-	MoverY = static_cast<unsigned int>(float(MoverYDelta) * float(MovementIndex));
+	MoverYDelta = static_cast<unsigned int>((float(m_Height - ContentY - UpButtonH) - (ContentY + DownButtonH)) * mover_position_percent_delta);
+	MoverY = static_cast<unsigned int>((float(m_Height - ContentY - UpButtonH) - (ContentY + DownButtonH)) * mover_position_percent_delta * float(MovementIndex));
+
+	//  There is a small chance of a float precision error leading to us being 1 pixel away from the bottom when updating the mover at the bottom position. Check for that.
+	auto MoverBarHeightTotal = (m_Height - ContentY - ContentY - DownButtonH - UpButtonH);
+	if ((MovementIndex + ItemDisplayCount == m_ItemList.size()) && (MoverY + MoverHeight < MoverBarHeightTotal)) MoverY = MoverBarHeightTotal - MoverHeight;
 }
 
 inline void GUIListBox::SetToDestroy(std::stack<GUIObjectNode*>& destroyList)
