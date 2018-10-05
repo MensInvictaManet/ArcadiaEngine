@@ -34,19 +34,21 @@ public:
 	int GetTrueX() const;
 	int GetTrueY() const;
 
-	void SetZOrder(int zOrder) { m_ZOrder = zOrder; if (m_Parent != nullptr) m_Parent->SortChild(this); }
-	void SetX(int x) { m_X = x; }
-	void SetY(int y) { m_Y = y; }
-	void SetWidth(int width) { m_Width = width; }
+	inline void SetZOrder(int zOrder) { m_ZOrder = zOrder; if (m_Parent != nullptr) m_Parent->SortChild(this); }
+	inline void SetX(int x) { m_X = x; }
+	inline void SetY(int y) { m_Y = y; }
+	inline void SetPosition(int x, int y) { SetX(x); SetY(y); }
+	inline void SetWidth(int width) { m_Width = width; }
 	virtual void SetHeight(int height) { m_Height = height; }
-	void SetTextureID(int textureID) { m_TextureID = textureID; }
-	void SetTextureAnimation(TextureAnimation* anim) { m_TextureAnimation = anim; }
-	void SetVisible(bool visible) { m_Visible = visible; }
-	void SetParent(GUIObjectNode* parent) { m_Parent = parent; }
-	void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
-	void SetObjectName(std::string objectName) { m_ObjectName = objectName; }
-	void SetClickX(int clickX) { m_ClickX = clickX; }
-	void SetClickY(int clickY) { m_ClickY = clickY; }
+	inline void SetDimensions(int width, int height) { SetWidth(width); SetHeight(height); }
+	inline void SetTextureID(int textureID) { m_TextureID = textureID; }
+	inline void SetTextureAnimation(TextureAnimation* anim) { m_TextureAnimation = anim; }
+	inline void SetVisible(bool visible) { m_Visible = visible; }
+	inline void SetParent(GUIObjectNode* parent) { m_Parent = parent; }
+	inline void SetColor(float r, float g, float b, float a) { m_Color.colorValues[0] = r; m_Color.colorValues[1] = g; m_Color.colorValues[2] = b; m_Color.colorValues[3] = a; }
+	inline void SetObjectName(std::string objectName) { m_ObjectName = objectName; }
+	inline void SetClickX(int clickX) { m_ClickX = clickX; }
+	inline void SetClickY(int clickY) { m_ClickY = clickY; }
 
 	int GetZOrder() const { return m_ZOrder; }
 	int GetX() const { return m_X; }
@@ -66,7 +68,7 @@ public:
 	void AddChild(GUIObjectNode* child);
 	void AddChildSorted(GUIObjectNode* child);
 	void RemoveChild(GUIObjectNode* child);
-	
+
 	int m_ZOrder;
 	int m_X;
 	int m_Y;
@@ -260,7 +262,7 @@ inline void GUIObjectNode::AddChildSorted(GUIObjectNode* child)
 	for (size_t i = 0; i < m_Children.size(); ++i)
 	{
 		if (m_Children[i]->GetZOrder() >= child->GetZOrder()) continue;
-		
+
 		m_Children.insert(m_Children.begin() + i, child);
 		return;
 	}

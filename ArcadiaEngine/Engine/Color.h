@@ -15,3 +15,6 @@ struct Color
 		float colorValues[4];
 	};
 };
+
+static Color COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
+static Color COLOR_WHITE_FADED(1.0f, 1.0f, 1.0f, 0.25f);

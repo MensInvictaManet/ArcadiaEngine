@@ -8,6 +8,8 @@
 class GUIEditBox : public GUIObjectNode
 {
 public:
+	enum TextAlignment { ALIGN_LEFT, ALIGN_CENTER };
+
 	static GUIEditBox* CreateEditBox(const char* imageFile, int x = 0, int y = 0, int w = 0, int h = 0);
 	static GUIEditBox* CreateTemplatedEditBox(const char* editboxTemplate, int x = 0, int y = 0, int w = 0, int h = 0);
 
@@ -17,6 +19,10 @@ public:
 	inline void SetFont(const Font* font) { m_Font = font; }
 	inline void SetText(const std::string text) { m_Text = text; }
 	inline std::string GetText() const { return m_Text; }
+	inline void SetTextAlignment(TextAlignment alignment) { m_TextAlignment = alignment; }
+
+	inline void SetEmptyText(std::string emptyText) { m_EmptyText = emptyText; }
+	inline void SetEmptyTextColor(Color emptyTextColor) { m_EmptyTextColor = emptyTextColor; }
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
@@ -25,7 +31,11 @@ private:
 	bool m_Selected;
 	const Font* m_Font;
 	std::string m_Text;
-	float m_LastBackspaceTime;
+
+	std::string m_EmptyText;
+	Color m_EmptyTextColor;
+
+	TextAlignment m_TextAlignment;
 
 	bool m_Templated;
 	TextureManager::ManagedTexture* TextureTopLeftCorner[2];
@@ -39,6 +49,7 @@ private:
 	TextureManager::ManagedTexture* TextureMiddle[2];
 
 	const float TIME_BETWEEN_BACKSPACES = 0.1f;
+	float m_LastBackspaceTime;
 };
 
 inline GUIEditBox* GUIEditBox::CreateEditBox(const char* imageFile, int x, int y, int w, int h)
@@ -94,6 +105,9 @@ inline GUIEditBox::GUIEditBox(bool templated) :
 	m_Selected(false),
 	m_Font(nullptr),
 	m_Text(""),
+	m_EmptyText(""),
+	m_EmptyTextColor(Color(0.0f, 0.0f, 0.0f, 1.0f)),
+	m_TextAlignment(ALIGN_CENTER),
 	m_LastBackspaceTime(0),
 	m_Templated(templated)
 {
@@ -156,7 +170,7 @@ inline void GUIEditBox::Render(int xOffset, int yOffset)
 	glColor4f(m_Color.colorValues[0], m_Color.colorValues[1], m_Color.colorValues[2], m_Color.colorValues[3]);
 
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && ((m_TextureID != 0) || m_Templated) && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible && m_Width > 0 && m_Height > 0)
 	{
 		auto x = m_X + xOffset;
 		auto y = m_Y + yOffset;
@@ -191,9 +205,18 @@ inline void GUIEditBox::Render(int xOffset, int yOffset)
 		}
 
 		//  Render the font the same way regardless of templating
-		if (m_Font != nullptr && !m_Text.empty())
+		if (m_Font != nullptr)
 		{
-			m_Font->RenderText(m_Text.c_str(), x + m_Width / 2, y + m_Height / 2, true, true);
+			auto textX = (m_TextAlignment == ALIGN_CENTER) ? (x + m_Width / 2) : x;
+			if (!m_Text.empty())
+			{
+				m_Font->RenderText(m_Text.c_str(), textX, y + m_Height / 2, (m_TextAlignment == ALIGN_CENTER), true);
+			}
+			else if (!m_EmptyText.empty() && !m_Selected)
+			{
+				m_Font->RenderText(m_EmptyText.c_str(), textX, y + m_Height / 2, (m_TextAlignment == ALIGN_CENTER), true, 1.0f, 1.0f, m_EmptyTextColor);
+			}
+
 		}
 	}
 

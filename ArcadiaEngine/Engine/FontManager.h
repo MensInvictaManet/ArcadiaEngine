@@ -16,7 +16,7 @@ public:
 	~Font();
 
 	void Shutdown();
-	void RenderText(const char* text, int x, int y, bool x_centered = false, bool y_centered = false, float x_scale = 1.0f, float y_scale = 1.0f) const;
+	void RenderText(const char* text, int x, int y, bool x_centered = false, bool y_centered = false, float x_scale = 1.0f, float y_scale = 1.0f, Color& fontColor = COLOR_WHITE) const;
 	unsigned int GetTextWidth(const char* text) const;
 	unsigned int GetCharacterCountBeforePassingWidth(const char* text, unsigned int width, bool cut_at_spaces = true) const;
 
@@ -72,7 +72,7 @@ inline void Font::Shutdown(void)
 }
 
 
-inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bool y_centered, float x_scale, float y_scale) const
+inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bool y_centered, float x_scale, float y_scale, Color& color) const
 {
 	if (m_Texture == nullptr) return;
 
@@ -85,11 +85,13 @@ inline void Font::RenderText(const char* text, int x, int y, bool x_centered, bo
 	if (y_centered) y_offset -= UINT(((m_MaxHeight / 2.0f)) * y_scale);
 
 	//  Render each character in a line while updating the X offset
+	glColor4f(color.R, color.G, color.B, color.A);
 	for (size_t i = 0; i < strlen(text); ++i)
 	{
 		m_Texture->RenderTexturePart(x_offset, y_offset, m_X[text[i] - 32], m_Y[text[i] - 32], int(m_Width[text[i] - 32] * x_scale), int(m_Height[text[i] - 32] * y_scale));
 		x_offset += int(m_Width[text[i] - 32] * x_scale);
 	}
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 

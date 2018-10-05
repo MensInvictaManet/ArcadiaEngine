@@ -144,9 +144,9 @@ struct Vector3
 		output.z = vector_a.x * vector_b.y - vector_a.y * vector_b.x;
 	}
 
-	static Vector3<data_type> Interpolate(const Vector3& vector_a, const Vector3& vector_b, float lamda)
+	static Vector3<data_type> Interpolate(const Vector3& vector_a, const Vector3& vector_b, float lambda)
 	{
-		return (vector_a + ((vector_b - vector_a) * lamba));
+		return (vector_a + ((vector_b - vector_a) * lambda));
 	}
 
 	//  "array" access

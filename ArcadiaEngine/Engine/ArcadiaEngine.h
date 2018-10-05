@@ -159,11 +159,11 @@ inline void AddDebugConsoleCommands()
 
 inline void ResizeWindow(void)
 {
-	glViewport(0, 0, GLsizei(SCREEN_WIDTH), GLsizei(SCREEN_WIDTH));
+	glViewport(0, 0, GLsizei(SCREEN_WIDTH), GLsizei(SCREEN_HEIGHT));
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_WIDTH), 0.0f, 100.0f);
+	gluPerspective(45.0f, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 0.0f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -260,7 +260,7 @@ inline bool InitializeOpenGL()
 	return success;
 }
 
-inline bool InitializeEngine()
+inline bool InitializeEngine(const char* programTitle)
 {
 	//  Initialize SDL
 	if (!InitializeSDL())
@@ -269,7 +269,7 @@ inline bool InitializeEngine()
 		return false;
 	}
 
-	auto windowIndex = windowManager.CreateNewWindow("Arcadia Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, true, false, false);
+	auto windowIndex = windowManager.CreateNewWindow(programTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, true, false, false);
 	if (windowIndex == -1) return false;
 
 	SDL_SetRenderDrawColor(windowManager.GetRenderer(windowIndex), 0xFF, 0xFF, 0xFF, 0xFF);

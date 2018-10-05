@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>./_Dependencies/SDL2-2.0.8/include;./_Dependencies/glew-2.1.0/include;./_Dependencies/glm-0.9.8.5/glm;./_Dependencies/rapidxml-1.13;./_Dependencies/SDL2_image-2.0.3/include;./_Dependencies/SDL2_mixer-2.0.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>./_Dependencies/glew-2.1.0/lib/Release/Win32;./_Dependencies/SDL2-2.0.8/lib/x86;./_Dependencies/SDL2_image-2.0.3/lib/x86;./_Dependencies/SDL2_mixer-2.0.2/lib/x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)/_Dependencies/SDL2-2.0.8/include;$(SolutionDir)/_Dependencies/glew-2.1.0/include;$(SolutionDir)/_Dependencies/glm-0.9.8.5;$(SolutionDir)/_Dependencies/rapidxml-1.13;$(SolutionDir)/_Dependencies/SDL2_image-2.0.3/include;$(SolutionDir)/_Dependencies/SDL2_mixer-2.0.2/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)/_Dependencies/glew-2.1.0/lib/Release/Win32;$(SolutionDir)/_Dependencies/SDL2-2.0.8/lib/x86;$(SolutionDir)/_Dependencies/SDL2_image-2.0.3/lib/x86;$(SolutionDir)/_Dependencies/SDL2_mixer-2.0.2/lib/x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>.\Dependencies\SDL2-2.0.8\include;.\Dependencies\SDL2_mixer-2.0.2\include;.\Dependencies\SDL2_image-2.0.3\include;.\Dependencies\rapidxml-1.13;.\Dependencies\glm;.\Dependencies\glew-2.1.0\include;$(IncludePath)</IncludePath>
@@ -82,8 +82,8 @@
     <LibraryPath>C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2-2.0.8\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_mixer-2.0.2\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\SDL2_image-2.0.3\lib\x86;C:\Users\Drew\Desktop\ArcadiaEngine\_Dependencies\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>./_Dependencies/SDL2-2.0.8/include;./_Dependencies/glew-2.1.0/include;./_Dependencies/glm-0.9.8.5/glm;./_Dependencies/rapidxml-1.13;./_Dependencies/SDL2_image-2.0.3/include;./_Dependencies/SDL2_mixer-2.0.2/include;$(IncludePath)</IncludePath>
-    <LibraryPath>./_Dependencies/glew-2.1.0/lib/Release/Win32;./_Dependencies/SDL2-2.0.8/lib/x86;./_Dependencies/SDL2_image-2.0.3/lib/x86;./_Dependencies/SDL2_mixer-2.0.2/lib/x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)/_Dependencies/SDL2-2.0.8/include;$(SolutionDir)/_Dependencies/glew-2.1.0/include;$(SolutionDir)/_Dependencies/glm-0.9.8.5;$(SolutionDir)/_Dependencies/rapidxml-1.13;$(SolutionDir)/_Dependencies/SDL2_image-2.0.3/include;$(SolutionDir)/_Dependencies/SDL2_mixer-2.0.2/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)/_Dependencies/glew-2.1.0/lib/Release/Win32;$(SolutionDir)/_Dependencies/SDL2-2.0.8/lib/x86;$(SolutionDir)/_Dependencies/SDL2_image-2.0.3/lib/x86;$(SolutionDir)/_Dependencies/SDL2_mixer-2.0.2/lib/x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

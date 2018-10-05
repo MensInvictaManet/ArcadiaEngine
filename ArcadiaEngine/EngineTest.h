@@ -20,7 +20,7 @@
 
 GUIObjectNode* currentDialogue;
 
-void CreateTestData()
+void CreateInitializationData()
 {
 	//  Load some basic fonts
 	fontManager.SetFontFolder("Assets/Fonts/");
@@ -81,14 +81,14 @@ void CreateTestData()
 
 void AppMain()
 {
-	if (!InitializeEngine())
+	if (!InitializeEngine("Arcadia Engine"))
 	{
 		ShutdownEngine();
 		throw std::runtime_error("InitializeEngine failed");
 	}
 
-	//  Create test data for different systems to ensure they work as they should
-	CreateTestData();
+	//  Create data for different systems to start the main program functionality
+	CreateInitializationData();
 
 	//  Load the Primary Loop
 	PrimaryLoop();
