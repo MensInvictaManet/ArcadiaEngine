@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#define RETURNVAL_BUFFER_SIZE 20000
+#define RETURNVAL_BUFFER_SIZE 1024 * 128 // 128KB
 
 class SocketBuffer
 {
@@ -26,6 +26,8 @@ public:
 	int 				writedouble(double a);
 	int 				writechars(char*str);
 	int 				writechars(const char*str);
+	int 				writechars(char*str, int length);
+	int 				writechars(const char*str, int length);
 	int 				writestring(char*str);
 	int 				writestring(const char*str);
 
@@ -153,6 +155,18 @@ inline int SocketBuffer::writechars(const char*str)
 	return len;
 }
 
+inline int SocketBuffer::writechars(char*str, int length)
+{
+	StreamWrite(str, length);
+	return length;
+}
+
+inline int SocketBuffer::writechars(const char*str, int length)
+{
+	StreamWrite((void*)(str), length);
+	return length;
+}
+
 inline int SocketBuffer::writestring(char *str)
 {
 	auto len = writechars(str);
@@ -170,6 +184,14 @@ inline unsigned char SocketBuffer::readchar(bool peek)
 	unsigned char b;
 	StreamRead(&b, 1, peek);
 	return b;
+}
+
+inline char* SocketBuffer::readchars(int len, bool peek)
+{
+	if (len < 0) return nullptr;
+	StreamRead(&m_ReturnValueBuffer, len, peek);
+	m_ReturnValueBuffer[len] = '\0';
+	return m_ReturnValueBuffer;
 }
 
 inline short SocketBuffer::readshort(bool peek)
@@ -211,15 +233,6 @@ inline double SocketBuffer::readdouble(bool peek)
 	double b;
 	StreamRead(&b, 8, peek);
 	return b;
-}
-
-inline char* SocketBuffer::readchars(int len, bool peek)
-{
-
-	if (len < 0) return nullptr;
-	StreamRead(&m_ReturnValueBuffer, len, peek);
-	m_ReturnValueBuffer[len] = '\0';
-	return m_ReturnValueBuffer;
 }
 
 inline char* SocketBuffer::readstring(bool peek)

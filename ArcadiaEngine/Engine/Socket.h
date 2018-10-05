@@ -2,6 +2,7 @@
 
 #include "SocketBuffer.h"
 
+#include <string>
 #include <WS2tcpip.h>
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -78,14 +79,14 @@ inline bool Socket::tcpconnect(const char *address, int port, int mode)
 			return false;
 		}
 	}
-	
+
 	if (mode == 1) setsync(1);
 	return true;
 }
 
 inline bool Socket::tcplisten(int port, int max, int mode)
 {
-	if ((m_SocketID = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET) return false;
+	if ((m_SocketID = socket(AF_INET, SOCK_STREAM, IPPROTO_HOPOPTS)) == INVALID_SOCKET) return false;
 	SOCKADDR_IN addr;
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
@@ -93,18 +94,20 @@ inline bool Socket::tcplisten(int port, int max, int mode)
 	if (mode) setsync(1);
 	if (bind(m_SocketID, (LPSOCKADDR)&addr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
+		int errorCode = WSAGetLastError();
 		closesocket(m_SocketID);
 		return false;
 	}
 	if (listen(m_SocketID, max) == SOCKET_ERROR)
 	{
+		int errorCode = WSAGetLastError();
 		closesocket(m_SocketID);
 		return false;
 	}
 	return true;
 }
 
-inline Socket::Socket(SOCKET sock) : 
+inline Socket::Socket(SOCKET sock) :
 	m_SocketID(sock),
 	m_IsConnectionUDP(false),
 	m_DataFormat(0)
@@ -157,7 +160,7 @@ inline void Socket::setnagle(bool enabled) const
 	setsockopt(m_SocketID, IPPROTO_TCP, TCP_NODELAY, (char*)&enabled, sizeof(bool));
 }
 
-inline bool Socket::tcpconnected() const 
+inline bool Socket::tcpconnected() const
 {
 	if (m_SocketID < 0) return false;
 	char b;
@@ -166,7 +169,7 @@ inline bool Socket::tcpconnected() const
 	return true;
 }
 
-inline int Socket::setsync(int mode) const 
+inline int Socket::setsync(int mode) const
 {
 	if (m_SocketID < 0) return -1;
 	u_long i = mode;
@@ -245,7 +248,8 @@ inline int Socket::receivetext(char*buf, int max)
 	}
 	return -1;
 }
-inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_specific)
+
+inline int Socket::receivemessage(int len, SocketBuffer* destination, int length_specific)
 {
 	if (m_SocketID < 0) return -1;
 	auto size = -1;
@@ -261,16 +265,18 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 	{
 		if (m_DataFormat == 0 && !len)
 		{
-			unsigned short length;
 			if (length_specific == 0)
 			{
-				if ((size = recv(m_SocketID, (char*)&length, 2, 0)) == SOCKET_ERROR) { return -1; }
+				//  Check that 2 bytes have been received, noting the length of the incoming message. Peek the data in case it hasn't fully arrived.
+				if ((size = recv(m_SocketID, (char*)&length_specific, 2, MSG_PEEK)) == SOCKET_ERROR) { return -1; }
 				if (size == 0) { return 0; }
 			}
-			auto buffer_size = length_specific != 0 ? length_specific : length;
+
+			auto buffer_size = length_specific;
 			MANAGE_MEMORY_NEW("WinsockWrapper", buffer_size);
-			buff = new char[buffer_size];
-			size = recv(m_SocketID, buff, buffer_size, 0);
+			buff = new char[buffer_size + 2];
+			if ((size = recv(m_SocketID, buff, buffer_size, MSG_PEEK)) == SOCKET_ERROR) { return -1; } // It is possible that the full data hasn't arrived yet, so peek first
+			size = recv(m_SocketID, buff, buffer_size + 2, 0);
 		}
 		else if (m_DataFormat == 1 && !len)
 		{
@@ -289,7 +295,7 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 	if (size > 0)
 	{
 		destination->clear();
-		destination->addBuffer(buff, size);
+		destination->addBuffer(buff + 2, size);
 	}
 	if (buff != nullptr)
 	{
@@ -301,7 +307,7 @@ inline int Socket::receivemessage(int len, SocketBuffer*destination, int length_
 
 inline int Socket::peekmessage(int size, SocketBuffer* destination) const
 {
-	if (m_SocketID < 0 ) return -1;
+	if (m_SocketID < 0) return -1;
 	if (size == 0) size = 65536;
 	MANAGE_MEMORY_NEW("WinsockWrapper", size);
 	auto buff = new char[size];
@@ -355,7 +361,7 @@ inline std::string Socket::GetHostIP(char* hostname)
 
 inline char* Socket::lastinIP(void)
 {
-	return "";
+	return (char*)"";
 	////return inet_ntoa(SenderAddr.sin_addr);
 }
 
@@ -368,7 +374,7 @@ inline int Socket::SetFormat(int mode, char* sep)
 {
 	auto previous = m_DataFormat;
 	m_DataFormat = mode;
-	if (mode == 1 && strlen(sep)>0) strcpy_s(m_FormatString, 30, sep);
+	if (mode == 1 && strlen(sep) > 0) strcpy_s(m_FormatString, 30, sep);
 	return previous;
 }
 

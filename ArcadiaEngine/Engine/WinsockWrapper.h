@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.h"
+#include "SocketBuffer.h"
 #include "SimpleMD5.h"
 
 #include <windows.h>
@@ -8,6 +9,7 @@
 #include <Iphlpapi.h>
 #include <vector>
 #include <minwindef.h>
+#include <assert.h>
 
 
 class WinsockWrapper
@@ -16,7 +18,7 @@ public:
 	typedef unsigned long ulong;
 
 	static WinsockWrapper& GetInstance() { static WinsockWrapper INSTANCE; return INSTANCE; }
-	
+
 	//  Utilities
 	static bool GetInternetConnected();
 	static unsigned int ConvertIPtoUINT(const char* ipAddress);
@@ -55,6 +57,7 @@ public:
 
 	// Buffer Write
 	int WriteChar(unsigned char val, int bufferID);
+	int WriteChars(unsigned char* val, int length, int bufferID);
 	int WriteShort(short val, int bufferID);
 	int WriteUnsignedShort(unsigned short val, int bufferID);
 	int WriteInt(int val, int bufferID);
@@ -66,6 +69,7 @@ public:
 
 	// Buffer Read
 	unsigned char ReadChar(int bufferID, bool peek = false);
+	unsigned char* ReadChars(int bufferID, int length, bool peek = false);
 	short ReadShort(int bufferID, bool peek = false);
 	unsigned short ReadUnsignedShort(int bufferID, bool peek = false);
 	int ReadInt(int bufferID, bool peek = false);
@@ -390,11 +394,18 @@ inline double WinsockWrapper::GetLastInPort()
 	return Socket::lastinPort();
 }
 
-
 inline int WinsockWrapper::WriteChar(unsigned char val, int bufferID)
 {
 	auto buffer = m_BufferList[bufferID];
 	return ((buffer == nullptr) ? 0 : buffer->writechar(val));
+}
+
+inline int WinsockWrapper::WriteChars(unsigned char* val, int length, int bufferID)
+{
+	auto buffer = m_BufferList[bufferID];
+	if (buffer == nullptr) return 0;
+
+	return ((buffer == nullptr) ? 0 : buffer->writechars((char*)val, length));
 }
 
 inline int WinsockWrapper::WriteShort(short val, int bufferID)
@@ -449,6 +460,12 @@ inline unsigned char WinsockWrapper::ReadChar(int bufferID, bool peek)
 {
 	auto buffer = m_BufferList[bufferID];
 	return ((buffer == nullptr) ? 0 : buffer->readchar(peek));
+}
+
+inline unsigned char* WinsockWrapper::ReadChars(int bufferID, int length, bool peek)
+{
+	auto buffer = m_BufferList[bufferID];
+	return ((buffer == nullptr) ? 0 : (unsigned char*)buffer->readchars(length, peek));
 }
 
 inline short WinsockWrapper::ReadShort(int bufferID, bool peek)
@@ -803,7 +820,7 @@ inline int WinsockWrapper::BinaryGetFileSize(HANDLE hwnd)
 	return GetFileSize(hwnd, nullptr);
 }
 
-inline WinsockWrapper::WinsockWrapper() : 
+inline WinsockWrapper::WinsockWrapper() :
 	m_WinsockInitialized(false)
 {
 
