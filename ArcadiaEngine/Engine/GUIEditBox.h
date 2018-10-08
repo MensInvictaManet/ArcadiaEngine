@@ -23,6 +23,7 @@ public:
 
 	inline void SetEmptyText(std::string emptyText) { m_EmptyText = emptyText; }
 	inline void SetEmptyTextColor(Color emptyTextColor) { m_EmptyTextColor = emptyTextColor; }
+	inline void SetMaxStringLength(int maxStringLength) { m_MaxStringLength = maxStringLength; }
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
 	void Render(int xOffset = 0, int yOffset = 0) override;
@@ -34,6 +35,7 @@ private:
 
 	std::string m_EmptyText;
 	Color m_EmptyTextColor;
+	int m_MaxStringLength = 128;
 
 	TextAlignment m_TextAlignment;
 
@@ -158,7 +160,7 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 			m_Text.erase(--m_Text.end());
 			m_LastBackspaceTime = gameSecondsF;
 		}
-		else m_Text += inputManager.GetKeyboardString();
+		else if (int(m_Text.length()) < m_MaxStringLength) m_Text += inputManager.GetKeyboardString();
 	}
 
 	//  Take base node input
