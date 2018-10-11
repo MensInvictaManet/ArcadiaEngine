@@ -137,8 +137,10 @@ inline void GUIObjectNode::Input(int xOffset, int yOffset)
 {
 	if (m_SetToDestroy || !m_Visible) return;
 
-	//  Pass the input call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Input(xOffset + m_X, yOffset + m_Y);
+	//  Pass the input call to all children (in reverse, so things rendered last are input checked first)
+	if (m_Children.size() != 0)
+		for (int i = int(m_Children.size()) - 1; i >= 0; --i)
+			m_Children[i]->Input(xOffset + m_X, yOffset + m_Y);
 }
 
 inline void GUIObjectNode::Update()
@@ -164,27 +166,30 @@ inline void GUIObjectNode::Render(int xOffset, int yOffset)
 	auto y = m_Y + yOffset;
 
 	//  Render the object if we're able
-	if (!m_SetToDestroy && m_Visible && m_Width > 0 && m_Height > 0)
+	if (!m_SetToDestroy && m_Visible)
 	{
-		if (m_TextureID != 0)
+		if (m_Width > 0 && m_Height > 0)
 		{
-			glBindTexture(GL_TEXTURE_2D, m_TextureID);
+			if (m_TextureID != 0)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
-			glBegin(GL_QUADS);
+				glBegin(GL_QUADS);
 				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
 				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
 				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
 				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
-			glEnd();
+				glEnd();
+			}
+			else if (m_TextureAnimation != nullptr)
+			{
+				m_TextureAnimation->Render(x, y);
+			}
 		}
-		else if (m_TextureAnimation != nullptr)
-		{
-			m_TextureAnimation->Render(x, y);
-		}
-	}
 
-	//  Pass the render call to all children
-	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(x, y);
+		//  Pass the render call to all children
+		for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter) (*iter)->Render(x, y);
+	}
 }
 
 inline void GUIObjectNode::Render3D()
