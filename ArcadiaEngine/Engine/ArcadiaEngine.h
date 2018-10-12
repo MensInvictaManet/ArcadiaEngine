@@ -10,10 +10,6 @@
 #define	USING_OPENGL		true
 #define	USING_GLU			true
 
-//  NOTE: Feel free to change screen size values to your liking
-#define SCREEN_SIZE_W		1024.0f
-#define SCREEN_SIZE_H		768.0f
-
 #if USING_SDL
 #include <SDL.h>
 #include <SDL_syswm.h>
@@ -67,14 +63,21 @@
 #include "SoundWrapper.h"
 #endif
 
-//  Screen dimension constants (change per project)
-#define	SCREEN_WIDTH	1024
-#define	SCREEN_HEIGHT	768
+//  Screen dimension constants (Change using SetScreenDimensions prior to calling InitializeEngine)
+static float ScreenWidth = 400.0f;
+static float ScreenHeight = 400.0f;
+
+static float Background_R = 0.5f;
+static float Background_G = 0.5f;
+static float Background_B = 0.5f;
+
+inline void ClearBackground() { glClearColor(Background_R, Background_G, Background_B, 1.f); }
+inline void SetBackgroundColor(float r, float g, float b) { Background_R = r; Background_G = g; Background_B = b; ClearBackground(); }
 
 inline void AddDebugConsoleCommands()
 {
 	//  MOVE_MOUSE_OVER: Automatically moves the mouse to a UI object click position
-	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string& commandString) -> bool
+	debugConsole->AddDebugCommand("MOVE_MOUSE_OVER", [=](std::string commandString) -> bool
 	{
 		std::string args[3];
 		auto argCount = 0;
@@ -125,7 +128,7 @@ inline void AddDebugConsoleCommands()
 	});
 
 	//  CLICK_MOUSE_LEFT: Simulates a left click
-	debugConsole->AddDebugCommand("CLICK_MOUSE_LEFT", [=](std::string& commandString) -> bool
+	debugConsole->AddDebugCommand("CLICK_MOUSE_LEFT", [=](std::string commandString) -> bool
 	{
 		debugConsole->AddDebugConsoleLine("Left mouse click simulated");
 		inputManager.SetSimulatedMouseButtonLeft(MOUSE_BUTTON_PRESSED);
@@ -133,7 +136,7 @@ inline void AddDebugConsoleCommands()
 	});
 
 	//  CLICK_MOUSE_MIDDLE: Simulates a middle click
-	debugConsole->AddDebugCommand("CLICK_MOUSE_MIDDLE", [=](std::string& commandString) -> bool
+	debugConsole->AddDebugCommand("CLICK_MOUSE_MIDDLE", [=](std::string commandString) -> bool
 	{
 		debugConsole->AddDebugConsoleLine("Middle mouse click simulated");
 		inputManager.SetSimulatedMouseButtonMiddle(MOUSE_BUTTON_PRESSED);
@@ -141,7 +144,7 @@ inline void AddDebugConsoleCommands()
 	});
 
 	//  CLICK_MOUSE_LEFT: Simulates a Right click
-	debugConsole->AddDebugCommand("CLICK_MOUSE_RIGHT", [=](std::string& commandString) -> bool
+	debugConsole->AddDebugCommand("CLICK_MOUSE_RIGHT", [=](std::string commandString) -> bool
 	{
 		debugConsole->AddDebugConsoleLine("Right mouse click simulated");
 		inputManager.SetSimulatedMouseButtonRight(MOUSE_BUTTON_PRESSED);
@@ -149,7 +152,7 @@ inline void AddDebugConsoleCommands()
 	});
 
 	//  ENTER_TEXT: Simulates a text input
-	debugConsole->AddDebugCommand("ENTER_TEXT", [=](std::string& commandString) -> bool
+	debugConsole->AddDebugCommand("ENTER_TEXT", [=](std::string commandString) -> bool
 	{
 		debugConsole->AddDebugConsoleLine("Text input simulated");
 		inputManager.AddTextInput(commandString);
@@ -159,14 +162,22 @@ inline void AddDebugConsoleCommands()
 
 inline void ResizeWindow(void)
 {
-	glViewport(0, 0, GLsizei(SCREEN_WIDTH), GLsizei(SCREEN_HEIGHT));
+	glViewport(0, 0, GLsizei(ScreenWidth), GLsizei(ScreenHeight));
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 0.0f, 100.0f);
+	gluPerspective(45.0f, GLdouble(ScreenWidth) / GLdouble(ScreenHeight), 0.0f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+inline void SetScreenDimensions(float screenWidth, float screenHeight)
+{
+	ScreenWidth = screenWidth;
+	ScreenHeight = screenHeight;
+	ResizeWindow();
+	debugConsole->SetWindowDimensions(int(ScreenWidth), int(ScreenHeight));
 }
 
 inline bool InitializeSDL()
@@ -243,7 +254,7 @@ inline bool InitializeOpenGL()
 	}
 
 	//  Initialize clear color
-	glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+	ClearBackground();
 
 	//  Check for an error
 	error = glGetError();
@@ -260,8 +271,10 @@ inline bool InitializeOpenGL()
 	return success;
 }
 
-inline bool InitializeEngine(const char* programTitle)
+inline bool InitializeEngine(const char* programTitle, float screenWidth, float screenHeght)
 {
+	SetScreenDimensions(screenWidth, screenHeght);
+
 	//  Initialize SDL
 	if (!InitializeSDL())
 	{
@@ -269,7 +282,7 @@ inline bool InitializeEngine(const char* programTitle)
 		return false;
 	}
 
-	auto windowIndex = windowManager.CreateNewWindow(programTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, true, false, false);
+	auto windowIndex = windowManager.CreateNewWindow(programTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(ScreenWidth), int(ScreenHeight), true, false, false);
 	if (windowIndex == -1) return false;
 
 	SDL_SetRenderDrawColor(windowManager.GetRenderer(windowIndex), 0xFF, 0xFF, 0xFF, 0xFF);
@@ -278,7 +291,7 @@ inline bool InitializeEngine(const char* programTitle)
 	winsockWrapper.WinsockInitialize();
 
 	//  Add the Debug Console to the GUI Manager
-	debugConsole->SetWindowDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
+	debugConsole->SetWindowDimensions(int(ScreenWidth), int(ScreenHeight));
 	AddDebugConsoleCommands();
 
 	//  Initialize OpenGL
@@ -347,7 +360,7 @@ inline void RenderScreen()
 	//  Initiate the 3D Rendering Context
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0, GLdouble(SCREEN_WIDTH) / GLdouble(SCREEN_HEIGHT), 1.0, 2000.0);
+	gluPerspective(45.0, GLdouble(ScreenWidth) / GLdouble(ScreenHeight), 1.0, 2000.0);
 
 	glDisable(GL_TEXTURE_2D);
 
@@ -356,7 +369,7 @@ inline void RenderScreen()
 	//  Initiate the 2D Rendering Context
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, GLdouble(SCREEN_WIDTH), GLdouble(SCREEN_HEIGHT), 0);
+	gluOrtho2D(0, GLdouble(ScreenWidth), GLdouble(ScreenHeight), 0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 

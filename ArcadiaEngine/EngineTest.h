@@ -81,7 +81,8 @@ void CreateInitializationData()
 
 void AppMain()
 {
-	if (!InitializeEngine("Arcadia Engine"))
+	SetBackgroundColor(0.3f, 0.3f, 0.3f);
+	if (!InitializeEngine("Arcadia Engine", 1024.0f, 768.0f))
 	{
 		ShutdownEngine();
 		throw std::runtime_error("InitializeEngine failed");

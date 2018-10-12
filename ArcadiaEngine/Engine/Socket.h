@@ -35,7 +35,7 @@ public:
 	int receivemessage(int len, SocketBuffer*destination, int length_specific = 0);
 	int peekmessage(int size, SocketBuffer*destination) const;
 	static int lasterror();
-	static std::string GetHostIP(char* address);
+	static std::string GetHostIP(const char* address);
 	static int SockExit(void);
 	static int SockStart(void);
 	static char* lastinIP(void);
@@ -330,7 +330,7 @@ inline int Socket::lasterror()
 	return WSAGetLastError();
 }
 
-inline std::string Socket::GetHostIP(char* hostname)
+inline std::string Socket::GetHostIP(const char* hostname)
 {
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_in *h;
