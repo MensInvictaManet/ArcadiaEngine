@@ -18,7 +18,7 @@
 class World3DExample : public GUIObjectNode
 {
 public:
-	World3DExample();
+	World3DExample(float screenWidth, float screenHeight);
 	~World3DExample();
 
 	void Input(int xOffset = 0, int yOffset = 0) override;
@@ -66,7 +66,7 @@ private:
 	}
 };
 
-inline World3DExample::World3DExample()
+inline World3DExample::World3DExample(float screenWidth, float screenHeight)
 {
 	LoadShaders();
 
@@ -98,7 +98,7 @@ inline World3DExample::World3DExample()
 	// setup GLM Camera
 	gCamera.setPosition(glm::vec3(0, 0, 4));
 	gCamera.setRotation(0.0f, 0.0f);
-	gCamera.setViewportAspectRatio(SCREEN_SIZE_W / SCREEN_SIZE_H);
+	gCamera.setViewportAspectRatio(screenWidth / screenHeight);
 }
 
 inline World3DExample::~World3DExample()
@@ -124,22 +124,50 @@ inline void World3DExample::Render3D()
 {
 	gCamera.ApplyTransform();
 
-	m_BasicCube.Render(Vector3<float>(-20, 0, -80), gCamera);
-	m_UnsplitCube.Render(Vector3<float>(-20, 0, -100), gCamera);
-	m_SplitCube1.Render(Vector3<float>(-20, 0, -120), gCamera);
-	m_SplitCube2.Render(Vector3<float>(-20, 0, -140), gCamera);
-	m_SplitCube3.Render(Vector3<float>(-20, 0, -160), gCamera);
-	m_SplitCube4.Render(Vector3<float>(-20, 0, -180), gCamera);
+	//  CUBES
+	auto cube1Pos = Vector3<float>(-20, 0, -80);
+	m_BasicCube.Render(cube1Pos, gCamera);
 
-	m_BasicIco.Render(Vector3<float>(20, 0, -80), gCamera);
-	m_UnsplitIco.Render(Vector3<float>(20, 0, -100), gCamera);
-	m_SplitIco1.Render(Vector3<float>(20, 0, -120), gCamera);
-	m_SplitIco2.Render(Vector3<float>(20, 0, -140), gCamera);
-	m_SplitIco3.Render(Vector3<float>(20, 0, -160), gCamera);
-	m_SplitIco4.Render(Vector3<float>(20, 0, -180), gCamera);
+	auto cube2Pos = Vector3<float>(-20, 0, -100);
+	m_UnsplitCube.Render(cube2Pos, gCamera);
 
-	m_BasicQuad1.Render(Vector3<float>(60, 0, -80), gCamera);
-	m_BasicQuad2.Render(Vector3<float>(60, 0, -100), gCamera);
+	auto cube3Pos = Vector3<float>(-20, 0, -120);
+	m_SplitCube1.Render(cube3Pos, gCamera);
+
+	auto cube4Pos = Vector3<float>(-20, 0, -140);
+	m_SplitCube2.Render(cube4Pos, gCamera);
+
+	auto cube5Pos = Vector3<float>(-20, 0, -160);
+	m_SplitCube3.Render(cube5Pos, gCamera);
+
+	auto cube6Pos = Vector3<float>(-20, 0, -180);
+	m_SplitCube4.Render(cube6Pos, gCamera);
+
+	//  ICOSEHEDRONS
+	auto ico1Pos = Vector3<float>(20, 0, -80);
+	m_BasicIco.Render(ico1Pos, gCamera);
+
+	auto ico2Pos = Vector3<float>(20, 0, -100);
+	m_UnsplitIco.Render(ico2Pos, gCamera);
+
+	auto ico3Pos = Vector3<float>(20, 0, -120);
+	m_SplitIco1.Render(ico3Pos, gCamera);
+
+	auto ico4Pos = Vector3<float>(20, 0, -140);
+	m_SplitIco2.Render(ico4Pos, gCamera);
+
+	auto ico5Pos = Vector3<float>(20, 0, -160);
+	m_SplitIco3.Render(ico5Pos, gCamera);
+
+	auto ico6Pos = Vector3<float>(20, 0, -180);
+	m_SplitIco4.Render(ico6Pos, gCamera);
+
+	//  QUADS
+	auto quad1Pos = Vector3<float>(60, 0, -80);
+	m_BasicQuad1.Render(quad1Pos, gCamera);
+
+	auto quad2Pos = Vector3<float>(60, 0, -100);
+	m_BasicQuad2.Render(quad2Pos, gCamera);
 }
 
 inline void World3DExample::TakeCameraInput()
