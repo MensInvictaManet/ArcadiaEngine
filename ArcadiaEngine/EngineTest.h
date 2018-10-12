@@ -31,7 +31,7 @@ void CreateInitializationData()
 	debugConsole->SetFont(fontManager.GetFont("Arial-12-White"));
 
 	//  Create the first test dialogue and add it to the scene
-	currentDialogue = new World3DExample;
+	currentDialogue = new World3DExample(ScreenWidth, ScreenHeight);
 	guiManager.GetBaseNode()->AddChild(currentDialogue);
 
 	//  Create the container that holds the showcase choice drop-down and button
@@ -65,11 +65,11 @@ void CreateInitializationData()
 		currentDialogue->SetToDestroy(guiManager.GetDestroyList());
 		switch (showcaseDropdown->GetSelectedIndex())
 		{
-		case 0:			currentDialogue = new World3DExample;				break;
-		case 1:			currentDialogue = new UIShowcaseDialogue;			break;
-		case 2:			currentDialogue = new SoundShowcaseDialogue;		break;
-		case 3:			currentDialogue = new MemoryShowcaseDialogue;		break;
-		case 4:			currentDialogue = new TopDownExample;				break;
+		case 0:			currentDialogue = new World3DExample(ScreenWidth, ScreenHeight);	break;
+		case 1:			currentDialogue = new UIShowcaseDialogue;							break;
+		case 2:			currentDialogue = new SoundShowcaseDialogue;						break;
+		case 3:			currentDialogue = new MemoryShowcaseDialogue;						break;
+		case 4:			currentDialogue = new TopDownExample;								break;
 		default:break;
 		}
 		guiManager.GetBaseNode()->AddChild(currentDialogue);
