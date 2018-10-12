@@ -58,6 +58,7 @@ public:
 	int GetTextureID() const { return m_TextureID; }
 	TextureAnimation* GetTextureAnimation() const { return m_TextureAnimation; }
 	bool GetVisible() const { return m_Visible; }
+	inline const std::string& GetObjectName(void) const { return m_ObjectName; }
 	GUIObjectNode* GetParent() { return m_Parent; }
 	const GUIObjectNode* GetParent() const { return m_Parent; }
 	float getColorR() const { return m_Color.colorValues[0]; }
@@ -68,6 +69,7 @@ public:
 	void AddChild(GUIObjectNode* child);
 	void AddChildSorted(GUIObjectNode* child);
 	void RemoveChild(GUIObjectNode* child);
+	GUIObjectNode* GetChildByName(std::string childName);
 
 	int m_ZOrder;
 	int m_X;
@@ -285,4 +287,14 @@ inline void GUIObjectNode::RemoveChild(GUIObjectNode* child)
 		m_Children.erase(iter);
 		return;
 	}
+}
+
+
+inline GUIObjectNode* GUIObjectNode::GetChildByName(std::string childName)
+{
+	for (auto iter = m_Children.begin(); iter != m_Children.end(); ++iter)
+		if ((*iter)->GetObjectName() == childName)
+			return (*iter);
+
+	return nullptr;
 }

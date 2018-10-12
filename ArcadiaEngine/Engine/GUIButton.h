@@ -21,6 +21,7 @@ public:
 	void SetMiddleClickCallback(const GUIButtonCallback& callback) { m_MiddleClickCallback = callback; }
 	void SetRightClickCallback(const GUIButtonCallback& callback) { m_RightClickCallback = callback; }
 	void SetFont(const Font* font) { m_Font = font; }
+	void SetFont(std::string fontName) { m_Font = fontManager.GetFont(fontName.c_str()); }
 	void SetText(const std::string text) { m_Text = text; }
 	void SetPressedSizeRatio(float ratio) { m_PressedSizeRatio = ratio; }
 
@@ -187,10 +188,10 @@ inline void GUIButton::Render(int xOffset, int yOffset)
 				auto pressedHeightDelta = m_Pressed ? int(m_Height * (1.0f - pressedSqueeze)) : 0;
 
 				glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(x + pressedWidthDelta, y + pressedHeightDelta);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + pressedHeightDelta);
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + m_Height - pressedHeightDelta);
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(x + pressedWidthDelta, y + m_Height - pressedHeightDelta);
+					glTexCoord2f(0.0f, 0.0f); glVertex2i(x + pressedWidthDelta, y + pressedHeightDelta);
+					glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + pressedHeightDelta);
+					glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - pressedWidthDelta, y + m_Height - pressedHeightDelta);
+					glTexCoord2f(0.0f, 1.0f); glVertex2i(x + pressedWidthDelta, y + m_Height - pressedHeightDelta);
 				glEnd();
 			}
 

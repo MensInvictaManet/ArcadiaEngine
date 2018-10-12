@@ -226,7 +226,11 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 		}
 	}
 
-	if (leftButtonState != MOUSE_BUTTON_PRESSED) return;
+	if (leftButtonState != MOUSE_BUTTON_PRESSED)
+	{
+		for (auto i = 0; i != int(m_ItemList.size()); ++i) m_ItemList[i]->Input(x, y + ((EntryHeight + SpaceBetweenEntries) * i));
+		return;
+	}
 	if (mx < x || mx > x + m_Width || my < y || my > y + m_Height) return;
 
 	//  If we're left of the directional buttons, assume we're clicking an entry in the list and find out which one
@@ -235,6 +239,11 @@ inline void GUIListBox::Input(int xOffset, int yOffset)
 		auto newSelectedIndex = (int(my) - y - TextureTopSide->getHeight()) / (EntryHeight + SpaceBetweenEntries) + MovementIndex;
 		if (newSelectedIndex >= MovementIndex && newSelectedIndex < int(m_ItemList.size()) && newSelectedIndex < MovementIndex + int(ItemDisplayCount))
 		{
+			//  If this index is already selected, check for input inside of the entry node first
+			auto selected_y_offset = (EntryHeight + SpaceBetweenEntries) * SelectedIndex;
+			if (newSelectedIndex == SelectedIndex) m_ItemList[SelectedIndex]->Input(x, y + selected_y_offset);
+			if (inputManager.GetMouseButtonLeft() != MOUSE_BUTTON_PRESSED) return;
+
 			inputManager.TakeMouseButtonLeft();
 			if (SelectedIndex != newSelectedIndex && m_ItemClickCallback != nullptr) m_ItemClickCallback(this);
 			SelectedIndex = newSelectedIndex;
