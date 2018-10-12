@@ -300,7 +300,7 @@ inline int Socket::receivemessage(int len, SocketBuffer* destination, int length
 	if (buff != nullptr)
 	{
 		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
-		delete [] buff;
+		delete[] buff;
 	}
 	return size;
 }
@@ -315,13 +315,13 @@ inline int Socket::peekmessage(int size, SocketBuffer* destination) const
 	if (size < 0)
 	{
 		MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
-		delete [] buff;
+		delete[] buff;
 		return -1;
 	}
 	destination->clear();
 	destination->addBuffer(buff, size);
 	MANAGE_MEMORY_DELETE("WinsockWrapper", sizeof(buff));
-	delete [] buff;
+	delete[] buff;
 	return size;
 }
 

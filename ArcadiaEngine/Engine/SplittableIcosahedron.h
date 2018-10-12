@@ -272,7 +272,7 @@ public:
 		auto point19_2 = MakePoint(0.0f, 0.0f, 0.0f, 0.8955078f, 0.0000000f);
 
 
-		m_Surfaces[0] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[2], point00_0), AddPoints(m_PrimarySurfacePoints[1], point00_1),  AddPoints(m_PrimarySurfacePoints[0], point00_2)), nullptr);	// 20
+		m_Surfaces[0] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[2], point00_0), AddPoints(m_PrimarySurfacePoints[1], point00_1),   AddPoints(m_PrimarySurfacePoints[0], point00_2)), nullptr);	// 20
 		m_Surfaces[1] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[1], point01_0), AddPoints(m_PrimarySurfacePoints[2], point01_1),   AddPoints(m_PrimarySurfacePoints[3], point01_2)), nullptr);	//  8
 		m_Surfaces[2] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[3], point02_0), AddPoints(m_PrimarySurfacePoints[2], point02_1),   AddPoints(m_PrimarySurfacePoints[4], point02_2)), nullptr);	// 10
 		m_Surfaces[3] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[4], point03_0), AddPoints(m_PrimarySurfacePoints[5], point03_1),   AddPoints(m_PrimarySurfacePoints[3], point03_2)), nullptr);	// 17
@@ -284,13 +284,13 @@ public:
 		m_Surfaces[9] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[0], point09_0), AddPoints(m_PrimarySurfacePoints[1], point09_1),   AddPoints(m_PrimarySurfacePoints[9], point09_2)), nullptr);	// 14
 		m_Surfaces[10] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[1], point10_0), AddPoints(m_PrimarySurfacePoints[3], point10_1),  AddPoints(m_PrimarySurfacePoints[10], point10_2)), nullptr);	// 16
 		m_Surfaces[11] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[5], point11_0), AddPoints(m_PrimarySurfacePoints[10], point11_1), AddPoints(m_PrimarySurfacePoints[3], point11_2)), nullptr);	//  3
-		m_Surfaces[12] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[5], point12_0), AddPoints(m_PrimarySurfacePoints[7], point12_1), AddPoints(m_PrimarySurfacePoints[10], point12_2)), nullptr);	// 19
+		m_Surfaces[12] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[5], point12_0), AddPoints(m_PrimarySurfacePoints[7], point12_1),  AddPoints(m_PrimarySurfacePoints[10], point12_2)), nullptr);	// 19
 		m_Surfaces[13] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[10], point13_0), AddPoints(m_PrimarySurfacePoints[7], point13_1), AddPoints(m_PrimarySurfacePoints[9], point13_2)), nullptr);	//  9
-		m_Surfaces[14] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[9], point14_0), AddPoints(m_PrimarySurfacePoints[1], point14_1), AddPoints(m_PrimarySurfacePoints[10], point14_2)), nullptr);	//  6
+		m_Surfaces[14] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[9], point14_0), AddPoints(m_PrimarySurfacePoints[1], point14_1),  AddPoints(m_PrimarySurfacePoints[10], point14_2)), nullptr);	//  6
 		m_Surfaces[15] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[2], point15_0), AddPoints(m_PrimarySurfacePoints[0], point15_1),  AddPoints(m_PrimarySurfacePoints[11], point15_2)), nullptr);	//  2
 		m_Surfaces[16] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[2], point16_0), AddPoints(m_PrimarySurfacePoints[11], point16_1), AddPoints(m_PrimarySurfacePoints[4], point16_2)), nullptr);	// 12
-		m_Surfaces[17] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[6], point17_0), AddPoints(m_PrimarySurfacePoints[4], point17_1), AddPoints(m_PrimarySurfacePoints[11], point17_2)), nullptr);	// 15
-		m_Surfaces[18] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[8], point18_0), AddPoints(m_PrimarySurfacePoints[6], point18_1), AddPoints(m_PrimarySurfacePoints[11], point18_2)), nullptr);	//  5
+		m_Surfaces[17] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[6], point17_0), AddPoints(m_PrimarySurfacePoints[4], point17_1),  AddPoints(m_PrimarySurfacePoints[11], point17_2)), nullptr);	// 15
+		m_Surfaces[18] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[8], point18_0), AddPoints(m_PrimarySurfacePoints[6], point18_1),  AddPoints(m_PrimarySurfacePoints[11], point18_2)), nullptr);	//  5
 		m_Surfaces[19] = MakeSurfaceTriangle(MakeTriangle(AddPoints(m_PrimarySurfacePoints[11], point19_0), AddPoints(m_PrimarySurfacePoints[0], point19_1), AddPoints(m_PrimarySurfacePoints[8], point19_2)), nullptr);	// 18
 	}
 
@@ -342,10 +342,10 @@ public:
 
 		if (surfaceSquare.m_SplitTriangles == nullptr)
 		{
-			vertexArray[memoryIndex +  0] = std::get<0>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  1] = std::get<1>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  2] = std::get<2>(std::get<0>(surfaceSquare.m_Triangle));
-			vertexArray[memoryIndex +  3] = std::get<3>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  4] = std::get<4>(std::get<0>(surfaceSquare.m_Triangle));
-			vertexArray[memoryIndex +  5] = std::get<0>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  6] = std::get<1>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  7] = std::get<2>(std::get<1>(surfaceSquare.m_Triangle));
-			vertexArray[memoryIndex +  8] = std::get<3>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex +  9] = std::get<4>(std::get<1>(surfaceSquare.m_Triangle));
+			vertexArray[memoryIndex + 0] = std::get<0>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 1] = std::get<1>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 2] = std::get<2>(std::get<0>(surfaceSquare.m_Triangle));
+			vertexArray[memoryIndex + 3] = std::get<3>(std::get<0>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 4] = std::get<4>(std::get<0>(surfaceSquare.m_Triangle));
+			vertexArray[memoryIndex + 5] = std::get<0>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 6] = std::get<1>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 7] = std::get<2>(std::get<1>(surfaceSquare.m_Triangle));
+			vertexArray[memoryIndex + 8] = std::get<3>(std::get<1>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 9] = std::get<4>(std::get<1>(surfaceSquare.m_Triangle));
 			vertexArray[memoryIndex + 10] = std::get<0>(std::get<2>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 11] = std::get<1>(std::get<2>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 12] = std::get<2>(std::get<2>(surfaceSquare.m_Triangle));
 			vertexArray[memoryIndex + 13] = std::get<3>(std::get<2>(surfaceSquare.m_Triangle));	vertexArray[memoryIndex + 14] = std::get<4>(std::get<2>(surfaceSquare.m_Triangle));
 		}
