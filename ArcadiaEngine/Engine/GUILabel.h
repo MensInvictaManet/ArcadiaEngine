@@ -6,9 +6,8 @@
 class GUILabel : public GUIObjectNode
 {
 public:
-	enum Justifications { JUSTIFY_LEFT = 0, JUSTIFY_RIGHT, JUSTIFY_CENTER, JUSTIFICATION_COUNT };
-
-	static GUILabel* CreateLabel(const Font* font, const char* text, int x = 0, int y = 0, int w = 0, int h = 0);
+	static GUILabel* CreateLabel(const char* font, const char* text, int x = 0, int y = 0, int w = 0, int h = 0, int justification = UI_JUSTIFY_LEFT);
+	static GUILabel* CreateLabel(const Font* font, const char* text, int x = 0, int y = 0, int w = 0, int h = 0, int justification = UI_JUSTIFY_LEFT);
 
 	explicit GUILabel(const char* text = "");
 	~GUILabel();
@@ -28,22 +27,28 @@ private:
 	int m_Justification;
 };
 
-inline GUILabel* GUILabel::CreateLabel(const Font* font, const char* text, int x, int y, int w, int h)
+
+inline GUILabel* GUILabel::CreateLabel(const char* font, const char* text, int x, int y, int w, int h, int justification)
+{
+	return GUILabel::CreateLabel(fontManager.GetFont(font), text, x, y, w, h, justification);
+}
+
+
+inline GUILabel* GUILabel::CreateLabel(const Font* font, const char* text, int x, int y, int w, int h, int justification)
 {
 	MANAGE_MEMORY_NEW("MenuUI_Label", sizeof(GUILabel));
 	auto newLabel = new GUILabel(text);
 	newLabel->SetFont(font);
-	newLabel->SetX(x);
-	newLabel->SetY(y);
-	newLabel->SetWidth(w);
-	newLabel->SetHeight(h);
+	newLabel->SetPosition(x, y);
+	newLabel->SetDimensions(w, h);
+	newLabel->SetJustification(justification);
 	return newLabel;
 }
 
 inline GUILabel::GUILabel(const char* text) :
 	m_Font(nullptr),
 	m_Text(text),
-	m_Justification(JUSTIFY_LEFT)
+	m_Justification(UI_JUSTIFY_LEFT)
 {
 
 }
@@ -65,9 +70,9 @@ inline void GUILabel::Render(int xOffset, int yOffset)
 	if (!m_SetToDestroy && m_Visible && (m_Font != nullptr && !m_Text.empty()) && m_Width > 0 && m_Height > 0)
 	{
 		//  Render the font the same way regardless of templating
-		if (m_Justification == JUSTIFY_CENTER)		m_Font->RenderText(m_Text.c_str(), x - m_Font->GetTextWidth(m_Text.c_str()) / 2, y);
-		else if (m_Justification == JUSTIFY_LEFT)	m_Font->RenderText(m_Text.c_str(), x, y);
-		else if (m_Justification == JUSTIFY_RIGHT)	m_Font->RenderText(m_Text.c_str(), x + m_Width - m_Font->GetTextWidth(m_Text.c_str()), y);
+		if (m_Justification == UI_JUSTIFY_CENTER)		m_Font->RenderText(m_Text.c_str(), x - m_Font->GetTextWidth(m_Text.c_str()) / 2, y);
+		else if (m_Justification == UI_JUSTIFY_LEFT)	m_Font->RenderText(m_Text.c_str(), x, y);
+		else if (m_Justification == UI_JUSTIFY_RIGHT)	m_Font->RenderText(m_Text.c_str(), x + m_Width - m_Font->GetTextWidth(m_Text.c_str()), y);
 	}
 
 	//  Pass the render call to all children
