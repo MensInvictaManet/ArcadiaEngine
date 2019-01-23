@@ -25,8 +25,7 @@ public:
 	inline void ClearItems() { for (auto iter = m_ItemList.begin(); iter != m_ItemList.end(); ++iter) { guiManager.DestroyNode((*iter)); } m_ItemList.clear(); SelectedIndex = 0; }
 	inline const GUIObjectNode* GetSelectedItem() const { return (SelectedIndex == -1) ? nullptr : m_ItemList[SelectedIndex]; }
 	inline int GetSelectedIndex() const { return SelectedIndex; }
-	inline void SetTemplate(const char* templateName) { if (strlen(templateName) == 0) { m_Templated = false; return; } m_Templated = true;  m_TemplateBox = GUITemplatedBox("DropDown", templateName, 1);
-}
+	inline void SetTemplate(const char* templateName) { if (strlen(templateName) == 0) { m_Templated = false; return; } m_Templated = true;  m_TemplateBox = GUITemplatedBox("DropDown", templateName, 1); }
 
 private:
 	GUIFunctionCallback	m_ItemSelectCallback;
@@ -188,10 +187,10 @@ inline void GUIDropDown::Render(int xOffset, int yOffset)
 			glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(x + m_Width, y + m_Height);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - m_Width, y + m_Height);
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - m_Width, y + m_Height - m_Height);
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height - m_Height);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(x + m_Width, y + m_Height);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width - m_Width, y + m_Height);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width - m_Width, y + m_Height - m_Height);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height - m_Height);
 			glEnd();
 		}
 	}

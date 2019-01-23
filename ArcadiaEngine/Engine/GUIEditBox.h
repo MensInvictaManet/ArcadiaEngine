@@ -55,7 +55,7 @@ private:
 	bool m_TextHidden = false;
 	char m_HiddenChar = '*';
 	std::string m_HiddenText;
-	
+
 	TextAlignment m_TextAlignment;
 
 	bool m_Templated;
@@ -140,8 +140,8 @@ inline void GUIEditBox::Input(int xOffset, int yOffset)
 	//  If selected, take keyboard text input
 	if (m_Selected)
 	{
-		if (inputManager.GetEnter() && m_EnterKeyCallback != nullptr)	{ m_EnterKeyCallback(this);		inputManager.ResetEnter(InputManager::KEY_STATE_HELD);		return; }
-		if (inputManager.GetTab() && m_TabKeyCallback != nullptr)		{ m_TabKeyCallback(this);		inputManager.ResetTab(InputManager::KEY_STATE_HELD);		return; }
+		if (inputManager.GetEnter() && m_EnterKeyCallback != nullptr) { m_EnterKeyCallback(this);		inputManager.ResetEnter(InputManager::KEY_STATE_HELD);		return; }
+		if (inputManager.GetTab() && m_TabKeyCallback != nullptr) { m_TabKeyCallback(this);		inputManager.ResetTab(InputManager::KEY_STATE_HELD);		return; }
 
 		if (inputManager.GetBackspace() && !m_Text.empty() && (gameSecondsF - m_LastBackspaceTime >= TIME_BETWEEN_BACKSPACES))
 		{

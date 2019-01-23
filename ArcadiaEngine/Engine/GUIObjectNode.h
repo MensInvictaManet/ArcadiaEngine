@@ -70,7 +70,7 @@ public:
 	inline float getColorB() const { return m_Color.colorValues[2]; }
 	inline float getColorA() const { return m_Color.colorValues[3]; }
 	inline bool GetRenderLast() const { return m_RenderLast; }
-	
+
 
 	void AddChild(GUIObjectNode* child);
 	void AddChildSorted(GUIObjectNode* child);
@@ -186,10 +186,10 @@ inline void GUIObjectNode::Render(int xOffset, int yOffset)
 				glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
 				glBegin(GL_QUADS);
-					glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
-					glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
-					glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
-					glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(x, y);
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(x + m_Width, y);
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(x + m_Width, y + m_Height);
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(x, y + m_Height);
 				glEnd();
 			}
 			else if (m_TextureAnimation != nullptr)
@@ -331,15 +331,15 @@ private:
 	std::unordered_map<int, TextureManager::ManagedTexture*> TextureMap;
 
 public:
-	inline TextureManager::ManagedTexture* TopLeft(int layerIndex)		{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_LEFT]; }
-	inline TextureManager::ManagedTexture* TopRight(int layerIndex)		{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_RIGHT]; }
-	inline TextureManager::ManagedTexture* BottomLeft(int layerIndex)	{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_LEFT]; }
-	inline TextureManager::ManagedTexture* BottomRight(int layerIndex)	{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_RIGHT]; }
-	inline TextureManager::ManagedTexture* TopSide(int layerIndex)		{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_SIDE]; }
-	inline TextureManager::ManagedTexture* LeftSide(int layerIndex)		{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + LEFT_SIDE]; }
-	inline TextureManager::ManagedTexture* RightSide(int layerIndex)	{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + RIGHT_SIDE]; }
-	inline TextureManager::ManagedTexture* BottomSide(int layerIndex)	{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_SIDE]; }
-	inline TextureManager::ManagedTexture* Middle(int layerIndex)		{ return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + MIDDLE]; }
+	inline TextureManager::ManagedTexture* TopLeft(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_LEFT]; }
+	inline TextureManager::ManagedTexture* TopRight(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_RIGHT]; }
+	inline TextureManager::ManagedTexture* BottomLeft(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_LEFT]; }
+	inline TextureManager::ManagedTexture* BottomRight(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_RIGHT]; }
+	inline TextureManager::ManagedTexture* TopSide(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + TOP_SIDE]; }
+	inline TextureManager::ManagedTexture* LeftSide(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + LEFT_SIDE]; }
+	inline TextureManager::ManagedTexture* RightSide(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + RIGHT_SIDE]; }
+	inline TextureManager::ManagedTexture* BottomSide(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + BOTTOM_SIDE]; }
+	inline TextureManager::ManagedTexture* Middle(int layerIndex) { return TextureMap[TEMPLATE_PORTIONS_COUNT * layerIndex + MIDDLE]; }
 
 	GUITemplatedBox()
 	{
@@ -353,15 +353,15 @@ public:
 		for (auto i = 0; i < boxCount; ++i)
 		{
 			auto layerIndex = TEMPLATE_PORTIONS_COUNT * i;
-			TextureMap[layerIndex + TOP_LEFT]		= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopLeftCorner.png").c_str());
-			TextureMap[layerIndex + TOP_RIGHT]		= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopRightCorner.png").c_str());
-			TextureMap[layerIndex + BOTTOM_LEFT]	= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomLeftCorner.png").c_str());
-			TextureMap[layerIndex + BOTTOM_RIGHT]	= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomRightCorner.png").c_str());
-			TextureMap[layerIndex + LEFT_SIDE]		= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_LeftSide.png").c_str());
-			TextureMap[layerIndex + RIGHT_SIDE]		= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_RightSide.png").c_str());
-			TextureMap[layerIndex + TOP_SIDE]		= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopSide.png").c_str());
-			TextureMap[layerIndex + BOTTOM_SIDE]	= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomSide.png").c_str());
-			TextureMap[layerIndex + MIDDLE]			= textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_Middle.png").c_str());
+			TextureMap[layerIndex + TOP_LEFT] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopLeftCorner.png").c_str());
+			TextureMap[layerIndex + TOP_RIGHT] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopRightCorner.png").c_str());
+			TextureMap[layerIndex + BOTTOM_LEFT] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomLeftCorner.png").c_str());
+			TextureMap[layerIndex + BOTTOM_RIGHT] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomRightCorner.png").c_str());
+			TextureMap[layerIndex + LEFT_SIDE] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_LeftSide.png").c_str());
+			TextureMap[layerIndex + RIGHT_SIDE] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_RightSide.png").c_str());
+			TextureMap[layerIndex + TOP_SIDE] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_TopSide.png").c_str());
+			TextureMap[layerIndex + BOTTOM_SIDE] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_BottomSide.png").c_str());
+			TextureMap[layerIndex + MIDDLE] = textureManager.LoadTexture(std::string(templateFolder + std::to_string(i) + "_Middle.png").c_str());
 		}
 	}
 

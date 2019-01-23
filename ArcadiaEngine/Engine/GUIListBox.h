@@ -40,7 +40,7 @@ public:
 	inline int GetEntryHeight() const { return EntryHeight; }
 	inline int GetSpaceBetweenEntries() const { return SpaceBetweenEntries; }
 	inline void SetTemplate(const char* templateName) { if (strlen(templateName) == 0) { m_Templated = false; return; } m_Templated = true;  m_TemplateBox = GUITemplatedBox("ListBox", templateName, 1); }
-	
+
 	inline void SetTemplateData(int dirButtonsX, int contentY, int upButtonW, int upButtonH, int downButtonW, int downButtonH, int barColumnW);
 
 private:
